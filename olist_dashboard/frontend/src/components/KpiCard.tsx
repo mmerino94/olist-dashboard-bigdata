@@ -1,16 +1,30 @@
+// KpiCard — número grande + label + hint opcional. Estilo corporativo sobrio
+// (paleta navy/blue-accent del brief de diseño).
+import { cn } from "../lib/utils";
+
+type Tone = "neutral" | "good" | "warn" | "bad";
+type Size = "sm" | "md" | "lg";
+
 type Props = {
   label: string;
-  value: string;
+  value: string | number | null | undefined;
   unit?: string;
   hint?: string;
-  tone?: "default" | "good" | "warn" | "bad";
+  tone?: Tone;
+  size?: Size;
 };
 
-const toneClass: Record<NonNullable<Props["tone"]>, string> = {
-  default: "text-primario",
-  good: "text-secundario",
-  warn: "text-acento",
-  bad: "text-critico",
+const toneClasses: Record<Tone, string> = {
+  neutral: "text-ink",
+  good: "text-good",
+  warn: "text-warn",
+  bad: "text-bad",
+};
+
+const sizeClasses: Record<Size, string> = {
+  sm: "text-2xl",
+  md: "text-3xl",
+  lg: "text-5xl",
 };
 
 export default function KpiCard({
@@ -18,31 +32,36 @@ export default function KpiCard({
   value,
   unit,
   hint,
-  tone = "default",
+  tone = "neutral",
+  size = "md",
 }: Props) {
+  const displayValue =
+    value == null || value === "" ? "—" : value;
+
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-5 flex flex-col min-h-[140px] overflow-hidden">
-      <div className="text-[11px] uppercase tracking-wider text-gray-500 font-semibold">
+    <div className="bg-paper border border-gray-200 rounded p-4 flex flex-col gap-1.5 min-h-[110px]">
+      <div className="text-[10.5px] tracking-[0.1em] uppercase text-gray font-mono">
         {label}
       </div>
-      <div className="flex-1 flex items-center">
-        <div className="flex items-baseline gap-1.5 whitespace-nowrap min-w-0">
-          <span
-            className={`text-2xl md:text-3xl xl:text-[2rem] font-bold tabular-nums tracking-tight leading-none ${toneClass[tone]}`}
-            title={value}
-          >
-            {value}
-          </span>
-          {unit && (
-            <span className="text-sm font-normal text-gray-400 leading-none">
-              {unit}
-            </span>
+      <div className="flex items-baseline gap-1.5">
+        <span
+          className={cn(
+            "font-semibold tracking-tight tabular-nums leading-none",
+            sizeClasses[size],
+            toneClasses[tone]
           )}
+        >
+          {displayValue}
+        </span>
+        {unit && (
+          <span className="text-sm text-gray font-mono">{unit}</span>
+        )}
+      </div>
+      {hint && (
+        <div className="text-[11.5px] text-gray leading-snug mt-0.5">
+          {hint}
         </div>
-      </div>
-      <div className="text-xs text-gray-500 leading-snug line-clamp-2 min-h-[2em]">
-        {hint ?? ""}
-      </div>
+      )}
     </div>
   );
 }

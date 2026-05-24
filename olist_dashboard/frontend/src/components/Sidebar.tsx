@@ -1,120 +1,100 @@
+// Sidebar oscuro estilo McKinsey/BCG — paleta navy del brief de diseño.
+// Sin filtros funcionales por ahora (se agregan en Día 5).
 import { NavLink } from "react-router-dom";
-import { useFilters } from "../lib/filters";
-import { categoriaEs } from "../lib/translate";
+import { cn } from "../lib/utils";
 
-const navItems = [
-  { to: "/", label: "Resumen ejecutivo", end: true },
-  { to: "/rentabilidad", label: "P1 · Rentabilidad" },
-  { to: "/retencion", label: "P2 · Retención" },
-  { to: "/logistica", label: "P3 · Logística" },
-  { to: "/vendedores", label: "P4 · Vendedores" },
-  { to: "/satisfaccion", label: "P5 · Satisfacción" },
+type NavItem = { to: string; num: string; label: string; end?: boolean };
+
+const navSections: { label: string; items: NavItem[] }[] = [
+  {
+    label: "Resumen",
+    items: [{ to: "/", num: "0", label: "Resumen ejecutivo", end: true }],
+  },
+  {
+    label: "Análisis por problema",
+    items: [
+      { to: "/rentabilidad", num: "1", label: "Rentabilidad" },
+      { to: "/retencion", num: "2", label: "Retención · RFM" },
+      { to: "/logistica", num: "3", label: "Logística" },
+      { to: "/vendedores", num: "4", label: "Vendedores" },
+      { to: "/satisfaccion", num: "5", label: "Satisfacción" },
+    ],
+  },
 ];
 
 export default function Sidebar() {
-  const { filters, setFilters, reset, options } = useFilters();
-
   return (
-    <aside className="w-72 shrink-0 bg-white border-r border-gray-200 flex flex-col">
-      <div className="px-6 py-5 border-b border-gray-100">
-        <div className="text-xs uppercase tracking-wider text-gray-400">
-          Big Data Analysis
+    <aside className="w-[220px] shrink-0 bg-navy text-white flex flex-col sticky top-0 h-screen">
+      {/* Branding */}
+      <div className="px-6 py-6 flex flex-col gap-1">
+        <div className="flex items-center gap-2 text-[11px] tracking-[0.08em] uppercase text-blue-light font-mono">
+          <span
+            className="inline-block w-2 h-2 rounded-sm bg-blue-accent"
+            style={{ boxShadow: "0 0 0 2px rgba(60,120,187,0.25)" }}
+          />
+          Big Data · UNMSM
         </div>
-        <div className="text-lg font-bold text-primario">Olist BI Suite</div>
-        <div className="text-xs text-gray-500 mt-0.5">
-          Caso de estudio para mercado peruano
+        <div className="text-[17px] font-semibold leading-tight tracking-tight mt-1">
+          Olist Consulting
+        </div>
+        <div className="text-[11.5px] text-white/55 font-mono">
+          Análisis · Decisión · Impacto
         </div>
       </div>
 
-      <nav className="px-3 py-4 space-y-0.5">
-        {navItems.map((it) => (
-          <NavLink
-            key={it.to}
-            to={it.to}
-            end={it.end}
-            className={({ isActive }) =>
-              `block px-3 py-2 rounded text-sm font-medium transition ${
-                isActive
-                  ? "bg-primario text-white"
-                  : "text-grisTexto hover:bg-grisClaro"
-              }`
-            }
-          >
-            {it.label}
-          </NavLink>
+      {/* Nav */}
+      <nav className="px-4 flex-1 flex flex-col gap-6 overflow-y-auto">
+        {navSections.map((section) => (
+          <div key={section.label}>
+            <div className="text-[10px] tracking-[0.14em] uppercase text-white/40 font-mono mb-2 px-3">
+              {section.label}
+            </div>
+            <div className="flex flex-col gap-0.5">
+              {section.items.map((it) => (
+                <NavLink
+                  key={it.to}
+                  to={it.to}
+                  end={it.end}
+                  className={({ isActive }) =>
+                    cn(
+                      "grid grid-cols-[28px_1fr] items-center px-3 py-2 rounded text-[13px] transition-colors",
+                      isActive
+                        ? "bg-white/10 text-white"
+                        : "text-white/70 hover:bg-white/5 hover:text-white"
+                    )
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <span
+                        className={cn(
+                          "text-[11px] font-mono",
+                          isActive ? "text-blue-light" : "text-white/40"
+                        )}
+                      >
+                        P{it.num}
+                      </span>
+                      <span className="font-medium">{it.label}</span>
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </div>
+          </div>
         ))}
       </nav>
 
-      <div className="px-6 py-4 border-t border-gray-100 mt-auto space-y-3">
-        <div className="text-xs uppercase tracking-wider text-gray-400 font-semibold">
-          Filtros globales
+      {/* Footer */}
+      <div className="px-6 py-4 border-t border-white/10">
+        <div className="text-[10px] uppercase tracking-[0.12em] text-white/40 font-mono">
+          Dataset
         </div>
-
-        <div>
-          <label className="block text-xs text-gray-600 mb-1">Desde</label>
-          <input
-            type="date"
-            value={filters.desde ?? ""}
-            min={options?.rango_fechas.desde}
-            max={options?.rango_fechas.hasta}
-            onChange={(e) =>
-              setFilters({ desde: e.target.value || null })
-            }
-            className="w-full text-sm border border-gray-300 rounded px-2 py-1.5"
-          />
+        <div className="text-[12px] text-white/80 mt-0.5">
+          Olist Brazilian E-Commerce
         </div>
-        <div>
-          <label className="block text-xs text-gray-600 mb-1">Hasta</label>
-          <input
-            type="date"
-            value={filters.hasta ?? ""}
-            min={options?.rango_fechas.desde}
-            max={options?.rango_fechas.hasta}
-            onChange={(e) =>
-              setFilters({ hasta: e.target.value || null })
-            }
-            className="w-full text-sm border border-gray-300 rounded px-2 py-1.5"
-          />
+        <div className="text-[10.5px] text-white/40 font-mono mt-1">
+          112,554 ítems · 2016–2018
         </div>
-        <div>
-          <label className="block text-xs text-gray-600 mb-1">Región</label>
-          <select
-            value={filters.region ?? ""}
-            onChange={(e) => setFilters({ region: e.target.value || null })}
-            className="w-full text-sm border border-gray-300 rounded px-2 py-1.5 bg-white"
-          >
-            <option value="">Todas</option>
-            {options?.regiones.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs text-gray-600 mb-1">Categoría</label>
-          <select
-            value={filters.categoria ?? ""}
-            onChange={(e) =>
-              setFilters({ categoria: e.target.value || null })
-            }
-            className="w-full text-sm border border-gray-300 rounded px-2 py-1.5 bg-white"
-          >
-            <option value="">Todas</option>
-            {options?.categorias.map((c) => (
-              <option key={c} value={c}>
-                {categoriaEs(c)}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <button
-          onClick={reset}
-          className="w-full text-xs text-primario font-semibold hover:underline mt-1"
-        >
-          Limpiar filtros
-        </button>
       </div>
     </aside>
   );
