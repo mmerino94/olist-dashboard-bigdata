@@ -1,0 +1,398 @@
+Actúa como un desarrollador senior experto en Python, Streamlit, pandas, Plotly, modelado de datos, SQL Server, BI, UX/UI ejecutiva y analítica de negocio.
+
+Necesito que me desarrolles un proyecto COMPLETO, profesional y listo para presentar, basado en el dataset “Brazilian E-Commerce Public Dataset by Olist”.
+
+OBJETIVO GENERAL
+Quiero un proyecto de inteligencia de negocios orientado a resolver problemas reales de e-commerce, con enfoque ejecutivo y de negocio, no solo técnico. El resultado final debe verse como una herramienta corporativa profesional hecha para gerencia.
+
+QUIERO QUE ME ENTREGUES TODO EL PROYECTO EN ESTILO STREAMLIT
+No quiero solo ideas o ejemplos sueltos.
+Quiero que me entregues:
+1. La estructura completa del proyecto.
+2. El código completo del Streamlit app.
+3. Los módulos auxiliares necesarios.
+4. La lógica de carga, limpieza, unión y transformación de datos.
+5. El modelado conceptual, lógico y físico.
+6. Los KPI’s.
+7. Las visualizaciones.
+8. El texto profesional que acompañe cada sección.
+9. El diseño visual moderno, ejecutivo y limpio.
+10. Todo explicado de forma ordenada.
+
+CONTEXTO DEL PROYECTO
+Este proyecto está basado en el dataset Olist, un e-commerce de Brasil con aproximadamente 100k órdenes entre 2016 y 2018.
+El proyecto debe resolver 5 problemas de negocio:
+1. No sabemos qué nos genera dinero y qué nos lo quita.
+2. Los clientes compran una vez y no regresan.
+3. No controlamos los tiempos de entrega y eso genera quejas.
+4. Tenemos vendedores que dañan la reputación de la plataforma.
+5. No entendemos por qué los clientes se quejan.
+
+REQUISITO CLAVE
+El proyecto NO debe verse académico solamente.
+Debe verse como una solución real de consultoría analítica para gerencia.
+Cada análisis debe terminar en una conclusión accionable y una recomendación concreta.
+
+DATASETS DISPONIBLES
+Debes trabajar con estas tablas y respetar exactamente sus nombres lógicos y columnas conocidas:
+
+1) olist_customers_dataset
+Columnas:
+- customer_id
+- customer_unique_id
+- customer_zip_code_prefix
+- customer_city
+- customer_state
+
+Nota importante:
+- customer_id conecta con orders
+- customer_unique_id permite identificar recompras reales
+
+2) olist_orders_dataset
+Columnas:
+- order_id
+- customer_id
+- order_status
+- order_purchase_timestamp
+- order_approved_at
+- order_delivered_carrier_date
+- order_delivered_customer_date
+- order_estimated_delivery_date
+
+3) olist_order_items_dataset
+Columnas:
+- order_id
+- order_item_id
+- product_id
+- seller_id
+- shipping_limit_date
+- price
+- freight_value
+
+Nota importante:
+- una orden puede tener múltiples ítems
+- cada ítem puede pertenecer a un vendedor distinto
+
+4) olist_order_payments_dataset
+Columnas:
+- order_id
+- payment_sequential
+- payment_type
+- payment_installments
+- payment_value
+
+5) olist_order_reviews_dataset
+Columnas:
+- review_id
+- order_id
+- review_score
+- review_comment_title
+- review_comment_message
+- review_creation_date
+- review_answer_timestamp
+
+6) olist_products_dataset
+Columnas:
+- product_id
+- product_category_name
+- product_name_lenght
+- product_description_lenght
+- product_photos_qty
+- product_weight_g
+- product_length_cm
+- product_height_cm
+- product_width_cm
+
+7) olist_sellers_dataset
+Columnas:
+- seller_id
+- seller_zip_code_prefix
+- seller_city
+- seller_state
+
+8) olist_geolocation_dataset
+Columnas:
+- geolocation_zip_code_prefix
+- geolocation_lat
+- geolocation_lng
+- geolocation_city
+- geolocation_state
+
+9) product_category_name_translation
+Columnas:
+- product_category_name
+- product_category_name_english
+
+RELACIONES QUE DEBES USAR
+- orders.customer_id = customers.customer_id
+- order_items.order_id = orders.order_id
+- order_items.product_id = products.product_id
+- order_items.seller_id = sellers.seller_id
+- order_payments.order_id = orders.order_id
+- order_reviews.order_id = orders.order_id
+- products.product_category_name = product_category_name_translation.product_category_name
+- customers.customer_zip_code_prefix se puede asociar con geolocation.geolocation_zip_code_prefix
+- sellers.seller_zip_code_prefix se puede asociar con geolocation.geolocation_zip_code_prefix
+
+INSTRUCCIONES IMPORTANTES
+- No inventes columnas.
+- No cambies los nombres reales de las columnas al hacer joins internos; si creas aliases, que sean claros.
+- El proyecto debe estar orientado a Streamlit.
+- Usa pandas para ETL y transformación.
+- Usa Plotly para gráficos interactivos.
+- Usa una estética ejecutiva, moderna y limpia.
+- Todo debe estar en español.
+- El dashboard debe ser intuitivo, profesional y con apariencia premium.
+- No quiero algo escolar o improvisado.
+- No quiero solo descripciones; quiero decisiones de negocio.
+- Si alguna parte opcional no puede construirse completamente sin los CSV físicos, deja el código listo para ejecutarse apenas se coloquen los archivos en una carpeta /data.
+
+ESTRUCTURA DEL PROYECTO QUE QUIERO
+Quiero una estructura como esta o mejor:
+
+/proyecto_olist_streamlit
+│
+├── app.py
+├── requirements.txt
+├── README.md
+├── /data
+│   ├── olist_customers_dataset.csv
+│   ├── olist_orders_dataset.csv
+│   ├── olist_order_items_dataset.csv
+│   ├── olist_order_payments_dataset.csv
+│   ├── olist_order_reviews_dataset.csv
+│   ├── olist_products_dataset.csv
+│   ├── olist_sellers_dataset.csv
+│   ├── olist_geolocation_dataset.csv
+│   └── product_category_name_translation.csv
+│
+├── /src
+│   ├── data_loader.py
+│   ├── transform.py
+│   ├── kpis.py
+│   ├── charts.py
+│   ├── modelado.py
+│   ├── utils.py
+│   └── styles.py
+│
+└── /assets
+    └── logo opcional
+
+SECCIONES QUE DEBE TENER LA APP STREAMLIT
+Quiero que la app tenga navegación lateral o tabs, con estas secciones mínimas:
+
+1. INICIO / RESUMEN EJECUTIVO
+Debe incluir:
+- tarjetas KPI
+- ingreso total
+- número de pedidos
+- ticket promedio
+- porcentaje de satisfacción
+- porcentaje de entrega puntual
+- evolución mensual de ingresos
+- top 5 categorías por ingreso
+- breve bloque de hallazgos clave
+- bloque de recomendaciones ejecutivas
+
+2. VENTAS Y CATEGORÍAS
+Debe incluir:
+- ranking de categorías por ingreso
+- Pareto 80/20 de categorías
+- comparación entre ingreso, ticket promedio, porcentaje de reseñas malas y porcentaje de retrasos por categoría
+- filtros por fecha, estado y categoría
+- identificar categorías estrella y categorías problema
+
+3. CLIENTES Y RETENCIÓN
+Debe incluir:
+- clientes de una sola compra vs clientes recurrentes
+- cálculo RFM
+- segmentación de clientes
+- segmentos con nombres de negocio claros:
+  * VIP
+  * Frecuentes
+  * En riesgo
+  * Dormidos
+  * Perdidos
+- visualización de segmentos
+- ingreso por segmento
+- satisfacción promedio por segmento
+- recomendaciones concretas para cada segmento
+
+4. LOGÍSTICA Y ENTREGAS
+Debe incluir:
+- tiempo promedio de entrega
+- porcentaje de puntualidad
+- cálculo de retraso
+- top rutas problemáticas
+- relación entre retraso y satisfacción
+- análisis por estado origen y estado destino
+- mapa o visual geográfica opcional
+- recomendaciones operativas
+
+5. VENDEDORES Y SATISFACCIÓN
+Debe incluir:
+- score de vendedor
+- clasificación de vendedores:
+  * Elite
+  * Estándar
+  * En observación
+  * Crítico
+- top 10 mejores vendedores
+- top 10 peores vendedores
+- porcentaje de ingresos concentrado en vendedores críticos
+- análisis de reseñas negativas
+- palabras frecuentes o análisis básico de texto
+- causas probables de insatisfacción
+
+6. MODELO DE DATOS
+Debe incluir:
+- modelo conceptual
+- modelo lógico
+- modelo físico opcional
+- explicación clara y profesional
+- diagrama bonito y entendible
+- enfoque tipo estrella o híbrido, justificado
+
+7. SECCIÓN “AVANCE PARA PRESENTAR”
+Esta sección debe estar pensada como si fueran diapositivas dentro de Streamlit.
+Debe incluir bloques visuales bonitos y claros con:
+- KPI’s definidos
+- modelo conceptual
+- modelo lógico
+- modelo físico opcional
+- texto breve para exposición
+- diseño tipo slide premium
+
+MODELO DE DATOS QUE DEBES PROPONER
+Quiero que propongas un modelo profesional.
+La idea central debe ser una tabla de hechos de ventas a nivel de ítem vendido.
+
+Propuesta esperada:
+
+TABLA DE HECHOS
+Fact_Ventas
+Grano:
+1 fila = 1 ítem vendido
+
+DIMENSIONES MÍNIMAS
+- Dim_Cliente
+- Dim_Producto
+- Dim_Vendedor
+- Dim_Pago
+- Dim_Review
+- Dim_Tiempo
+- Dim_Categoria_Traducida
+- Dim_Geolocalizacion (opcional)
+
+VARIABLES DERIVADAS OBLIGATORIAS
+Debes crear y usar estas variables:
+- dias_hasta_entrega
+- dias_retraso
+- entrega_puntual
+- valor_total_item
+- valor_total_pedido
+- flete_sobre_precio
+- satisfaccion_cliente
+- escribio_comentario
+- rango_precio_producto
+- ruta_logistica
+- mes_compra
+- trimestre_compra
+- anio_compra
+
+REGLAS DE NEGOCIO PARA KPI Y DASHBOARD
+Debes calcular y mostrar como mínimo:
+- ingreso total
+- número total de pedidos
+- ticket promedio
+- ingreso por categoría
+- participación por categoría
+- tasa de recompra
+- porcentaje de clientes de una sola compra
+- tiempo promedio de entrega
+- porcentaje de entrega puntual
+- días promedio de retraso
+- satisfacción promedio
+- porcentaje de reseñas malas
+- porcentaje de pedidos con comentario
+- score de vendedor
+
+FORMULAS QUE DEBES USAR
+- valor_total_item = price + freight_value
+- dias_hasta_entrega = fecha_entrega_real - fecha_compra
+- dias_retraso = fecha_entrega_real - fecha_entrega_estimada
+- entrega_puntual = 1 si dias_retraso <= 0, si no 0
+- satisfaccion_cliente:
+  * Buena = review_score 4-5
+  * Regular = review_score 3
+  * Mala = review_score 1-2
+- escribio_comentario = 1 si hay review_comment_message, si no 0
+
+REQUERIMIENTOS VISUALES
+Quiero una interfaz:
+- moderna
+- elegante
+- limpia
+- ejecutiva
+- con sidebar profesional
+- con tarjetas KPI premium
+- con separadores visuales
+- con métricas arriba
+- con colores consistentes:
+  * verde = bueno
+  * rojo = problema
+  * gris = neutro
+- con gráficos bien titulados
+- con texto explicativo breve
+- con apariencia de producto real para gerencia
+
+QUIERO QUE EVITES
+- código desordenado
+- una sola página gigante sin estructura
+- gráficos mal etiquetados
+- texto genérico
+- conclusiones superficiales
+- nombres confusos
+- apariencia escolar
+- explicaciones sin aplicación al negocio
+
+ENTREGABLES QUE DEBES DARME EN TU RESPUESTA
+Quiero que me entregues en orden:
+
+1. Resumen ejecutivo del proyecto.
+2. Arquitectura general de la solución.
+3. Estructura de carpetas.
+4. Código completo de todos los archivos.
+5. Función de carga de datos.
+6. Función de transformación y joins.
+7. Cálculo de KPIs.
+8. Gráficos y componentes Streamlit.
+9. Modelo conceptual explicado.
+10. Modelo lógico explicado.
+11. SQL del modelo físico opcional.
+12. Texto listo para exposición.
+13. Recomendaciones de negocio finales.
+14. requirements.txt
+15. README con instrucciones de ejecución.
+
+IMPORTANTE
+- Quiero que escribas el código completo, no pseudocódigo.
+- Si divides en varios archivos, entrega el contenido completo de cada archivo.
+- Usa buenas prácticas.
+- Usa funciones reutilizables.
+- Usa nombres limpios.
+- Incluye comentarios útiles.
+- El proyecto debe poder correr localmente.
+- Si alguna visualización o diagrama necesita librerías adicionales, inclúyelas en requirements.
+- No me entregues solo una propuesta; entrégame el proyecto completo listo para copiar en VS Code.
+
+Adicionalmente:
+- Crea una sección especial dentro de la app llamada “Presentación / Avance” donde se vea todo en formato tipo diapositiva premium.
+- Esa sección debe servirme para exponer KPI’s, modelo conceptual, modelo lógico y físico opcional sin tener que abrir PowerPoint.
+- Debe verse muy profesional.
+
+Empieza ahora entregándome primero:
+A. la arquitectura general,
+B. la estructura del proyecto,
+C. el app.py completo,
+y luego continúa con el resto de archivos hasta terminar todo.

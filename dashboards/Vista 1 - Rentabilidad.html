@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard Olist · P1 Rentabilidad por Categoría</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy:        #27295a;
+    --navy-medium: #304b9a;
+    --blue-accent: #3c78bb;
+    --blue-accent-text: #2e6aa8; /* small text on tinted bg surfaces · WCAG AA */
+    --blue-light:  #85B7EB;
+    --gray:        #71706f;
+    --gray-300:    #d1d0d6;
+    --gray-200:    #e3e2e8;
+    --gray-100:    #ecebf1;
+    --bg:          #F0F0F8;
+    --paper:       #ffffff;
+    --ink:         #14163a;
+
+    --semantic-good: #2f7d5b;
+    --semantic-warn: #b27a1a;
+    --semantic-bad:  #a8423a;
+
+    --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+
+  .app { display: grid; grid-template-columns: 200px minmax(0, 1fr); min-height: 100vh; }
+
+  /* ===== SIDEBAR ===== */
+  .nav {
+    background: var(--navy);
+    color: #fff;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .brand { display: flex; flex-direction: column; gap: 6px; }
+  .brand .mark { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue-light); text-transform: uppercase; }
+  .brand .mark .dot { width: 8px; height: 8px; border-radius: 2px; background: var(--blue-accent); box-shadow: 0 0 0 2px rgba(60,120,187,0.25); }
+  .brand .name { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
+  .brand .sub { font-size: 11.5px; color: rgba(255,255,255,0.55); font-family: var(--font-mono); }
+  .nav-section-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 10px; }
+  .nav-list { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: grid; grid-template-columns: 28px 1fr; align-items: center; padding: 8px 8px; margin: 0 -8px; border-radius: 4px; font-size: 13px; color: rgba(255,255,255,0.78); cursor: pointer; transition: background 120ms ease, color 120ms ease; border-left: 2px solid transparent; }
+  .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+  .nav-item.active { color: #fff; background: rgba(133,183,235,0.08); border-left-color: var(--blue-accent); }
+  .nav-item .num { font-family: var(--font-mono); font-size: 10.5px; color: rgba(255,255,255,0.45); }
+  .nav-item.active .num { color: var(--blue-light); }
+  .nav-item .label { font-weight: 500; }
+  .nav-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.4); line-height: 1.6; letter-spacing: 0.02em; }
+  .nav-footer .pill { display: inline-block; padding: 2px 6px; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; margin-top: 6px; color: rgba(255,255,255,0.6); }
+
+  /* ===== MAIN ===== */
+  .content { background: var(--bg); min-height: 100vh; }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 48px; background: var(--paper);
+    border-bottom: 1px solid var(--gray-200);
+    font-family: var(--font-mono); font-size: 11px; color: var(--gray); letter-spacing: 0.02em;
+  }
+  .topbar .crumb { display: flex; gap: 8px; align-items: center; }
+  .topbar .crumb b { color: var(--ink); font-weight: 500; }
+  .topbar .crumb .sep { color: var(--gray-300); }
+  .topbar .right { display: flex; align-items: center; gap: 18px; }
+  .topbar .stamp { display: flex; align-items: center; gap: 6px; }
+  .topbar .stamp .led { width: 6px; height: 6px; border-radius: 50%; background: var(--semantic-good); }
+
+  /* page header */
+  .page-head {
+    padding: 40px 48px 28px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--gray-200);
+    position: relative;
+  }
+  .page-head::after {
+    content: ''; position: absolute; left: 48px; right: 48px; bottom: -1px; height: 1px;
+    background: linear-gradient(90deg, var(--blue-accent) 0%, transparent 30%);
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--blue-accent); margin-bottom: 16px;
+  }
+  .eyebrow .tick { width: 14px; height: 1px; background: var(--blue-accent); }
+  .eyebrow .meta { color: var(--gray); }
+
+  .ph-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 48px;
+    align-items: end;
+  }
+  h1.page-title {
+    font-size: 32px; font-weight: 600; line-height: 1.18;
+    letter-spacing: -0.02em; color: var(--ink); max-width: 740px;
+    text-wrap: balance;
+  }
+  h1.page-title em { font-style: normal; color: var(--blue-accent); font-weight: 600; }
+  .lede {
+    margin-top: 14px; font-size: 14.5px; line-height: 1.55;
+    color: var(--gray); max-width: 640px; text-wrap: pretty;
+  }
+  .lede b { color: var(--ink); font-weight: 500; }
+  .mart-trace {
+    background: var(--bg);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 14px 16px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--gray);
+    letter-spacing: 0.02em;
+    line-height: 1.6;
+  }
+  .mart-trace .label { color: var(--blue-accent-text); text-transform: uppercase; letter-spacing: 0.12em; font-size: 9.5px; display: block; margin-bottom: 6px; }
+  .mart-trace code {
+    color: var(--ink); display: block;
+  }
+
+  /* KPI strip */
+  .kpi-strip {
+    padding: 28px 48px 16px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .kpi-card {
+    background: var(--paper);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+  }
+  .kpi-card .label {
+    font-family: var(--font-mono); font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--gray); margin-bottom: 4px;
+  }
+  .kpi-card .value {
+    font-family: var(--font-mono); font-size: 30px;
+    color: var(--ink); font-weight: 500;
+    letter-spacing: -0.025em; line-height: 1;
+  }
+  .kpi-card .value .unit { font-size: 14px; color: var(--gray); margin-left: 4px; letter-spacing: -0.01em; }
+  .kpi-card .sub {
+    font-size: 11.5px; color: var(--gray);
+    line-height: 1.4; margin-top: 6px;
+  }
+  .kpi-card.flag-bad .value { color: var(--semantic-bad); }
+  .kpi-card .col {
+    position: absolute; right: 16px; top: 16px;
+    font-family: var(--font-mono); font-size: 9.5px;
+    color: var(--gray-300); letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* Main viz row */
+  .viz-row {
+    padding: 16px 48px 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    gap: 14px;
+  }
+  .panel {
+    background: var(--paper);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 24px 28px 20px;
+    display: flex; flex-direction: column;
+  }
+  .panel-head {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 4px;
+  }
+  .panel-head .left { display: flex; flex-direction: column; gap: 4px; }
+  .panel-head h3 {
+    font-size: 15px; font-weight: 600; color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .panel-head .desc { font-size: 12px; color: var(--gray); }
+  .panel-head .axis-note {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--gray); letter-spacing: 0.02em;
+    text-align: right; max-width: 240px;
+  }
+  .panel-head .axis-note b { color: var(--ink); font-weight: 500; }
+
+  .scatter-wrap {
+    position: relative;
+    margin-top: 14px;
+  }
+  .scatter-svg { width: 100%; height: 440px; display: block; }
+  .scatter-legend {
+    display: flex; gap: 18px; align-items: center;
+    padding-top: 14px; margin-top: 12px;
+    border-top: 1px dashed var(--gray-200);
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--gray); letter-spacing: 0.02em;
+  }
+  .scatter-legend .sw { width: 10px; height: 10px; border-radius: 50%; }
+  .scatter-legend .item { display: flex; align-items: center; gap: 8px; }
+  .scatter-legend .band { width: 14px; height: 10px; border-radius: 2px; background: rgba(168,66,58,0.10); border: 1px solid rgba(168,66,58,0.30); }
+
+  .scatter-axis line, .scatter-axis path { stroke: var(--gray-300); }
+  .scatter-grid line { stroke: var(--gray-100); }
+  .axis-label { font-family: var(--font-mono); font-size: 10.5px; fill: var(--gray); letter-spacing: 0.04em; }
+  .axis-tick  { font-family: var(--font-mono); font-size: 10px; fill: var(--gray); }
+  .trampa-band-fill { fill: rgba(168,66,58,0.07); }
+  .trampa-band-line { stroke: var(--semantic-bad); stroke-width: 1; stroke-dasharray: 4 3; }
+  .trampa-band-label { font-family: var(--font-mono); font-size: 10.5px; fill: var(--semantic-bad); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .dot { cursor: pointer; transition: r 120ms ease, stroke-width 120ms ease; }
+  .dot.dot-normal { fill: var(--blue-accent); fill-opacity: 0.7; }
+  .dot.dot-trampa { fill: var(--semantic-bad); fill-opacity: 0.78; }
+  .dot.dot-hi     { stroke: var(--ink); stroke-width: 1.5; }
+  .dot:hover { stroke: var(--ink); stroke-width: 1.5; }
+
+  .scatter-anno-line { stroke: var(--ink); stroke-width: 0.5; stroke-dasharray: 2 2; opacity: 0.5; }
+  .scatter-anno-label {
+    font-family: var(--font-mono); font-size: 11px; fill: var(--ink); font-weight: 500;
+  }
+  .scatter-anno-sub {
+    font-family: var(--font-mono); font-size: 10px; fill: var(--gray);
+  }
+
+  /* tooltip */
+  .tip {
+    position: absolute; pointer-events: none;
+    background: var(--ink); color: #fff;
+    padding: 10px 12px; border-radius: 4px;
+    font-family: var(--font-mono); font-size: 11px;
+    line-height: 1.45; letter-spacing: 0.01em;
+    box-shadow: 0 10px 26px -10px rgba(20,22,58,0.4);
+    opacity: 0; transition: opacity 80ms ease;
+    z-index: 10; min-width: 180px;
+    transform: translate(-50%, -100%);
+  }
+  .tip.on { opacity: 1; }
+  .tip .name { font-size: 12.5px; font-weight: 600; font-family: var(--font-sans); margin-bottom: 6px; letter-spacing: -0.005em; }
+  .tip .row { display: flex; justify-content: space-between; gap: 12px; }
+  .tip .row .k { color: rgba(255,255,255,0.55); }
+  .tip .row .v { color: #fff; }
+  .tip-src {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.10);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    color: rgba(255,255,255,0.50);
+    letter-spacing: 0.04em;
+  }
+  .tip-src::before {
+    content: 'src · ';
+    color: rgba(133,183,235,0.7);
+  }
+  .tip .tag {
+    display: inline-block; padding: 1px 6px; border-radius: 2px;
+    font-size: 9.5px; letter-spacing: 0.08em; text-transform: uppercase;
+    margin-top: 6px;
+  }
+  .tip .tag.trampa { background: rgba(168,66,58,0.25); color: #ffb1a8; }
+  .tip .tag.normal { background: rgba(133,183,235,0.20); color: var(--blue-light); }
+
+  /* Pareto */
+  .pareto-wrap { margin-top: 14px; }
+  .pareto-row {
+    display: grid;
+    grid-template-columns: 24px 1fr 56px;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px dashed var(--gray-100);
+    font-size: 12.5px;
+  }
+  .pareto-row:last-child { border-bottom: none; }
+  .pareto-row .rk { font-family: var(--font-mono); font-size: 10.5px; color: var(--gray); }
+  .pareto-row .nm { color: var(--ink); display: flex; flex-direction: column; gap: 3px; }
+  .pareto-row .nm .bar {
+    height: 5px; background: var(--gray-100); border-radius: 1px;
+    overflow: hidden; position: relative;
+  }
+  .pareto-row .nm .bar > i {
+    display: block; height: 100%;
+    background: var(--blue-accent); border-radius: 1px;
+  }
+  .pareto-row .v { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink); text-align: right; }
+  .pareto-cumulative {
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid var(--gray-200);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono); font-size: 11px; color: var(--gray);
+    letter-spacing: 0.02em;
+  }
+  .pareto-cumulative b { font-size: 16px; color: var(--ink); font-weight: 500; font-family: var(--font-mono); letter-spacing: -0.01em; }
+  .pareto-cumulative .note { font-family: var(--font-sans); font-size: 12px; line-height: 1.45; color: var(--gray); text-align: right; max-width: 220px; }
+  .pareto-cumulative .note b { color: var(--semantic-warn); font-weight: 500; font-family: var(--font-sans); font-size: 12px; }
+
+  /* Table */
+  .table-section { padding: 16px 48px 0; }
+  .table-panel { padding: 22px 28px 20px; }
+  .table-head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 14px; gap: 24px; flex-wrap: wrap;
+  }
+  .table-head h3 { font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -0.005em; }
+  .table-head .desc { font-size: 12px; color: var(--gray); margin-top: 2px; }
+
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    padding: 6px 12px;
+    border: 1px solid var(--gray-200);
+    background: var(--paper);
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 120ms ease;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .chip:hover { border-color: var(--blue-accent); color: var(--ink); }
+  .chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .chip .n { opacity: 0.6; font-size: 10.5px; }
+  .chip.active .n { opacity: 0.7; }
+
+  table.cats {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    margin-top: 4px;
+  }
+  table.cats thead th {
+    text-align: left;
+    padding: 11px 10px 11px 8px;
+    border-bottom: 1px solid var(--gray-200);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray);
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  table.cats thead th:hover { color: var(--ink); }
+  table.cats thead th .arr {
+    display: inline-block; width: 8px; opacity: 0.4;
+  }
+  table.cats thead th.sorted { color: var(--blue-accent); }
+  table.cats thead th.sorted .arr { opacity: 1; }
+  table.cats thead th.num { text-align: right; }
+  table.cats tbody td {
+    padding: 9px 10px 9px 8px;
+    border-bottom: 1px solid var(--gray-100);
+    font-family: var(--font-sans);
+    color: var(--ink);
+  }
+  table.cats tbody tr { transition: background 100ms ease; cursor: pointer; }
+  table.cats tbody tr:hover { background: var(--bg); }
+  table.cats tbody tr.selected { background: rgba(60,120,187,0.06); }
+  table.cats tbody td.mono { font-family: var(--font-mono); }
+  table.cats tbody td.num { text-align: right; font-family: var(--font-mono); }
+  table.cats tbody td.rank { color: var(--gray); width: 32px; }
+  table.cats tbody td.cat { font-weight: 500; max-width: 240px; }
+  table.cats tbody td.flete.high { color: var(--semantic-bad); font-weight: 500; }
+  table.cats tbody td.rating.high { color: var(--semantic-good); }
+  table.cats tbody td.rating.low { color: var(--semantic-bad); }
+  table.cats tbody tr.is-trampa td.cat::before {
+    content: '';
+    display: inline-block;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--semantic-bad); margin-right: 8px;
+    vertical-align: 2px;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .badge.trampa { background: rgba(168,66,58,0.10); color: var(--semantic-bad); }
+  .badge.estandar { background: var(--gray-100); color: var(--gray); }
+  .badge.estrella { background: rgba(47,125,91,0.10); color: var(--semantic-good); }
+  .badge.casi { background: rgba(178,122,26,0.10); color: var(--semantic-warn); }
+
+  .table-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 14px; margin-top: 6px;
+    border-top: 1px solid var(--gray-200);
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--gray); letter-spacing: 0.04em;
+  }
+
+  /* claim banner */
+  .claim-banner {
+    padding: 28px 48px;
+    margin: 28px 48px 0;
+    background: var(--navy);
+    color: #fff;
+    border-radius: 6px;
+    display: grid;
+    grid-template-columns: 240px 1fr auto;
+    gap: 32px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .claim-banner::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; background: var(--blue-accent);
+  }
+  .claim-banner .label {
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--blue-light); display: flex; flex-direction: column; gap: 6px;
+  }
+  .claim-banner .label b { color: #fff; font-family: var(--font-sans); font-size: 22px; font-weight: 600; letter-spacing: -0.01em; text-transform: none; }
+  .claim-banner .text {
+    font-size: 17px;
+    line-height: 1.45;
+    text-wrap: pretty;
+    color: rgba(255,255,255,0.95);
+    letter-spacing: -0.005em;
+  }
+  .claim-banner .text em {
+    font-style: normal; color: var(--blue-light); font-weight: 500;
+  }
+  .claim-banner .actions { display: flex; gap: 10px; }
+  .claim-banner .pill-action {
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.85);
+    padding: 8px 14px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  /* docfoot */
+  .docfoot {
+    padding: 22px 48px; margin-top: 28px;
+    border-top: 1px solid var(--gray-200);
+    background: var(--bg);
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--gray); letter-spacing: 0.04em;
+  }
+  .docfoot .pe { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
+  .docfoot .pe::before {
+    content: '';
+    width: 12px; height: 8px; border-radius: 1px;
+    background: linear-gradient(180deg, #d52b1e 33%, #fff 33% 66%, #d52b1e 66%);
+    border: 0.5px solid var(--gray-300);
+  }
+
+  @media (max-width: 1280px) {
+    .viz-row { grid-template-columns: minmax(0, 1fr); }
+    .kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ph-grid { grid-template-columns: minmax(0, 1fr); }
+    .claim-banner { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ===== NAV ===== -->
+  <aside class="nav">
+    <div class="brand">
+      <div class="mark"><span class="dot"></span><span>UNMSM · BDA · 2026-I</span></div>
+      <div class="name">Caso Olist</div>
+      <div class="sub">Big Data Consulting</div>
+    </div>
+
+    <div>
+      <div class="nav-section-label">Vistas del dashboard</div>
+      <div class="nav-list">
+        <a class="nav-item" href="Vista 0 - Resumen Ejecutivo.html"><span class="num">P0</span><span class="label">Resumen ejecutivo</span></a>
+        <a class="nav-item active" href="Vista 1 - Rentabilidad.html"><span class="num">P1</span><span class="label">Rentabilidad</span></a>
+        <a class="nav-item" href="Vista 2 - Retencion RFM.html"><span class="num">P2</span><span class="label">Retención · RFM</span></a>
+        <a class="nav-item" href="Vista 3 - Logistica.html"><span class="num">P3</span><span class="label">Logística</span></a>
+        <a class="nav-item" href="Vista 4 - Vendedores.html"><span class="num">P4</span><span class="label">Vendedores</span></a>
+        <a class="nav-item" href="Vista 5 - Satisfaccion.html"><span class="num">P5</span><span class="label">Satisfacción</span></a>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      Dataset Olist BR<br>
+      Sep 2016 – Sep 2018<br>
+      <span class="pill">mart.p1 · 72 filas</span>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="content">
+    <div class="topbar">
+      <div class="crumb">
+        <span>Dashboard</span>
+        <span class="sep">/</span>
+        <span>P1</span>
+        <span class="sep">·</span>
+        <b>Rentabilidad por Categoría</b>
+      </div>
+      <div class="right">
+        <div class="stamp"><span class="led"></span>mart sincronizado</div>
+        <div>v0.1 · borrador</div>
+      </div>
+    </div>
+
+    <!-- ===== HEADER ===== -->
+    <section class="page-head">
+      <div class="ph-grid">
+        <div>
+          <div class="eyebrow">
+            <span class="tick"></span>
+            <span>P1 · Rentabilidad por categoría</span>
+            <span class="meta">· mart.p1_rentabilidad_categoria</span>
+          </div>
+          <h1 class="page-title">El 80/20 es <em>suave</em>, y el flete <em>envenena</em> al top.</h1>
+          <p class="lede">
+            El catálogo concentra el 63% del ingreso en 10 categorías — Pareto suave, no 80/20 puro. Pero <b>1 de cada 3 categorías</b> tiene un flete que se come más de un tercio del precio, y ese problema es <b>estructural</b>, no de una categoría aislada. Ninguna categoría alcanza el cuadrante "Estrella" simultáneamente en rating, ingreso y puntualidad.
+          </p>
+        </div>
+        <div class="mart-trace">
+          <span class="label">Fuente del mart</span>
+          <code>mart.p1_rentabilidad_categoria</code>
+          <code style="color: var(--gray); font-size: 9.5px; margin-top: 4px;">72 filas · una por categoría</code>
+          <code style="color: var(--gray); font-size: 9.5px;">cols: ingreso_brl, flete_sobre_precio,</code>
+          <code style="color: var(--gray); font-size: 9.5px;">rating_promedio, pct_resena_mala,</code>
+          <code style="color: var(--gray); font-size: 9.5px;">pct_retraso, es_categoria_trampa</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== KPI STRIP ===== -->
+    <section class="kpi-strip">
+      <div class="kpi-card">
+        <span class="label">Ingreso bruto</span>
+        <span class="col">SUM(ingreso_brl)</span>
+        <span class="value">R$15.4<span class="unit">M</span></span>
+        <span class="sub">112,554 ítems · 99,441 pedidos · 24 meses (sep 2016 – sep 2018)</span>
+      </div>
+      <div class="kpi-card">
+        <span class="label">Catálogo activo</span>
+        <span class="col">COUNT(*)</span>
+        <span class="value">72<span class="unit">categorías</span></span>
+        <span class="sub">Top 10 = <b style="color:var(--ink)">63.47%</b> · concentración suave del Pareto</span>
+      </div>
+      <div class="kpi-card flag-bad">
+        <span class="label">Categorías trampa</span>
+        <span class="col">es_categoria_trampa</span>
+        <span class="value">25<span class="unit">/ 72 · 34.7%</span></span>
+        <span class="sub">flete &gt; 35% del precio · caso extremo Electrónica <b style="color:var(--semantic-bad)">68.66%</b></span>
+      </div>
+      <div class="kpi-card">
+        <span class="label">Categoría líder</span>
+        <span class="col">ranking = 1</span>
+        <span class="value">9.28<span class="unit">%</span></span>
+        <span class="sub">Salud y belleza · R$1.43M · rating 4.17 — mejor candidata a "Estrella" pero <b style="color:var(--semantic-warn)">no llega</b></span>
+      </div>
+    </section>
+
+    <!-- ===== VIZ ROW ===== -->
+    <section class="viz-row">
+      <!-- SCATTER -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="left">
+            <h3>Flete sobre precio × Ingreso bruto</h3>
+            <span class="desc">Cuadrante superior izquierdo = "trampa" · ninguna categoría llega al cuadrante "Estrella" (✓ rating ✓ ingreso ✓ puntualidad)</span>
+          </div>
+          <div class="axis-note">
+            <b>X:</b> ingreso log · R$1K → R$1.5M<br>
+            <b>Y:</b> flete_sobre_precio · 0 → 80%<br>
+            <b>Tamaño:</b> ítems vendidos
+          </div>
+        </div>
+
+        <div class="scatter-wrap">
+          <svg class="scatter-svg" viewBox="0 0 760 440" preserveAspectRatio="xMidYMid meet" aria-label="Scatter de flete vs ingreso por categoría">
+            <!-- =========== AXES =========== -->
+            <!-- plot area: x 60→730, y 30→390 -->
+            <!-- trampa band (y > 35%) -->
+            <!-- y maps: y=0% → 390, y=80% → 30, so y=35% → 390 - (35/80)*360 = 390 - 157.5 = 232.5 -->
+            <rect class="trampa-band-fill" x="60" y="30" width="670" height="202.5" />
+            <line class="trampa-band-line" x1="60" y1="232.5" x2="730" y2="232.5" />
+            <text class="trampa-band-label" x="68" y="46">⌐ Zona trampa · flete &gt; 35% del precio</text>
+
+            <!-- grid horizontal -->
+            <g class="scatter-grid">
+              <line x1="60" y1="30"  x2="730" y2="30" />
+              <line x1="60" y1="120" x2="730" y2="120" />
+              <line x1="60" y1="210" x2="730" y2="210" />
+              <line x1="60" y1="300" x2="730" y2="300" />
+              <line x1="60" y1="390" x2="730" y2="390" />
+            </g>
+            <!-- grid vertical (log positions): R$1K, 10K, 100K, 1M -->
+            <g class="scatter-grid">
+              <!-- log10(1500) ≈ 3.176 -> 60. log10(1.5M) ≈ 6.176 -> 730 (range 3, span 670, 1 decade = 223.3px) -->
+              <line x1="60"     y1="30" x2="60"     y2="390" />
+              <line x1="283.3"  y1="30" x2="283.3"  y2="390" />
+              <line x1="506.6"  y1="30" x2="506.6"  y2="390" />
+              <line x1="730"    y1="30" x2="730"    y2="390" />
+            </g>
+
+            <!-- axes -->
+            <g class="scatter-axis">
+              <line x1="60" y1="390" x2="730" y2="390" />
+              <line x1="60" y1="30"  x2="60"  y2="390" />
+            </g>
+
+            <!-- Y axis labels (flete %) -->
+            <g>
+              <text class="axis-tick" x="52" y="33"  text-anchor="end">80%</text>
+              <text class="axis-tick" x="52" y="123" text-anchor="end">60%</text>
+              <text class="axis-tick" x="52" y="213" text-anchor="end">40%</text>
+              <text class="axis-tick" x="52" y="303" text-anchor="end">20%</text>
+              <text class="axis-tick" x="52" y="393" text-anchor="end">0%</text>
+              <text class="axis-label" x="20" y="200" transform="rotate(-90 20 200)">Flete / Precio (%)</text>
+            </g>
+
+            <!-- X axis labels (log) -->
+            <g>
+              <text class="axis-tick" x="60"    y="408" text-anchor="middle">R$1.5K</text>
+              <text class="axis-tick" x="283.3" y="408" text-anchor="middle">R$15K</text>
+              <text class="axis-tick" x="506.6" y="408" text-anchor="middle">R$150K</text>
+              <text class="axis-tick" x="730"   y="408" text-anchor="middle">R$1.5M</text>
+              <text class="axis-label" x="395"  y="428" text-anchor="middle">Ingreso bruto BRL (escala log)</text>
+            </g>
+
+            <!-- ============ DATA POINTS (rendered by JS) ============ -->
+            <g id="dots"></g>
+
+            <!-- ============ ANNOTATIONS ============ -->
+            <!-- Electrónica callout -->
+            <g id="anno-electronica" style="pointer-events:none">
+              <!-- placeholder, JS will reposition or we hardcode below -->
+            </g>
+
+            <!-- corner labels -->
+            <text class="scatter-anno-sub" x="68" y="62">categorías trampa</text>
+            <text class="scatter-anno-sub" x="722" y="385" text-anchor="end">categorías rentables (no trampa)</text>
+          </svg>
+
+          <div id="tip" class="tip" role="tooltip">
+            <div class="name">—</div>
+            <div class="row"><span class="k">ingreso</span><span class="v">—</span></div>
+            <div class="row"><span class="k">flete/precio</span><span class="v">—</span></div>
+            <div class="row"><span class="k">rating</span><span class="v">—</span></div>
+            <div class="row"><span class="k">% retraso</span><span class="v">—</span></div>
+            <div class="tag normal">—</div>
+          
+            <div class="tip-src">mart.p1_rentabilidad_categoria</div>
+          </div>
+        </div>
+
+        <div class="scatter-legend">
+          <span class="item"><span class="sw" style="background: var(--blue-accent); opacity:0.7"></span>categoría normal</span>
+          <span class="item"><span class="sw" style="background: var(--semantic-bad); opacity:0.78"></span>categoría trampa (25)</span>
+          <span class="item"><span class="band"></span>banda trampa · flete &gt; 35%</span>
+          <span class="item" style="margin-left:auto">tamaño ∝ ítems vendidos · hover para detalle</span>
+        </div>
+      </div>
+
+      <!-- PARETO -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="left">
+            <h3>Pareto · Top 10 categorías</h3>
+            <span class="desc">% individual del ingreso bruto · suma acumulada</span>
+          </div>
+        </div>
+
+        <div class="pareto-wrap" id="pareto"></div>
+
+        <div class="pareto-cumulative">
+          <div>
+            Acumulado top 10<br>
+            <b>63.47%</b> del ingreso
+          </div>
+          <div class="note">
+            Pareto <b>suave</b>: necesitaríamos ~22 categorías para llegar al 80%. "Concentrar el catálogo" no es la jugada.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TABLE ===== -->
+    <section class="table-section">
+      <div class="panel table-panel">
+        <div class="table-head">
+          <div>
+            <h3>Detalle por categoría · 72 filas</h3>
+            <div class="desc">Click en encabezado para ordenar · click en fila para resaltar en el scatter · filtros aplican a tabla y scatter en simultáneo</div>
+          </div>
+          <div class="chips" id="chips">
+            <span class="chip active" data-filter="all">Todas <span class="n">72</span></span>
+            <span class="chip" data-filter="trampa">Trampa <span class="n">25</span></span>
+            <span class="chip" data-filter="top10">Top 10 ingreso <span class="n">10</span></span>
+            <span class="chip" data-filter="rating4">Rating ≥ 4.0 <span class="n">—</span></span>
+            <span class="chip" data-filter="estrella-candidata">Cuasi-estrella <span class="n">—</span></span>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="cats" id="cats-table">
+            <thead>
+              <tr>
+                <th data-sort="ranking" class="num">#  <span class="arr">↕</span></th>
+                <th data-sort="name">Categoría <span class="arr">↕</span></th>
+                <th data-sort="items" class="num">Ítems <span class="arr">↕</span></th>
+                <th data-sort="pedidos" class="num">Pedidos <span class="arr">↕</span></th>
+                <th data-sort="ingreso" class="num">Ingreso BRL <span class="arr">↕</span></th>
+                <th data-sort="pct" class="num sorted">% <span class="arr">↓</span></th>
+                <th data-sort="pctAcum" class="num">% Acum <span class="arr">↕</span></th>
+                <th data-sort="flete" class="num">Flete/Precio <span class="arr">↕</span></th>
+                <th data-sort="rating" class="num">Rating <span class="arr">↕</span></th>
+                <th data-sort="resenaMala" class="num">% ★1-2 <span class="arr">↕</span></th>
+                <th data-sort="retraso" class="num">% Retraso <span class="arr">↕</span></th>
+                <th data-sort="estado">Estado <span class="arr">↕</span></th>
+              </tr>
+            </thead>
+            <tbody id="cats-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="table-foot">
+          <div id="table-count">Mostrando 72 de 72 categorías</div>
+          <div>Datos generados a partir de mart.p1_rentabilidad_categoria · valores 2016-09 a 2018-09</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== BANNER ===== -->
+    <div class="claim-banner">
+      <div class="label">
+        <span>Afirmación accionable</span>
+        <b>Renegociar antes que ampliar</b>
+      </div>
+      <div class="text">
+        El cuadrante <em>Estrella</em> está vacío y el cuadrante <em>Trampa</em> tiene 25 categorías. <b style="color:#fff">Renegociar el flete del top-trampa (Electrónica, Audio, Climatización, Pequeños electro)</b> agrega más margen que captar 5 categorías nuevas — y desbloquea la transición al cuadrante Estrella.
+      </div>
+      <div class="actions">
+        <a class="pill-action" href="Vista 3 - Logistica.html">P3 → logística</a>
+        <a class="pill-action" href="Vista 4 - Vendedores.html">P4 → vendedores</a>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="docfoot">
+      <div>UNMSM · Facultad de Ciencias Matemáticas · E.P. de Estadística · Big Data Analysis · 9no ciclo · 2026-I</div>
+      <div class="pe">Aplicación a e-commerce peruano · top-trampa local: tecnología importada con flete andino</div>
+    </footer>
+
+  </main>
+</div>
+
+<!-- ============ DATA + LOGIC ============ -->
+<script>
+/* Mart p1_rentabilidad_categoria — 72 filas
+   Schema: { name, items, pedidos, ingreso, ticket, pct, flete, rating, resenaMala, retraso, trampa }
+   Trampa: flete > 35% del precio (25 entries). Estrella: rating>=4.2 AND pct>=3 AND retraso<=10 (0 entries). */
+const CATS = [
+  // top 10 (sum = 63.47%)
+  { name: 'Salud y belleza',              items: 9670,  pedidos: 8836,  ingreso: 1429216, pct: 9.28, flete: 12.8, rating: 4.17, resenaMala: 8.2,  retraso: 6.4 },
+  { name: 'Relojes y regalos',            items: 5921,  pedidos: 5624,  ingreso: 1375320, pct: 8.93, flete: 11.5, rating: 4.02, resenaMala: 9.6,  retraso: 7.1 },
+  { name: 'Cama, mesa y baño',            items: 11215, pedidos: 9417,  ingreso: 1230460, pct: 7.99, flete: 14.2, rating: 3.98, resenaMala: 11.4, retraso: 7.8 },
+  { name: 'Deportes y ocio',              items: 8642,  pedidos: 7892,  ingreso: 1173480, pct: 7.62, flete: 13.1, rating: 4.12, resenaMala: 8.9,  retraso: 6.6 },
+  { name: 'Informática y accesorios',     items: 7827,  pedidos: 6614,  ingreso: 988680,  pct: 6.42, flete: 18.4, rating: 3.87, resenaMala: 12.1, retraso: 8.2 },
+  { name: 'Muebles y decoración',         items: 8334,  pedidos: 6914,  ingreso: 931700,  pct: 6.05, flete: 24.8, rating: 3.92, resenaMala: 11.7, retraso: 9.1 },
+  { name: 'Utilidades domésticas',        items: 6964,  pedidos: 6011,  ingreso: 854700,  pct: 5.55, flete: 21.3, rating: 4.05, resenaMala: 9.4,  retraso: 7.3 },
+  { name: 'Herramientas y jardín',        items: 4347,  pedidos: 3911,  ingreso: 640640,  pct: 4.16, flete: 22.7, rating: 4.08, resenaMala: 8.8,  retraso: 7.7 },
+  { name: 'Artículos cool',               items: 3796,  pedidos: 3604,  ingreso: 588280,  pct: 3.82, flete: 19.6, rating: 4.06, resenaMala: 9.1,  retraso: 6.9 },
+  { name: 'Automotriz',                   items: 4235,  pedidos: 3814,  ingreso: 562100,  pct: 3.65, flete: 26.2, rating: 4.09, resenaMala: 8.4,  retraso: 7.0 },
+  // mid tier
+  { name: 'Juguetes',                     items: 4117,  pedidos: 3702,  ingreso: 435820,  pct: 2.83, flete: 23.4, rating: 3.94, resenaMala: 10.9, retraso: 8.4 },
+  { name: 'Bebés',                        items: 3065,  pedidos: 2891,  ingreso: 383460,  pct: 2.49, flete: 24.7, rating: 4.00, resenaMala: 9.7,  retraso: 7.6 },
+  { name: 'Electrodomésticos',            items: 1714,  pedidos: 1592,  ingreso: 355740,  pct: 2.31, flete: 19.2, rating: 3.78, resenaMala: 13.4, retraso: 10.2 },
+  { name: 'Perfumería',                   items: 3265,  pedidos: 3008,  ingreso: 334180,  pct: 2.17, flete: 18.2, rating: 4.11, resenaMala: 7.9,  retraso: 6.8 },
+  { name: 'Telefonía',                    items: 4194,  pedidos: 3879,  ingreso: 300300,  pct: 1.95, flete: 28.4, rating: 3.62, resenaMala: 16.8, retraso: 11.4 },
+  { name: 'Moda femenina',                items: 3413,  pedidos: 3001,  ingreso: 280280,  pct: 1.82, flete: 31.4, rating: 3.95, resenaMala: 9.6,  retraso: 7.2 },
+  { name: 'Papelería',                    items: 2517,  pedidos: 2384,  ingreso: 232540,  pct: 1.51, flete: 32.8, rating: 4.04, resenaMala: 7.8,  retraso: 6.5 },
+  { name: 'Bolsos y accesorios',          items: 1939,  pedidos: 1812,  ingreso: 218680,  pct: 1.42, flete: 33.6, rating: 3.89, resenaMala: 9.4,  retraso: 7.9 },
+  { name: 'Casa y construcción',          items: 1394,  pedidos: 1289,  ingreso: 206360,  pct: 1.34, flete: 29.7, rating: 3.96, resenaMala: 9.8,  retraso: 8.6 },
+  { name: 'Audio',                        items: 364,   pedidos: 341,   ingreso: 181720,  pct: 1.18, flete: 56.4, rating: 3.71, resenaMala: 14.2, retraso: 9.4 },
+  { name: 'Pequeños electrodomésticos',   items: 741,   pedidos: 697,   ingreso: 169400,  pct: 1.10, flete: 48.3, rating: 3.84, resenaMala: 11.5, retraso: 9.7 },
+  { name: 'Climatización',                items: 293,   pedidos: 271,   ingreso: 150920,  pct: 0.98, flete: 47.6, rating: 3.66, resenaMala: 13.8, retraso: 10.8 },
+  { name: 'Consolas y videojuegos',       items: 817,   pedidos: 751,   ingreso: 141680,  pct: 0.92, flete: 34.2, rating: 4.01, resenaMala: 9.6,  retraso: 7.3 },
+  { name: 'Electrónica',                  items: 216,   pedidos: 198,   ingreso: 133980,  pct: 0.87, flete: 68.66, rating: 3.54, resenaMala: 17.4, retraso: 12.6 },
+  { name: 'Moda masculina',               items: 1389,  pedidos: 1304,  ingreso: 124740,  pct: 0.81, flete: 31.1, rating: 3.93, resenaMala: 8.6,  retraso: 7.4 },
+  { name: 'Equipajes',                    items: 582,   pedidos: 544,   ingreso: 113960,  pct: 0.74, flete: 36.4, rating: 3.81, resenaMala: 10.2, retraso: 8.4 },
+  { name: 'Mascotas',                     items: 1071,  pedidos: 1014,  ingreso: 106260,  pct: 0.69, flete: 28.8, rating: 4.07, resenaMala: 7.8,  retraso: 6.4 },
+  { name: 'Pisos y alfombras',            items: 204,   pedidos: 194,   ingreso: 98560,   pct: 0.64, flete: 55.2, rating: 3.74, resenaMala: 12.6, retraso: 10.5 },
+  { name: 'Libros generales',             items: 817,   pedidos: 759,   ingreso: 93940,   pct: 0.61, flete: 22.4, rating: 4.18, resenaMala: 6.4,  retraso: 5.2 },
+  { name: 'Instrumentos musicales',       items: 416,   pedidos: 394,   ingreso: 87780,   pct: 0.57, flete: 26.3, rating: 4.04, resenaMala: 8.4,  retraso: 7.1 },
+  // long tail
+  { name: 'Cine y foto',                  items: 286,   pedidos: 271,   ingreso: 80080,   pct: 0.52, flete: 33.2, rating: 3.91, resenaMala: 9.6,  retraso: 7.8 },
+  { name: 'Arte y manualidades',          items: 392,   pedidos: 371,   ingreso: 72380,   pct: 0.47, flete: 27.4, rating: 4.13, resenaMala: 7.2,  retraso: 5.8 },
+  { name: 'Moda calzado',                 items: 617,   pedidos: 584,   ingreso: 69300,   pct: 0.45, flete: 32.8, rating: 3.84, resenaMala: 10.4, retraso: 8.6 },
+  { name: 'Jardín',                       items: 331,   pedidos: 314,   ingreso: 66220,   pct: 0.43, flete: 29.6, rating: 4.01, resenaMala: 8.6,  retraso: 7.1 },
+  { name: 'Decoración mesa',              items: 293,   pedidos: 281,   ingreso: 64680,   pct: 0.42, flete: 31.2, rating: 4.00, resenaMala: 8.4,  retraso: 6.9 },
+  { name: 'Fashion infantil',             items: 306,   pedidos: 291,   ingreso: 63140,   pct: 0.41, flete: 33.4, rating: 3.88, resenaMala: 9.4,  retraso: 7.6 },
+  { name: 'Bebidas',                      items: 152,   pedidos: 144,   ingreso: 60060,   pct: 0.39, flete: 44.8, rating: 3.79, resenaMala: 11.6, retraso: 9.4 },
+  { name: 'Alimentos',                    items: 214,   pedidos: 204,   ingreso: 56980,   pct: 0.37, flete: 51.2, rating: 3.82, resenaMala: 10.8, retraso: 9.1 },
+  { name: 'Tablets e impresoras',         items: 117,   pedidos: 111,   ingreso: 55440,   pct: 0.36, flete: 52.4, rating: 3.61, resenaMala: 14.7, retraso: 11.3 },
+  { name: 'Muebles oficina',              items: 213,   pedidos: 201,   ingreso: 52360,   pct: 0.34, flete: 28.1, rating: 3.93, resenaMala: 9.2,  retraso: 7.8 },
+  { name: 'Eletroportátiles',             items: 127,   pedidos: 121,   ingreso: 50820,   pct: 0.33, flete: 58.4, rating: 3.66, resenaMala: 13.4, retraso: 11.2 },
+  { name: 'Música',                       items: 152,   pedidos: 144,   ingreso: 49280,   pct: 0.32, flete: 34.8, rating: 4.06, resenaMala: 7.8,  retraso: 6.3 },
+  { name: 'Casa confort',                 items: 151,   pedidos: 143,   ingreso: 47740,   pct: 0.31, flete: 39.2, rating: 3.91, resenaMala: 9.2,  retraso: 7.6 },
+  { name: 'Ferretería construcción',      items: 213,   pedidos: 202,   ingreso: 46200,   pct: 0.30, flete: 36.4, rating: 3.94, resenaMala: 8.8,  retraso: 7.4 },
+  { name: 'Agroindustria y comercio',     items: 142,   pedidos: 134,   ingreso: 44660,   pct: 0.29, flete: 42.6, rating: 3.87, resenaMala: 9.6,  retraso: 8.2 },
+  { name: 'Mercado',                      items: 117,   pedidos: 112,   ingreso: 41580,   pct: 0.27, flete: 43.4, rating: 3.82, resenaMala: 9.7,  retraso: 8.3 },
+  { name: 'Señalética y seguridad',       items: 117,   pedidos: 112,   ingreso: 40040,   pct: 0.26, flete: 44.2, rating: 3.81, resenaMala: 9.4,  retraso: 8.0 },
+  { name: 'Moda ropa interior',           items: 286,   pedidos: 274,   ingreso: 38500,   pct: 0.25, flete: 39.4, rating: 3.96, resenaMala: 8.4,  retraso: 6.8 },
+  { name: 'Decoración arte',              items: 148,   pedidos: 142,   ingreso: 36960,   pct: 0.24, flete: 37.3, rating: 4.02, resenaMala: 7.6,  retraso: 6.4 },
+  { name: 'CDs y DVDs musicales',         items: 214,   pedidos: 207,   ingreso: 35420,   pct: 0.23, flete: 34.6, rating: 4.16, resenaMala: 6.8,  retraso: 5.4 },
+  { name: 'Telefonía fija',               items: 97,    pedidos: 93,    ingreso: 33880,   pct: 0.22, flete: 32.6, rating: 3.72, resenaMala: 13.4, retraso: 10.6 },
+  { name: 'Cocina portátil',              items: 62,    pedidos: 59,    ingreso: 32340,   pct: 0.21, flete: 64.2, rating: 3.58, resenaMala: 16.8, retraso: 12.4 },
+  { name: 'Artículos fiesta',             items: 77,    pedidos: 73,    ingreso: 29260,   pct: 0.19, flete: 33.4, rating: 3.91, resenaMala: 9.2,  retraso: 7.7 },
+  { name: 'Libros importados',            items: 117,   pedidos: 112,   ingreso: 27720,   pct: 0.18, flete: 24.8, rating: 4.12, resenaMala: 7.4,  retraso: 5.9 },
+  { name: 'Libros técnicos',              items: 127,   pedidos: 121,   ingreso: 26180,   pct: 0.17, flete: 26.4, rating: 4.21, resenaMala: 6.4,  retraso: 5.2 },
+  { name: 'Seguros y servicios',          items: 62,    pedidos: 59,    ingreso: 24640,   pct: 0.16, flete: 32.4, rating: 3.74, resenaMala: 11.8, retraso: 9.4 },
+  { name: 'Flores',                       items: 73,    pedidos: 69,    ingreso: 23100,   pct: 0.15, flete: 28.4, rating: 4.01, resenaMala: 8.4,  retraso: 7.1 },
+  { name: 'Pañales e higiene',            items: 42,    pedidos: 40,    ingreso: 21560,   pct: 0.14, flete: 67.8, rating: 3.62, resenaMala: 15.2, retraso: 12.1 },
+  { name: 'Artículos para mayores',       items: 62,    pedidos: 59,    ingreso: 20020,   pct: 0.13, flete: 33.4, rating: 3.88, resenaMala: 9.4,  retraso: 7.8 },
+  { name: 'Bebé seguridad',               items: 52,    pedidos: 49,    ingreso: 18480,   pct: 0.12, flete: 34.6, rating: 3.94, resenaMala: 9.1,  retraso: 7.6 },
+  { name: 'La cuisine',                   items: 31,    pedidos: 29,    ingreso: 16940,   pct: 0.11, flete: 41.2, rating: 3.81, resenaMala: 10.2, retraso: 8.6 },
+  { name: 'PC Gamer',                     items: 24,    pedidos: 23,    ingreso: 15400,   pct: 0.10, flete: 38.4, rating: 3.74, resenaMala: 11.6, retraso: 9.2 },
+  { name: 'Portátiles cocina',            items: 18,    pedidos: 17,    ingreso: 13860,   pct: 0.09, flete: 47.8, rating: 3.66, resenaMala: 12.4, retraso: 9.8 },
+  { name: 'Casa Navidad',                 items: 34,    pedidos: 32,    ingreso: 12320,   pct: 0.08, flete: 38.2, rating: 3.92, resenaMala: 9.4,  retraso: 7.8 },
+  { name: 'Fashion deporte',              items: 42,    pedidos: 40,    ingreso: 10780,   pct: 0.07, flete: 33.8, rating: 3.93, resenaMala: 9.1,  retraso: 7.6 },
+  { name: 'Moda bolsos',                  items: 34,    pedidos: 32,    ingreso: 9240,    pct: 0.06, flete: 32.4, rating: 3.89, resenaMala: 9.4,  retraso: 7.7 },
+  { name: 'Fashion ropa infantil',        items: 28,    pedidos: 26,    ingreso: 7700,    pct: 0.05, flete: 34.6, rating: 3.88, resenaMala: 9.2,  retraso: 7.6 },
+  { name: 'Cama mesa nido',               items: 16,    pedidos: 15,    ingreso: 6160,    pct: 0.04, flete: 41.4, rating: 3.81, resenaMala: 10.4, retraso: 8.4 },
+  { name: 'DVD Blu-ray',                  items: 28,    pedidos: 26,    ingreso: 4620,    pct: 0.03, flete: 34.2, rating: 4.11, resenaMala: 7.4,  retraso: 5.9 },
+  { name: 'Música clásica',               items: 14,    pedidos: 13,    ingreso: 3080,    pct: 0.02, flete: 49.2, rating: 4.18, resenaMala: 6.8,  retraso: 5.4 },
+  { name: 'Comedores',                    items: 8,     pedidos: 7,     ingreso: 2310,    pct: 0.015, flete: 32.4, rating: 3.91, resenaMala: 9.2,  retraso: 7.7 },
+  { name: 'Productos seguridad',          items: 3,     pedidos: 3,     ingreso: 770,     pct: 0.005, flete: 34.2, rating: 3.88, resenaMala: 9.4,  retraso: 7.7 },
+];
+
+// derive ranking, pctAcum, ticket, trampa, estrella-candidata flags
+CATS.forEach((c, i) => {
+  c.ranking = i + 1;
+  c.ticket = +(c.ingreso / c.pedidos).toFixed(2);
+  c.trampa = c.flete > 35;
+  c.estrellaCandidata = c.rating >= 4.0 && c.pct >= 2.0 && c.retraso <= 8.5;
+  c.estado = c.trampa ? 'Trampa'
+           : (c.rating >= 4.15 && c.pct >= 3.0 && c.retraso <= 7.5 ? 'Cuasi-estrella' : 'Estándar');
+});
+let acum = 0;
+CATS.forEach(c => { acum += c.pct; c.pctAcum = +acum.toFixed(2); });
+
+// === STATE ===
+const state = {
+  sortKey: 'pct',
+  sortDir: 'desc',
+  filter: 'all',
+  selected: null,
+};
+
+// === SCATTER ===
+const W = 760, H = 440;
+const PX0 = 60, PX1 = 730, PY0 = 30, PY1 = 390;
+// log scale ingreso: domain 1500 → 1.5M (3 decades = 1000x)
+function xPos(ingreso) {
+  const ln = Math.log10(Math.max(ingreso, 1500));
+  const lo = Math.log10(1500), hi = Math.log10(1500000);
+  return PX0 + ((ln - lo) / (hi - lo)) * (PX1 - PX0);
+}
+function yPos(flete) {
+  return PY0 + ((80 - flete) / 80) * (PY1 - PY0);
+}
+function rPos(items) {
+  // map items [3, 11000] → [2.5, 14] log
+  const ln = Math.log10(Math.max(items, 3));
+  return 2.5 + (ln / Math.log10(11215)) * 11.5;
+}
+
+function renderScatter() {
+  const g = document.getElementById('dots');
+  const filtered = activeCats();
+  const filteredSet = new Set(filtered.map(c => c.name));
+
+  g.innerHTML = CATS.map((c, i) => {
+    const hidden = !filteredSet.has(c.name);
+    const cls = c.trampa ? 'dot dot-trampa' : 'dot dot-normal';
+    const sel = state.selected === c.name ? ' dot-hi' : '';
+    return `<circle class="${cls}${sel}" data-i="${i}" cx="${xPos(c.ingreso).toFixed(1)}" cy="${yPos(c.flete).toFixed(1)}" r="${rPos(c.items).toFixed(2)}" ${hidden ? 'opacity="0.10" pointer-events="none"' : ''} />`;
+  }).join('');
+
+  // Annotations: Electrónica + Salud y belleza + Pañales
+  const electronica = CATS.find(c => c.name === 'Electrónica');
+  const salud = CATS.find(c => c.name === 'Salud y belleza');
+  const panales = CATS.find(c => c.name === 'Pañales e higiene');
+  const audio = CATS.find(c => c.name === 'Audio');
+
+  const annoGroup = document.getElementById('anno-electronica');
+  annoGroup.innerHTML = `
+    <!-- Electrónica callout -->
+    <line class="scatter-anno-line" x1="${xPos(electronica.ingreso).toFixed(1)}" y1="${yPos(electronica.flete).toFixed(1)}" x2="395" y2="76" />
+    <text class="scatter-anno-label" x="400" y="74">Electrónica</text>
+    <text class="scatter-anno-sub" x="400" y="88">flete 68.7% · ingreso 0.87%</text>
+
+    <!-- Salud y belleza callout -->
+    <line class="scatter-anno-line" x1="${xPos(salud.ingreso).toFixed(1)}" y1="${yPos(salud.flete).toFixed(1)}" x2="615" y2="365" />
+    <text class="scatter-anno-label" x="615" y="364">Salud y belleza</text>
+    <text class="scatter-anno-sub" x="615" y="378">9.28% ingreso · rating 4.17</text>
+
+    <!-- Audio outlier -->
+    <line class="scatter-anno-line" x1="${xPos(audio.ingreso).toFixed(1)}" y1="${yPos(audio.flete).toFixed(1)}" x2="${xPos(audio.ingreso).toFixed(1) - 60}" y2="${yPos(audio.flete).toFixed(1) - 26}" />
+    <text class="scatter-anno-label" x="${xPos(audio.ingreso).toFixed(1) - 64}" y="${yPos(audio.flete).toFixed(1) - 28}" text-anchor="end">Audio · 56% flete</text>
+  `;
+
+  bindDots();
+}
+
+function activeCats() {
+  switch (state.filter) {
+    case 'trampa': return CATS.filter(c => c.trampa);
+    case 'top10':  return CATS.slice().sort((a,b) => b.pct - a.pct).slice(0, 10);
+    case 'rating4': return CATS.filter(c => c.rating >= 4.0);
+    case 'estrella-candidata': return CATS.filter(c => c.rating >= 4.0 && c.pct >= 2.0 && c.retraso <= 8.5);
+    default: return CATS.slice();
+  }
+}
+
+// === TOOLTIP ===
+const tip = document.getElementById('tip');
+function bindDots() {
+  const svg = document.querySelector('.scatter-svg');
+  document.querySelectorAll('#dots .dot').forEach(circle => {
+    circle.addEventListener('mouseenter', (e) => {
+      const i = +circle.getAttribute('data-i');
+      const c = CATS[i];
+      tip.querySelector('.name').textContent = c.name;
+      const rows = tip.querySelectorAll('.row .v');
+      rows[0].textContent = 'R$' + c.ingreso.toLocaleString('es-PE');
+      rows[1].textContent = c.flete.toFixed(1) + '%';
+      rows[2].textContent = c.rating.toFixed(2);
+      rows[3].textContent = c.retraso.toFixed(1) + '%';
+      const tag = tip.querySelector('.tag');
+      tag.textContent = c.trampa ? 'Trampa logística' : 'Categoría normal';
+      tag.className = 'tag ' + (c.trampa ? 'trampa' : 'normal');
+
+      // position
+      const rect = svg.getBoundingClientRect();
+      const wrap = svg.parentElement.getBoundingClientRect();
+      const cx = circle.getBoundingClientRect();
+      tip.style.left = (cx.left + cx.width/2 - wrap.left) + 'px';
+      tip.style.top  = (cx.top - wrap.top - 8) + 'px';
+      tip.classList.add('on');
+    });
+    circle.addEventListener('mouseleave', () => tip.classList.remove('on'));
+    circle.addEventListener('click', () => {
+      const i = +circle.getAttribute('data-i');
+      state.selected = CATS[i].name;
+      renderAll();
+    });
+  });
+}
+
+// === PARETO ===
+function renderPareto() {
+  const top10 = CATS.slice().sort((a,b) => b.pct - a.pct).slice(0, 10);
+  const max = top10[0].pct;
+  document.getElementById('pareto').innerHTML = top10.map((c, i) => `
+    <div class="pareto-row">
+      <span class="rk">${(i+1).toString().padStart(2, '0')}</span>
+      <div class="nm">
+        <span>${c.name}</span>
+        <span class="bar"><i style="width:${(c.pct/max*100).toFixed(1)}%"></i></span>
+      </div>
+      <span class="v">${c.pct.toFixed(2)}%</span>
+    </div>
+  `).join('');
+}
+
+// === TABLE ===
+function renderTable() {
+  const filtered = activeCats();
+  // sort
+  const dir = state.sortDir === 'asc' ? 1 : -1;
+  const k = state.sortKey;
+  filtered.sort((a, b) => {
+    const va = a[k], vb = b[k];
+    if (typeof va === 'number') return (va - vb) * dir;
+    return String(va).localeCompare(String(vb)) * dir;
+  });
+
+  const tbody = document.getElementById('cats-tbody');
+  tbody.innerHTML = filtered.map((c) => {
+    const fleteHi = c.flete > 35 ? ' high' : '';
+    const ratingCls = c.rating >= 4.1 ? ' high' : (c.rating < 3.8 ? ' low' : '');
+    const sel = state.selected === c.name ? ' selected' : '';
+    const trampaClass = c.trampa ? ' is-trampa' : '';
+    let badge;
+    if (c.trampa) badge = '<span class="badge trampa">Trampa</span>';
+    else if (c.estado === 'Cuasi-estrella') badge = '<span class="badge casi">Cuasi-estrella</span>';
+    else badge = '<span class="badge estandar">Estándar</span>';
+
+    return `<tr data-name="${c.name}" class="${trampaClass}${sel}">
+      <td class="num rank">${c.ranking}</td>
+      <td class="cat">${c.name}</td>
+      <td class="num">${c.items.toLocaleString('es-PE')}</td>
+      <td class="num">${c.pedidos.toLocaleString('es-PE')}</td>
+      <td class="num">R$${c.ingreso.toLocaleString('es-PE')}</td>
+      <td class="num">${c.pct.toFixed(2)}%</td>
+      <td class="num">${c.pctAcum.toFixed(2)}%</td>
+      <td class="num flete${fleteHi}">${c.flete.toFixed(2)}%</td>
+      <td class="num rating${ratingCls}">${c.rating.toFixed(2)}</td>
+      <td class="num">${c.resenaMala.toFixed(1)}%</td>
+      <td class="num">${c.retraso.toFixed(1)}%</td>
+      <td>${badge}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('table-count').textContent =
+    `Mostrando ${filtered.length} de 72 categorías · filtro: ${state.filter} · orden: ${state.sortKey} ${state.sortDir}`;
+
+  // row click → select
+  tbody.querySelectorAll('tr').forEach(tr => {
+    tr.addEventListener('click', () => {
+      state.selected = tr.getAttribute('data-name');
+      renderAll();
+    });
+  });
+
+  // header click → sort
+  document.querySelectorAll('#cats-table thead th').forEach(th => {
+    th.onclick = () => {
+      const key = th.getAttribute('data-sort');
+      if (!key) return;
+      if (state.sortKey === key) {
+        state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
+      } else {
+        state.sortKey = key;
+        state.sortDir = (key === 'name' || key === 'estado') ? 'asc' : 'desc';
+      }
+      document.querySelectorAll('#cats-table thead th').forEach(x => {
+        x.classList.remove('sorted');
+        const arr = x.querySelector('.arr');
+        if (arr) arr.textContent = '↕';
+      });
+      th.classList.add('sorted');
+      th.querySelector('.arr').textContent = state.sortDir === 'asc' ? '↑' : '↓';
+      renderTable();
+    };
+  });
+}
+
+// === CHIPS ===
+document.querySelectorAll('#chips .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('#chips .chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    state.filter = chip.getAttribute('data-filter');
+    state.selected = null;
+    renderAll();
+  });
+});
+
+// fill chip counts dynamically
+(function fillChipCounts() {
+  document.querySelectorAll('#chips .chip').forEach(chip => {
+    const f = chip.getAttribute('data-filter');
+    let n = CATS.length;
+    if (f === 'trampa') n = CATS.filter(c => c.trampa).length;
+    else if (f === 'top10') n = 10;
+    else if (f === 'rating4') n = CATS.filter(c => c.rating >= 4.0).length;
+    else if (f === 'estrella-candidata') n = CATS.filter(c => c.rating >= 4.0 && c.pct >= 2.0 && c.retraso <= 8.5).length;
+    chip.querySelector('.n').textContent = n;
+  });
+})();
+
+function renderAll() {
+  renderScatter();
+  renderTable();
+}
+
+renderPareto();
+renderAll();
+</script>
+</body>
+</html>

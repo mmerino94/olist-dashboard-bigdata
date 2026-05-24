@@ -1,0 +1,73 @@
+# ============================================================================
+# .gitignore — ProyectoFinal Olist Big Data Consulting
+# ============================================================================
+
+# ----------------- Python -----------------
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# ----------------- Node / Vite / React -----------------
+node_modules/
+dist/
+build/
+.vite/
+.next/
+.cache/
+*.tsbuildinfo
+
+# ----------------- CSVs originales (~50 MB, están en Kaggle) -----------------
+proyectobigdata/data/*.csv
+proyectobigdata/data/*.csv.gz
+proyectobigdata/data/*.zip
+proyectobigdata/data/*.parquet
+
+# ----------------- Credenciales -----------------
+.env
+.env.local
+.env.*.local
+!.env.example
+**/secrets.json
+**/credentials.json
+
+# ----------------- IDE / Editor -----------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ----------------- macOS / Sistema -----------------
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# ----------------- Logs -----------------
+*.log
+streamlit.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ----------------- LaTeX (artefactos compilados) -----------------
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+
+# ----------------- Temp / Bytes pesados -----------------
+*.parquet
+*.pkl
+*.cache
+tmp/
+temp/

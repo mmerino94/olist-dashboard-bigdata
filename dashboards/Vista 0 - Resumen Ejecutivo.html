@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard Olist · Resumen Ejecutivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Serif:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy:        #27295a;
+    --navy-medium: #304b9a;
+    --blue-accent: #3c78bb;
+    --blue-accent-text: #2e6aa8; /* small text on tinted bg surfaces · WCAG AA */
+    --blue-light:  #85B7EB;
+    --gray:        #71706f;
+    --gray-300:    #d1d0d6;
+    --gray-200:    #e3e2e8;
+    --gray-100:    #ecebf1;
+    --bg:          #F0F0F8;
+    --paper:       #ffffff;
+    --ink:         #14163a;
+
+    --semantic-good:    #2f7d5b;
+    --semantic-warn:    #b27a1a;
+    --semantic-bad:     #a8423a;
+
+    --font-sans:  'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono:  'IBM Plex Mono', ui-monospace, monospace;
+    --font-serif: 'IBM Plex Serif', Georgia, serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+
+  .app {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ============ SIDEBAR ============ */
+  .nav {
+    background: var(--navy);
+    color: #fff;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .brand .mark {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--blue-light);
+    text-transform: uppercase;
+  }
+  .brand .mark .dot {
+    width: 8px; height: 8px; border-radius: 2px;
+    background: var(--blue-accent);
+    box-shadow: 0 0 0 2px rgba(60,120,187,0.25);
+  }
+  .brand .name {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .brand .sub {
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.55);
+    font-family: var(--font-mono);
+  }
+
+  .nav-section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 10px;
+  }
+  .nav-list { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    align-items: center;
+    padding: 8px 8px;
+    margin: 0 -8px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.78);
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease;
+    border-left: 2px solid transparent;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+  .nav-item.active {
+    color: #fff;
+    background: rgba(133,183,235,0.08);
+    border-left-color: var(--blue-accent);
+  }
+  .nav-item .num {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: rgba(255,255,255,0.45);
+  }
+  .nav-item.active .num { color: var(--blue-light); }
+  .nav-item .label { font-weight: 500; }
+
+  .nav-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+  .nav-footer .pill {
+    display: inline-block;
+    padding: 2px 6px;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 3px;
+    margin-top: 6px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  /* ============ MAIN ============ */
+  .content {
+    background: var(--bg);
+    min-height: 100vh;
+  }
+
+  /* top utility bar */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 48px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--gray-200);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray);
+    letter-spacing: 0.02em;
+  }
+  .topbar .crumb { display: flex; gap: 8px; align-items: center; }
+  .topbar .crumb b { color: var(--ink); font-weight: 500; }
+  .topbar .crumb .sep { color: var(--gray-300); }
+  .topbar .right { display: flex; align-items: center; gap: 18px; }
+  .topbar .stamp { display: flex; align-items: center; gap: 6px; }
+  .topbar .stamp .led { width: 6px; height: 6px; border-radius: 50%; background: var(--semantic-good); }
+
+  /* hero */
+  .hero {
+    padding: 56px 48px 40px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--gray-200);
+    position: relative;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    left: 48px; right: 48px;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--blue-accent) 0%, transparent 30%);
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 48px;
+    align-items: end;
+    max-width: 1480px;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--blue-accent);
+    margin-bottom: 22px;
+  }
+  .eyebrow .tick { width: 14px; height: 1px; background: var(--blue-accent); }
+  .eyebrow .meta { color: var(--gray); }
+
+  h1.thesis {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    max-width: 900px;
+    text-wrap: balance;
+  }
+  h1.thesis em {
+    font-style: normal;
+    color: var(--blue-accent);
+    font-weight: 600;
+  }
+  h1.thesis .underline {
+    background: linear-gradient(transparent 78%, rgba(60,120,187,0.18) 78%);
+    padding: 0 2px;
+  }
+  .lede {
+    margin-top: 22px;
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--gray);
+    max-width: 720px;
+    text-wrap: pretty;
+  }
+  .lede b { color: var(--ink); font-weight: 500; }
+
+  .dataset-card {
+    background: var(--bg);
+    border: 1px solid var(--gray-200);
+    padding: 18px 20px;
+    border-radius: 6px;
+    font-family: var(--font-mono);
+  }
+  .dataset-card .head {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--gray);
+    margin-bottom: 14px;
+  }
+  .dataset-card .head .src {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--blue-accent);
+  }
+  .dataset-card .head .src::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--blue-accent);
+  }
+  .dataset-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 24px;
+  }
+  .dataset-grid .row {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .dataset-grid .row .v {
+    font-size: 18px;
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+  .dataset-grid .row .k {
+    font-size: 9.5px;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* findings section */
+  .section {
+    padding: 48px 48px 56px;
+  }
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 24px;
+  }
+  .section-head h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-family: var(--font-mono);
+    font-weight: 500;
+    color: var(--gray);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-head h2 .idx {
+    color: var(--blue-accent);
+    font-weight: 600;
+  }
+  .section-head .legend {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--gray);
+    display: flex; gap: 14px; align-items: center;
+  }
+  .section-head .legend span { display: flex; align-items: center; gap: 6px; }
+  .legend .sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  /* ===== HERO CARD (P2) ===== */
+  .card-hero {
+    background: var(--paper);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    margin-bottom: 14px;
+    padding: 0;
+    display: block;
+    min-height: 0;
+    position: relative;
+    cursor: pointer;
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    overflow: hidden;
+  }
+  .card-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: var(--blue-accent);
+  }
+  .card-hero:hover {
+    border-color: var(--blue-accent);
+    box-shadow: 0 10px 32px -16px rgba(39,41,90,0.22);
+    transform: translateY(-2px);
+  }
+  .hero-card-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 0;
+    align-items: stretch;
+  }
+  .hero-card-left {
+    padding: 32px 36px 28px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--gray-200);
+  }
+  .hero-card-right {
+    padding: 32px 36px 28px;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--paper) 60%);
+    display: flex;
+    flex-direction: column;
+  }
+  .hero-title { font-size: 22px; line-height: 1.25; margin-bottom: 28px; max-width: 460px; }
+  .hero-kpi .num { font-size: 78px; }
+  .hero-kpi .unit { font-size: 22px; }
+  .hero-kpi-label {
+    font-size: 14px;
+    color: var(--gray);
+    line-height: 1.5;
+    margin-bottom: 24px;
+    max-width: 460px;
+  }
+  .hero-kpi-label b { color: var(--ink); font-weight: 500; }
+  .hero-claim {
+    font-size: 14.5px;
+    line-height: 1.55;
+    margin-bottom: 24px;
+    max-width: 480px;
+    flex: 1;
+  }
+  .hero-viz-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .hero-viz-head .src-mono { color: var(--gray); }
+  .hero-microviz {
+    height: 130px;
+    margin: 0 0 22px;
+    padding: 0;
+    border: 1px solid var(--gray-200);
+    background: var(--paper);
+    border-radius: 4px;
+    padding: 6px 10px;
+  }
+  .hero-microviz svg { height: 120px; }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    padding-top: 18px;
+    border-top: 1px solid var(--gray-200);
+  }
+  .hero-stat { display: flex; flex-direction: column; gap: 4px; }
+  .hero-stat-num {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .hero-stat-lbl {
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--gray);
+  }
+
+  .card {
+    background: var(--paper);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 22px 22px 18px;
+    display: flex;
+    flex-direction: column;
+    min-height: 460px;
+    position: relative;
+    transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+    cursor: pointer;
+  }
+  .card:hover {
+    border-color: var(--blue-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px -12px rgba(39,41,90,0.18);
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: -1px -1px auto -1px;
+    height: 3px;
+    background: var(--blue-accent);
+    opacity: 0;
+    border-radius: 6px 6px 0 0;
+    transition: opacity 160ms ease;
+  }
+  .card:hover::before { opacity: 1; }
+
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+  }
+  .card-head .tag {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--blue-accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .card-head .topic {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--gray);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin-bottom: 18px;
+    line-height: 1.3;
+  }
+
+  .kpi {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 6px;
+  }
+  .kpi .num {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: 38px;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .kpi .unit {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--gray);
+    letter-spacing: -0.01em;
+  }
+  .kpi-label {
+    font-size: 12.5px;
+    color: var(--gray);
+    line-height: 1.4;
+    margin-bottom: 16px;
+    min-height: 36px;
+  }
+
+  .microviz {
+    height: 64px;
+    margin: 4px -22px 18px;
+    padding: 0 22px;
+    border-top: 1px solid var(--gray-100);
+    border-bottom: 1px solid var(--gray-100);
+    background: linear-gradient(180deg, transparent 0%, rgba(240,240,248,0.5) 100%);
+    display: flex;
+    align-items: center;
+  }
+  .microviz svg { width: 100%; height: 56px; display: block; }
+
+  .claim {
+    flex: 1;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--ink);
+    border-left: 2px solid var(--blue-accent);
+    padding: 2px 0 2px 12px;
+    margin-bottom: 18px;
+    text-wrap: pretty;
+  }
+  .claim b { font-weight: 600; }
+
+  .card-cta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px dashed var(--gray-200);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .card-cta .src { color: var(--gray); }
+  .card-cta .go { color: var(--blue-accent); display: flex; align-items: center; gap: 6px; font-weight: 500; }
+  .card-cta .go .arrow { transition: transform 160ms ease; }
+  .card:hover .card-cta .go .arrow { transform: translateX(3px); }
+
+  /* exec reading */
+  .reading {
+    padding: 48px 48px 64px;
+    background: var(--paper);
+    border-top: 1px solid var(--gray-200);
+  }
+  .reading-matrix {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    max-width: 1480px;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    background: var(--paper);
+    overflow: hidden;
+  }
+  .col-head {
+    padding: 18px 24px 16px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .col-head + .col-head { border-left: 1px solid var(--gray-200); }
+  .col-badge {
+    display: inline-block;
+    width: fit-content;
+    padding: 3px 9px;
+    border-radius: 3px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .col-badge.high { background: rgba(168,66,58,0.10);  color: var(--semantic-bad); }
+  .col-badge.mid  { background: rgba(178,122,26,0.10); color: var(--semantic-warn); }
+  .col-badge.low  { background: rgba(47,125,91,0.10);  color: var(--semantic-good); }
+  .col-sub {
+    font-size: 11.5px;
+    color: var(--gray);
+    letter-spacing: 0;
+  }
+
+  .cell {
+    padding: 22px 24px;
+    border-top: 1px solid var(--gray-200);
+    position: relative;
+  }
+  .cell:nth-child(3n+2),
+  .cell:nth-child(3n) { border-left: 1px solid var(--gray-200); }
+  .cell-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--blue-accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .cell-title {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: -0.005em;
+    line-height: 1.3;
+  }
+  .cell p {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--gray);
+    text-wrap: pretty;
+  }
+  .cell p code {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    background: var(--bg);
+    border: 1px solid var(--gray-200);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--ink);
+  }
+
+  /* footer */
+  .docfoot {
+    padding: 22px 48px;
+    border-top: 1px solid var(--gray-200);
+    background: var(--bg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--gray);
+    letter-spacing: 0.04em;
+  }
+  .docfoot .pe {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink);
+  }
+  .docfoot .pe::before {
+    content: '';
+    width: 12px; height: 8px; border-radius: 1px;
+    background: linear-gradient(180deg, #d52b1e 33%, #fff 33% 66%, #d52b1e 66%);
+    border: 0.5px solid var(--gray-300);
+  }
+
+  /* shared microviz styles */
+  .vz-axis { stroke: var(--gray-200); stroke-width: 1; }
+  .vz-grid { stroke: var(--gray-100); stroke-width: 1; }
+  .vz-line { fill: none; stroke: var(--blue-accent); stroke-width: 1.5; }
+  .vz-area { fill: rgba(60,120,187,0.10); stroke: none; }
+  .vz-bar  { fill: var(--blue-accent); }
+  .vz-bar-muted { fill: var(--gray-300); }
+  .vz-bar-bad { fill: var(--semantic-bad); opacity: 0.85; }
+  .vz-dot { fill: var(--blue-accent); }
+  .vz-dot-outlier { fill: var(--semantic-bad); }
+  .vz-label { font-family: var(--font-mono); font-size: 9px; fill: var(--gray); letter-spacing: 0.04em; }
+  .vz-value { font-family: var(--font-mono); font-size: 10px; fill: var(--ink); font-weight: 500; }
+
+  @media (max-width: 1280px) {
+    .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hero-grid { grid-template-columns: minmax(0, 1fr); }
+    .dataset-card { max-width: 480px; }
+    .hero-card-grid { grid-template-columns: minmax(0, 1fr); }
+    .hero-card-left { border-right: none; border-bottom: 1px solid var(--gray-200); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ============ NAV ============ -->
+  <aside class="nav">
+    <div class="brand">
+      <div class="mark"><span class="dot"></span><span>UNMSM · BDA · 2026-I</span></div>
+      <div class="name">Caso Olist</div>
+      <div class="sub">Big Data Consulting</div>
+    </div>
+
+    <div>
+      <div class="nav-section-label">Vistas del dashboard</div>
+      <div class="nav-list">
+        <a class="nav-item active" href="Vista 0 - Resumen Ejecutivo.html">
+          <span class="num">P0</span>
+          <span class="label">Resumen ejecutivo</span>
+        </a>
+        <a class="nav-item" href="Vista 1 - Rentabilidad.html">
+          <span class="num">P1</span>
+          <span class="label">Rentabilidad</span>
+        </a>
+        <a class="nav-item" href="Vista 2 - Retencion RFM.html">
+          <span class="num">P2</span>
+          <span class="label">Retención · RFM</span>
+        </a>
+        <a class="nav-item" href="Vista 3 - Logistica.html">
+          <span class="num">P3</span>
+          <span class="label">Logística</span>
+        </a>
+        <a class="nav-item" href="Vista 4 - Vendedores.html">
+          <span class="num">P4</span>
+          <span class="label">Vendedores</span>
+        </a>
+        <a class="nav-item" href="Vista 5 - Satisfaccion.html">
+          <span class="num">P5</span>
+          <span class="label">Satisfacción</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="nav-footer">
+      Dataset Olist BR<br>
+      Sep 2016 – Sep 2018<br>
+      <span class="pill">7 data marts · 6s reproducible</span>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="content">
+
+    <!-- top utility bar -->
+    <div class="topbar">
+      <div class="crumb">
+        <span>Dashboard</span>
+        <span class="sep">/</span>
+        <b>P0 · Resumen ejecutivo</b>
+      </div>
+      <div class="right">
+        <div class="stamp"><span class="led"></span>marts sincronizados</div>
+        <div>v0.1 · borrador</div>
+      </div>
+    </div>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">
+            <span class="tick"></span>
+            <span>Tesis del caso</span>
+            <span class="meta">· Olist Brazilian E-Commerce, 2016–2018</span>
+          </div>
+          <h1 class="thesis">
+            Olist entrega bien y crece, pero pierde el <em>97%</em> de sus clientes después de la primera compra.<br>
+            El problema no es <span class="underline">operativo</span>: es de <em>calidad</em>, <em>retención</em> y <em>catálogo</em>.
+          </h1>
+          <p class="lede">
+            Las cinco vistas que siguen no son cinco problemas separados: son <b>tres palancas de negocio con jerarquía de impacto</b>. El dashboard no pregunta qué está mal — propone <b>en qué orden intervenir</b> y qué decisiones <i>no</i> tomar.
+          </p>
+        </div>
+
+        <div class="dataset-card">
+          <div class="head">
+            <span>Dataset</span>
+            <span class="src">Kaggle / Olist</span>
+          </div>
+          <div class="dataset-grid">
+            <div class="row"><span class="v">112,554</span><span class="k">Ítems vendidos</span></div>
+            <div class="row"><span class="v">93,285</span><span class="k">Clientes únicos</span></div>
+            <div class="row"><span class="v">3,094</span><span class="k">Vendedores</span></div>
+            <div class="row"><span class="v">R$15.4M</span><span class="k">Ingreso bruto</span></div>
+            <div class="row"><span class="v">72</span><span class="k">Categorías</span></div>
+            <div class="row"><span class="v">412</span><span class="k">Rutas estado→estado</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 5 CARDS ============ -->
+    <section class="section">
+      <div class="section-head">
+        <h2><span class="idx">5 hallazgos</span> · 5 decisiones · una por vista del dashboard</h2>
+        <div class="legend">
+          <span><span class="sw" style="background:var(--blue-accent)"></span>magnitud</span>
+          <span><span class="sw" style="background:var(--semantic-bad)"></span>punto de quiebre</span>
+          <span>clic en una tarjeta → vista detallada</span>
+        </div>
+      </div>
+
+      <!-- ===== P2 HERO ===== -->
+      <a class="card card-hero" href="Vista 2 - Retencion RFM.html">
+        <div class="hero-card-grid">
+          <div class="hero-card-left">
+            <div class="card-head">
+              <span class="tag">P2</span>
+              <span class="topic">Retención · RFM · hallazgo estrella</span>
+            </div>
+            <div class="card-title hero-title">No es un problema de retención. Es de adquisición de mala calidad.</div>
+
+            <div class="kpi hero-kpi">
+              <span class="num">97.00</span><span class="unit">%</span>
+            </div>
+            <div class="kpi-label hero-kpi-label">de los 93,285 clientes únicos <b>no volvieron a comprar</b> en los 24 meses observados — 90,488 one-time buyers.</div>
+
+            <div class="claim hero-claim">
+              La oportunidad NO es retener al 3% Champions. Es <b>convertir al 78% accionable</b> — Dormidos (29.7%) + Recientes potenciales (29.3%) + Estables (19.4%), todos F=1 — antes que se enfríen al estado Dormido permanente.
+            </div>
+
+            <div class="card-cta">
+              <span class="src">mart.p2_rfm_clientes · 93,285 filas</span>
+              <span class="go">Vista P2 — Retención <span class="arrow">→</span></span>
+            </div>
+          </div>
+
+          <div class="hero-card-right">
+            <div class="hero-viz-head">
+              <span>Distribución F (frecuencia de compra)</span>
+              <span class="src-mono">N = 93,285</span>
+            </div>
+            <div class="microviz hero-microviz">
+              <svg viewBox="0 0 360 120" aria-hidden="true" preserveAspectRatio="none">
+                <!-- baseline -->
+                <line class="vz-axis" x1="0" y1="95" x2="360" y2="95" />
+                <!-- F=1 huge bar -->
+                <rect x="0" y="12" width="349.2" height="83" fill="var(--blue-accent)" opacity="0.92" />
+                <!-- F=2,3,4+ tiny bars -->
+                <rect x="349.2" y="82" width="6.5" height="13" fill="var(--navy)" />
+                <rect x="355.7" y="90" width="2.6" height="5" fill="var(--navy-medium)" />
+                <rect x="358.3" y="93" width="1.5" height="2" fill="var(--navy-medium)" opacity="0.7" />
+                <!-- divider -->
+                <line class="vz-grid" x1="349.2" y1="0" x2="349.2" y2="105" stroke-dasharray="2 3" />
+                <!-- labels -->
+                <text class="vz-value" x="10" y="32" fill="#fff" style="font-size:14px">F = 1</text>
+                <text class="vz-label" x="10" y="50" fill="#fff" opacity="0.85">90,488 clientes · 97.00%</text>
+                <text class="vz-label" x="10" y="115">★1</text>
+                <text class="vz-label" x="349" y="115" text-anchor="end">★2+</text>
+                <text class="vz-value" x="358" y="75" text-anchor="end">3.00%</text>
+                <text class="vz-label" x="358" y="8" text-anchor="end" fill="var(--navy)">Champions (F≥2)</text>
+              </svg>
+            </div>
+
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <span class="hero-stat-num">R$182</span>
+                <span class="hero-stat-lbl">Umbral p75 que separa<br>F=1 chico de F=1 grande</span>
+              </div>
+              <div class="hero-stat">
+                <span class="hero-stat-num">4 / 5</span>
+                <span class="hero-stat-lbl">Top clientes por gasto<br>son one-time (hasta R$13.6K)</span>
+              </div>
+              <div class="hero-stat">
+                <span class="hero-stat-num">78%</span>
+                <span class="hero-stat-lbl">Universo accionable<br>(Dormidos + Recientes + Estables)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <div class="cards">
+
+        <!-- ===== P1 ===== -->
+        <a class="card" href="Vista 1 - Rentabilidad.html">
+          <div class="card-head"><span class="tag">P1</span><span class="topic">Rentabilidad</span></div>
+          <div class="card-title">El 80/20 es suave, y el flete envenena al top</div>
+
+          <div class="kpi">
+            <span class="num">25</span><span class="unit">/ 72</span>
+          </div>
+          <div class="kpi-label">categorías con flete &gt; 35% del precio — "categorías trampa"</div>
+
+          <div class="microviz">
+            <!-- Pareto curve mini -->
+            <svg viewBox="0 0 220 56" preserveAspectRatio="none" aria-hidden="true">
+              <line class="vz-axis" x1="0" y1="55" x2="220" y2="55" />
+              <!-- pareto cumulative -->
+              <path class="vz-area" d="M0,55 L0,55 L10,38 L25,28 L45,21 L70,17 L100,14 L140,12 L180,11 L220,10 L220,55 Z" />
+              <path class="vz-line" d="M0,55 L10,38 L25,28 L45,21 L70,17 L100,14 L140,12 L180,11 L220,10" />
+              <!-- 80% marker -->
+              <line class="vz-grid" x1="0" y1="14" x2="220" y2="14" stroke-dasharray="2 3" />
+              <text class="vz-label" x="2" y="11">80% ingreso</text>
+              <!-- top 10 marker -->
+              <line class="vz-grid" x1="32" y1="0" x2="32" y2="55" stroke-dasharray="2 3" />
+              <text class="vz-label" x="35" y="50">top 10 → 63%</text>
+            </svg>
+          </div>
+
+          <div class="claim">
+            <b>25 de 72 categorías</b> tienen flete &gt; 35% del precio. Caso extremo: <b>Electrónica con 68.7%</b>. Renegociar logística de las trampas antes que captar nuevas categorías.
+          </div>
+
+          <div class="card-cta">
+            <span class="src">mart.p1_rentabilidad_categoria</span>
+            <span class="go">Vista P1 <span class="arrow">→</span></span>
+          </div>
+        </a>
+
+        <!-- ===== P3 ===== -->
+        <a class="card" href="Vista 3 - Logistica.html">
+          <div class="card-head"><span class="tag">P3</span><span class="topic">Logística</span></div>
+          <div class="card-title">El Nordeste castiga más que la selva (y nadie lo había mirado)</div>
+
+          <div class="kpi">
+            <span class="num">5.85</span><span class="unit">% vs 3.93%</span>
+          </div>
+          <div class="kpi-label">retraso crítico Nordeste vs Norte como destino</div>
+
+          <div class="microviz">
+            <!-- Horizontal bars: NE vs N retraso crítico -->
+            <svg viewBox="0 0 220 56" aria-hidden="true">
+              <text class="vz-label" x="0" y="14">Nordeste</text>
+              <rect class="vz-bar-bad" x="58" y="6" width="146" height="11" />
+              <text class="vz-value" x="208" y="15" text-anchor="end" fill="#fff">5.85%</text>
+
+              <text class="vz-label" x="0" y="36">Norte</text>
+              <rect class="vz-bar" x="58" y="28" width="98" height="11" opacity="0.5" />
+              <text class="vz-value" x="160" y="37">3.93%</text>
+
+              <text class="vz-label" x="0" y="52">SP→SP es 32% del negocio · 95.4% a tiempo</text>
+            </svg>
+          </div>
+
+          <div class="claim">
+            <b>Recalibrar el SLA estimado</b> hacia el Nordeste agrega más valor que invertir en logística amazónica. El sesgo geográfico esperado está mal calibrado en los datos.
+          </div>
+
+          <div class="card-cta">
+            <span class="src">mart.p3_rutas_problematicas</span>
+            <span class="go">Vista P3 <span class="arrow">→</span></span>
+          </div>
+        </a>
+
+        <!-- ===== P4 ===== -->
+        <a class="card" href="Vista 4 - Vendedores.html">
+          <div class="card-head"><span class="tag">P4</span><span class="topic">Vendedores</span></div>
+          <div class="card-title">Calidad ≠ escala. El #2 en ingreso es Crítico.</div>
+
+          <div class="kpi">
+            <span class="num">9</span><span class="unit">/ 10</span>
+          </div>
+          <div class="kpi-label">Críticos top son por rating bajo, no por puntualidad</div>
+
+          <div class="microviz">
+            <!-- Scatter rating vs ingreso, with outlier highlighted -->
+            <svg viewBox="0 0 220 56" aria-hidden="true">
+              <line class="vz-axis" x1="20" y1="48" x2="215" y2="48" />
+              <line class="vz-axis" x1="20" y1="6" x2="20" y2="48" />
+              <text class="vz-label" x="20" y="55">ingreso →</text>
+              <text class="vz-label" x="2" y="10" transform="rotate(-90 4 10)">rating</text>
+              <!-- normal vendors cloud -->
+              <circle class="vz-dot" cx="34" cy="22" r="1.6" opacity="0.4" />
+              <circle class="vz-dot" cx="42" cy="18" r="1.6" opacity="0.5" />
+              <circle class="vz-dot" cx="48" cy="14" r="1.6" opacity="0.6" />
+              <circle class="vz-dot" cx="58" cy="20" r="1.6" opacity="0.5" />
+              <circle class="vz-dot" cx="64" cy="16" r="1.6" opacity="0.6" />
+              <circle class="vz-dot" cx="72" cy="22" r="1.6" opacity="0.5" />
+              <circle class="vz-dot" cx="82" cy="14" r="1.6" opacity="0.7" />
+              <circle class="vz-dot" cx="92" cy="20" r="1.6" opacity="0.5" />
+              <circle class="vz-dot" cx="104" cy="12" r="1.6" opacity="0.7" />
+              <circle class="vz-dot" cx="118" cy="16" r="1.6" opacity="0.6" />
+              <circle class="vz-dot" cx="134" cy="14" r="1.6" opacity="0.8" />
+              <circle class="vz-dot" cx="152" cy="18" r="1.8" opacity="0.7" />
+              <circle class="vz-dot" cx="170" cy="20" r="2.2" opacity="0.85" />
+              <!-- outlier #2 vendor critico -->
+              <circle class="vz-dot-outlier" cx="190" cy="40" r="3.5" />
+              <text class="vz-value" x="155" y="44" fill="var(--semantic-bad)">#2 · 3.34★</text>
+            </svg>
+          </div>
+
+          <div class="claim">
+            <b>10 vendedores Críticos</b> concentran ~5% del ingreso y dañan la reputación de la plataforma. Protocolo de intervención <b>por calidad</b>, no por operaciones.
+          </div>
+
+          <div class="card-cta">
+            <span class="src">mart.p4_vendedores_scorecard</span>
+            <span class="go">Vista P4 <span class="arrow">→</span></span>
+          </div>
+        </a>
+
+        <!-- ===== P5 ===== -->
+        <a class="card" href="Vista 5 - Satisfaccion.html">
+          <div class="card-head"><span class="tag">P5</span><span class="topic">Satisfacción</span></div>
+          <div class="card-title">Cuatro causas explican la mayoría de quejas escritas</div>
+
+          <div class="kpi">
+            <span class="num">4</span><span class="unit">temas</span>
+          </div>
+          <div class="kpi-label">en bigramas negativos: devolución, defecto, silencio del vendedor, calidad</div>
+
+          <div class="microviz">
+            <!-- Stars distribution 1-5 bars -->
+            <svg viewBox="0 0 220 56" aria-hidden="true">
+              <!-- baseline -->
+              <line class="vz-axis" x1="20" y1="48" x2="215" y2="48" />
+              <!-- 5★ 57.82% -->
+              <rect class="vz-bar" x="175" y="8"  width="32" height="40" />
+              <text class="vz-value" x="191" y="6" text-anchor="middle">57.8%</text>
+              <text class="vz-label" x="191" y="55" text-anchor="middle">★5</text>
+              <!-- 4★ 19.27% -->
+              <rect class="vz-bar-muted" x="135" y="35" width="32" height="13" />
+              <text class="vz-label" x="151" y="55" text-anchor="middle">★4</text>
+              <!-- 3★ 8.28% -->
+              <rect class="vz-bar-muted" x="95" y="42" width="32" height="6" />
+              <text class="vz-label" x="111" y="55" text-anchor="middle">★3</text>
+              <!-- 2★ 3.18% -->
+              <rect class="vz-bar-bad" x="55" y="45" width="32" height="3" opacity="0.6" />
+              <text class="vz-label" x="71" y="55" text-anchor="middle">★2</text>
+              <!-- 1★ 11.45% -->
+              <rect class="vz-bar-bad" x="15" y="40" width="32" height="8" />
+              <text class="vz-value" x="31" y="6" text-anchor="middle" fill="var(--semantic-bad)">11.5%</text>
+              <text class="vz-label" x="31" y="55" text-anchor="middle">★1</text>
+              <!-- divider -->
+              <line class="vz-grid" x1="115" y1="4" x2="115" y2="50" stroke-dasharray="2 3" />
+              <text class="vz-label" x="115" y="4" text-anchor="middle">distribución bimodal</text>
+            </svg>
+          </div>
+
+          <div class="claim">
+            Olist no necesita "mejorar la satisfacción". Necesita <b>resolver 4 problemas</b> específicos en orden de magnitud — empezando por devolución de dinero (241 menciones).
+          </div>
+
+          <div class="card-cta">
+            <span class="src">mart.p5_palabras_frecuentes</span>
+            <span class="go">Vista P5 <span class="arrow">→</span></span>
+          </div>
+        </a>
+
+      </div>
+    </section>
+
+    <!-- ============ EXEC READING ============ -->
+    <section class="reading">
+      <div class="section-head">
+        <h2><span class="idx">Lectura del caso</span> · qué pesa más, qué pesa menos, qué cambia la conversación</h2>
+      </div>
+      <div class="reading-matrix">
+        <div class="col-head">
+          <span class="col-badge high">Palanca alta</span>
+          <span class="col-sub">donde concentrar el esfuerzo</span>
+        </div>
+        <div class="col-head">
+          <span class="col-badge mid">Contraintuitivo</span>
+          <span class="col-sub">revisar antes de invertir</span>
+        </div>
+        <div class="col-head">
+          <span class="col-badge low">No priorizar</span>
+          <span class="col-sub">no es ahí donde está la oportunidad</span>
+        </div>
+
+        <!-- ROW 1 -->
+        <div class="cell">
+          <span class="cell-tag">P2</span>
+          <div class="cell-title">Conversión de one-time</div>
+          <p>78% del universo es accionable (Dormidos + Recientes + Estables). Ticket medio R$182.</p>
+        </div>
+        <div class="cell">
+          <span class="cell-tag">P3</span>
+          <div class="cell-title">Nordeste, no Norte</div>
+          <p>Mayor volumen, peor SLA. Recalibrar la promesa de entrega, no la logística.</p>
+        </div>
+        <div class="cell">
+          <span class="cell-tag">P3</span>
+          <div class="cell-title">Norte como mercado</div>
+          <p>25 envíos como origen. Es un problema de oferta, no de logística.</p>
+        </div>
+
+        <!-- ROW 2 -->
+        <div class="cell">
+          <span class="cell-tag">P4</span>
+          <div class="cell-title">Top 10 Críticos</div>
+          <p>5% del ingreso en manos de vendedores que dañan la reputación de la plataforma.</p>
+        </div>
+        <div class="cell">
+          <span class="cell-tag">P5</span>
+          <div class="cell-title">La logística genera felicidad, no el producto</div>
+          <p>Los positivos celebran <code>dentro prazo</code> y <code>bem embalado</code>, no la calidad del producto.</p>
+        </div>
+        <div class="cell">
+          <span class="cell-tag">P4</span>
+          <div class="cell-title">Buscar más Elite</div>
+          <p>29% del padrón pero solo 7% del ingreso. Subir Estándar pesa más que captar Elite.</p>
+        </div>
+
+        <!-- ROW 3 -->
+        <div class="cell">
+          <span class="cell-tag">P5</span>
+          <div class="cell-title">Cuatro causas textuales</div>
+          <p>Quejas agrupadas en devolución, defecto, no-respuesta y calidad. No es "experiencia" vaga.</p>
+        </div>
+        <div class="cell">
+          <span class="cell-tag">P1</span>
+          <div class="cell-title">Categoría trampa estructural</div>
+          <p>35% del catálogo tiene flete &gt; 35% del precio. No es un caso aislado: es sistema.</p>
+        </div>
+        <div class="cell">
+          <span class="cell-tag">P5</span>
+          <div class="cell-title">Black Friday 2017</div>
+          <p>Ya pasó. Recuperación demostrada (NPS 45.7 → 72.3). Antecedente, no problema vigente.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="docfoot">
+      <div>UNMSM · Facultad de Ciencias Matemáticas · E.P. de Estadística · Big Data Analysis · 9no ciclo · 2026-I</div>
+      <div class="pe">Aplicación a e-commerce peruano · Falabella · Mercado Libre · Cyber Wow</div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  // sidebar: visual selection only for now (other views not built yet)
+  document.querySelectorAll('.nav-item').forEach((el) => {
+    el.addEventListener('click', () => {
+      // keep P0 active; other items will route once their files exist
+      if (el.classList.contains('active')) return;
+      // soft hint
+      el.animate(
+        [{ background: 'rgba(133,183,235,0.10)' }, { background: 'transparent' }],
+        { duration: 380, easing: 'ease-out' }
+      );
+    });
+  });
+
+  // cards: navigate normally now that views exist; just animate a pulse on click for confirmation
+  document.querySelectorAll('.card').forEach((c) => {
+    c.addEventListener('click', (e) => {
+      // do NOT preventDefault — allow navigation
+      c.animate(
+        [{ borderColor: 'var(--blue-accent)' }, { borderColor: 'var(--gray-200)' }],
+        { duration: 240, easing: 'ease-out' }
+      );
+    });
+  });
+</script>
+</body>
+</html>

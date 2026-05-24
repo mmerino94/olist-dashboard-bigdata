@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dashboard Olist · P4 Desempeño de Vendedores</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --navy: #27295a;
+    --navy-medium: #304b9a;
+    --blue-accent: #3c78bb;
+    --blue-accent-text: #2e6aa8; /* small text on tinted bg surfaces · WCAG AA */
+    --blue-light: #85B7EB;
+    --gray: #71706f;
+    --gray-300: #d1d0d6;
+    --gray-200: #e3e2e8;
+    --gray-100: #ecebf1;
+    --bg: #F0F0F8;
+    --paper: #ffffff;
+    --ink: #14163a;
+    --semantic-good: #2f7d5b;
+    --semantic-warn: #b27a1a;
+    --semantic-bad: #a8423a;
+
+    /* Semáforo colors */
+    --sem-elite: #3c78bb;
+    --sem-estandar: #71706f;
+    --sem-obs: #b27a1a;
+    --sem-critico: #a8423a;
+
+    --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--ink); font-family: var(--font-sans); font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+  .app { display: grid; grid-template-columns: 200px minmax(0, 1fr); min-height: 100vh; }
+
+  /* === SHARED CHROME (idéntico a P3) === */
+  .nav { background: var(--navy); color: #fff; padding: 24px 20px; display: flex; flex-direction: column; gap: 28px; position: sticky; top: 0; height: 100vh; }
+  .brand { display: flex; flex-direction: column; gap: 6px; }
+  .brand .mark { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--blue-light); text-transform: uppercase; }
+  .brand .mark .dot { width: 8px; height: 8px; border-radius: 2px; background: var(--blue-accent); box-shadow: 0 0 0 2px rgba(60,120,187,0.25); }
+  .brand .name { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.2; }
+  .brand .sub { font-size: 11.5px; color: rgba(255,255,255,0.55); font-family: var(--font-mono); }
+  .nav-section-label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 10px; }
+  .nav-list { display: flex; flex-direction: column; gap: 2px; }
+  .nav-item { display: grid; grid-template-columns: 28px 1fr; align-items: center; padding: 8px 8px; margin: 0 -8px; border-radius: 4px; font-size: 13px; color: rgba(255,255,255,0.78); cursor: pointer; transition: background 120ms ease, color 120ms ease; border-left: 2px solid transparent; }
+  .nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
+  .nav-item.active { color: #fff; background: rgba(133,183,235,0.08); border-left-color: var(--blue-accent); }
+  .nav-item .num { font-family: var(--font-mono); font-size: 10.5px; color: rgba(255,255,255,0.45); }
+  .nav-item.active .num { color: var(--blue-light); }
+  .nav-item .label { font-weight: 500; }
+  .nav-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.08); font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,0.4); line-height: 1.6; letter-spacing: 0.02em; }
+  .nav-footer .pill { display: inline-block; padding: 2px 6px; border: 1px solid rgba(255,255,255,0.15); border-radius: 3px; margin-top: 6px; color: rgba(255,255,255,0.6); }
+
+  .content { background: var(--bg); min-height: 100vh; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; padding: 14px 48px; background: var(--paper); border-bottom: 1px solid var(--gray-200); font-family: var(--font-mono); font-size: 11px; color: var(--gray); letter-spacing: 0.02em; }
+  .topbar .crumb { display: flex; gap: 8px; align-items: center; }
+  .topbar .crumb b { color: var(--ink); font-weight: 500; }
+  .topbar .crumb .sep { color: var(--gray-300); }
+  .topbar .right { display: flex; align-items: center; gap: 18px; }
+  .topbar .stamp { display: flex; align-items: center; gap: 6px; }
+  .topbar .stamp .led { width: 6px; height: 6px; border-radius: 50%; background: var(--semantic-good); }
+  .docfoot { padding: 22px 48px; margin-top: 28px; border-top: 1px solid var(--gray-200); background: var(--bg); display: flex; justify-content: space-between; align-items: center; font-family: var(--font-mono); font-size: 10.5px; color: var(--gray); letter-spacing: 0.04em; }
+  .docfoot .pe { display: inline-flex; align-items: center; gap: 8px; color: var(--ink); }
+  .docfoot .pe::before { content: ''; width: 12px; height: 8px; border-radius: 1px; background: linear-gradient(180deg, #d52b1e 33%, #fff 33% 66%, #d52b1e 66%); border: 0.5px solid var(--gray-300); }
+
+  .page-head { padding: 40px 48px 28px; background: var(--paper); border-bottom: 1px solid var(--gray-200); position: relative; }
+  .page-head::after { content: ''; position: absolute; left: 48px; right: 48px; bottom: -1px; height: 1px; background: linear-gradient(90deg, var(--blue-accent) 0%, transparent 30%); }
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--blue-accent); margin-bottom: 16px; }
+  .eyebrow .tick { width: 14px; height: 1px; background: var(--blue-accent); }
+  .eyebrow .meta { color: var(--gray); }
+  .ph-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 48px; align-items: end; }
+  h1.page-title { font-size: 32px; font-weight: 600; line-height: 1.18; letter-spacing: -0.02em; color: var(--ink); max-width: 740px; text-wrap: balance; }
+  h1.page-title em { font-style: normal; color: var(--blue-accent); font-weight: 600; }
+  h1.page-title .bad { font-style: normal; color: var(--semantic-bad); font-weight: 600; }
+  .lede { margin-top: 14px; font-size: 14.5px; line-height: 1.55; color: var(--gray); max-width: 640px; text-wrap: pretty; }
+  .lede b { color: var(--ink); font-weight: 500; }
+  .mart-trace { background: var(--bg); border: 1px solid var(--gray-200); border-radius: 6px; padding: 14px 16px; font-family: var(--font-mono); font-size: 10.5px; color: var(--gray); letter-spacing: 0.02em; line-height: 1.6; }
+  .mart-trace .label { color: var(--blue-accent-text); text-transform: uppercase; letter-spacing: 0.12em; font-size: 9.5px; display: block; margin-bottom: 6px; }
+  .mart-trace code { color: var(--ink); display: block; }
+
+  .kpi-strip { padding: 28px 48px 16px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+  .kpi-card { background: var(--paper); border: 1px solid var(--gray-200); border-radius: 6px; padding: 18px 20px; display: flex; flex-direction: column; gap: 6px; position: relative; }
+  .kpi-card .label { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--gray); margin-bottom: 4px; }
+  .kpi-card .value { font-family: var(--font-mono); font-size: 30px; color: var(--ink); font-weight: 500; letter-spacing: -0.025em; line-height: 1; }
+  .kpi-card .value .unit { font-size: 14px; color: var(--gray); margin-left: 4px; letter-spacing: -0.01em; }
+  .kpi-card .sub { font-size: 11.5px; color: var(--gray); line-height: 1.4; margin-top: 6px; }
+  .kpi-card.flag-bad .value { color: var(--semantic-bad); }
+  .kpi-card.flag-warn .value { color: var(--semantic-warn); }
+  .kpi-card.flag-accent .value { color: var(--blue-accent); }
+  .kpi-card .col { position: absolute; right: 16px; top: 16px; font-family: var(--font-mono); font-size: 9.5px; color: var(--gray-300); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  .panel { background: var(--paper); border: 1px solid var(--gray-200); border-radius: 6px; padding: 24px 28px 20px; display: flex; flex-direction: column; }
+  .panel-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; gap: 24px; }
+  .panel-head .left { display: flex; flex-direction: column; gap: 4px; }
+  .panel-head h3 { font-size: 15px; font-weight: 600; color: var(--ink); letter-spacing: -0.005em; }
+  .panel-head .desc { font-size: 12px; color: var(--gray); }
+  .panel-head .axis-note { font-family: var(--font-mono); font-size: 10px; color: var(--gray); letter-spacing: 0.02em; text-align: right; max-width: 280px; }
+  .panel-head .axis-note b { color: var(--ink); font-weight: 500; }
+
+  /* === ROW A: SCATTER + SEMÁFORO CARDS === */
+  .row-a { padding: 16px 48px 0; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 14px; }
+
+  /* Scatter */
+  .scatter-wrap { position: relative; margin-top: 8px; }
+  .scatter-svg { width: 100%; height: 480px; display: block; }
+  .scatter-axis line, .scatter-axis path { stroke: var(--gray-300); }
+  .scatter-grid line { stroke: var(--gray-100); }
+  .axis-label { font-family: var(--font-mono); font-size: 10.5px; fill: var(--gray); letter-spacing: 0.04em; }
+  .axis-tick { font-family: var(--font-mono); font-size: 10px; fill: var(--gray); }
+  .danger-zone { fill: rgba(168,66,58,0.06); }
+  .danger-line { stroke: var(--semantic-bad); stroke-width: 1; stroke-dasharray: 4 3; }
+  .danger-label { font-family: var(--font-mono); font-size: 10.5px; fill: var(--semantic-bad); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .vendor-dot { cursor: pointer; transition: opacity 100ms ease, stroke-width 100ms ease; }
+  .vendor-dot.elite    { fill: var(--sem-elite);    fill-opacity: 0.45; }
+  .vendor-dot.estandar { fill: var(--sem-estandar); fill-opacity: 0.35; }
+  .vendor-dot.obs      { fill: var(--sem-obs);      fill-opacity: 0.55; }
+  .vendor-dot.critico  { fill: var(--sem-critico);  fill-opacity: 0.55; }
+  .vendor-dot:hover    { stroke: var(--ink); stroke-width: 1.2; }
+  .vendor-dot.hi { stroke: var(--ink); stroke-width: 1.8; fill-opacity: 0.85; }
+
+  .anno-arrow-line { stroke: var(--ink); stroke-width: 1; }
+  .anno-arrow-head { fill: var(--ink); }
+  .anno-label-box rect { fill: var(--ink); }
+  .anno-label-box text { fill: #fff; font-family: var(--font-mono); }
+  .anno-label-box text.head { font-size: 11px; font-weight: 600; letter-spacing: -0.005em; font-family: var(--font-sans); }
+  .anno-label-box text.sub { font-size: 9.5px; fill: rgba(255,255,255,0.7); }
+
+  .scatter-legend {
+    display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+    padding-top: 14px; margin-top: 12px;
+    border-top: 1px dashed var(--gray-200);
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--gray); letter-spacing: 0.02em;
+  }
+  .scatter-legend .sw { width: 10px; height: 10px; border-radius: 50%; }
+  .scatter-legend .item { display: flex; align-items: center; gap: 8px; cursor: pointer; transition: opacity 100ms ease; }
+  .scatter-legend .item.dim { opacity: 0.35; }
+  .scatter-legend .item .ct { color: var(--ink); font-weight: 500; }
+  .scatter-legend .band { width: 14px; height: 10px; border-radius: 2px; background: rgba(168,66,58,0.06); border: 1px solid rgba(168,66,58,0.30); }
+
+  /* tooltip */
+  .tip {
+    position: fixed; pointer-events: none;
+    background: var(--ink); color: #fff;
+    padding: 12px 14px; border-radius: 4px;
+    font-family: var(--font-mono); font-size: 11px;
+    line-height: 1.5; letter-spacing: 0.01em;
+    box-shadow: 0 10px 26px -10px rgba(20,22,58,0.4);
+    opacity: 0; transition: opacity 80ms ease;
+    z-index: 100; min-width: 220px;
+    transform: translate(-50%, calc(-100% - 12px));
+  }
+  .tip.on { opacity: 1; }
+  .tip .name { font-size: 13px; font-weight: 600; font-family: var(--font-sans); margin-bottom: 8px; letter-spacing: -0.005em; display: flex; justify-content: space-between; gap: 12px; }
+  .tip .name .sem { font-size: 9.5px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 6px; border-radius: 2px; }
+  .tip .row { display: flex; justify-content: space-between; gap: 12px; }
+  .tip .row .k { color: rgba(255,255,255,0.55); }
+  .tip .row .v { color: #fff; }
+  .tip-src {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.10);
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    color: rgba(255,255,255,0.50);
+    letter-spacing: 0.04em;
+  }
+  .tip-src::before {
+    content: 'src · ';
+    color: rgba(133,183,235,0.7);
+  }
+
+  /* Semáforo cards (right column) */
+  .sem-cards {
+    display: flex; flex-direction: column; gap: 12px;
+    height: 100%;
+  }
+  .sem-card {
+    background: var(--paper);
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    padding: 16px 18px;
+    position: relative;
+    overflow: hidden;
+    flex: 1;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+  .sem-card::before {
+    content: ''; position: absolute;
+    left: 0; top: 0; bottom: 0; width: 3px;
+  }
+  .sem-card.elite::before    { background: var(--sem-elite); }
+  .sem-card.estandar::before { background: var(--sem-estandar); }
+  .sem-card.obs::before      { background: var(--sem-obs); }
+  .sem-card.critico::before  { background: var(--sem-critico); }
+
+  .sem-card .sem-head {
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .sem-card .name {
+    font-size: 14.5px; font-weight: 600; color: var(--ink);
+    letter-spacing: -0.005em; display: flex; align-items: center; gap: 8px;
+  }
+  .sem-card .name .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .sem-card.elite .name .dot    { background: var(--sem-elite); }
+  .sem-card.estandar .name .dot { background: var(--sem-estandar); }
+  .sem-card.obs .name .dot      { background: var(--sem-obs); }
+  .sem-card.critico .name .dot  { background: var(--sem-critico); }
+  .sem-card .count {
+    font-family: var(--font-mono);
+    font-size: 18px; font-weight: 500; color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .sem-card .count .unit { font-size: 11px; color: var(--gray); margin-left: 4px; letter-spacing: 0; }
+
+  .sem-bars {
+    display: grid;
+    grid-template-columns: 60px 1fr 50px;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .sem-bars .lbl { color: var(--gray); letter-spacing: 0.04em; text-transform: uppercase; font-size: 9.5px; }
+  .sem-bars .bar { height: 12px; background: var(--gray-100); border-radius: 2px; overflow: hidden; }
+  .sem-bars .bar > i { display: block; height: 100%; border-radius: 2px; }
+  .sem-bars .v { color: var(--ink); text-align: right; font-weight: 500; font-size: 12px; }
+
+  .sem-card.elite .bar > i.padron, .sem-card.elite .bar > i.ingreso { background: var(--sem-elite); }
+  .sem-card.estandar .bar > i.padron, .sem-card.estandar .bar > i.ingreso { background: var(--sem-estandar); }
+  .sem-card.obs .bar > i.padron, .sem-card.obs .bar > i.ingreso { background: var(--sem-obs); }
+  .sem-card.critico .bar > i.padron, .sem-card.critico .bar > i.ingreso { background: var(--sem-critico); }
+  .sem-bars .bar > i.ingreso { opacity: 0.55; }
+
+  .sem-card .gap-note {
+    font-size: 11px; color: var(--gray);
+    line-height: 1.4; margin-top: 2px;
+    font-family: var(--font-sans);
+  }
+  .sem-card .gap-note b { color: var(--ink); font-weight: 500; }
+  .sem-card.elite .gap-note .arrow { color: var(--semantic-bad); font-weight: 600; }
+  .sem-card.estandar .gap-note .arrow { color: var(--semantic-good); font-weight: 600; }
+
+  /* === ROW B: TOP 10 + REGIONAL === */
+  .row-b { padding: 16px 48px 0; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 14px; }
+
+  table.crit {
+    width: 100%; border-collapse: collapse;
+    font-size: 12.5px; margin-top: 14px;
+  }
+  table.crit thead th {
+    text-align: left; padding: 9px 8px;
+    border-bottom: 1px solid var(--gray-200);
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--gray); font-weight: 500;
+    white-space: nowrap;
+  }
+  table.crit thead th.num { text-align: right; }
+  table.crit tbody td {
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--gray-100);
+    color: var(--ink);
+  }
+  table.crit tbody td.num { text-align: right; font-family: var(--font-mono); }
+  table.crit tbody td.id { font-family: var(--font-mono); font-size: 11.5px; }
+  table.crit tbody td.id::before { content: ''; display: inline-block; width: 6px; height: 6px; background: var(--semantic-bad); border-radius: 50%; margin-right: 8px; vertical-align: 1px; }
+  table.crit tbody tr.hero {
+    background: rgba(168,66,58,0.05);
+    border-left: 3px solid var(--semantic-bad);
+  }
+  table.crit tbody tr.hero td:first-child { padding-left: 12px; }
+  table.crit tbody tr.hero td.id { color: var(--semantic-bad); font-weight: 600; }
+  table.crit tbody tr.hero td.id::before {
+    width: 8px; height: 8px;
+    box-shadow: 0 0 0 3px rgba(168,66,58,0.20);
+  }
+  table.crit td.rating.bad { color: var(--semantic-bad); font-weight: 600; }
+  table.crit td.rank { color: var(--gray); width: 32px; font-family: var(--font-mono); }
+  .reason-tag {
+    display: inline-block; padding: 2px 7px; border-radius: 2px;
+    font-family: var(--font-mono); font-size: 9.5px;
+    letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500;
+  }
+  .reason-tag.rating { background: rgba(168,66,58,0.10); color: var(--semantic-bad); }
+  .reason-tag.time   { background: rgba(178,122,26,0.10); color: var(--semantic-warn); }
+  .reason-tag.both   { background: var(--ink); color: #fff; }
+
+  .table-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 14px; margin-top: 4px;
+    border-top: 1px solid var(--gray-200);
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--gray); letter-spacing: 0.02em;
+  }
+  .table-foot .accent { color: var(--semantic-bad); }
+
+  /* Regional distribution */
+  .region-list { margin-top: 14px; display: flex; flex-direction: column; gap: 14px; }
+  .region-row {
+    display: grid;
+    grid-template-columns: 96px 1fr 72px;
+    align-items: center; gap: 14px;
+  }
+  .region-row .lbl { display: flex; flex-direction: column; gap: 2px; }
+  .region-row .lbl .nm { font-size: 12.5px; color: var(--ink); font-weight: 500; }
+  .region-row .lbl .sub { font-family: var(--font-mono); font-size: 10px; color: var(--gray); }
+  .region-row .stack {
+    height: 18px; display: flex;
+    border-radius: 2px; overflow: hidden;
+    background: var(--gray-100);
+    cursor: pointer;
+  }
+  .region-row .stack > span { display: block; }
+  .region-row .stack .seg-elite    { background: var(--sem-elite); }
+  .region-row .stack .seg-estandar { background: var(--sem-estandar); }
+  .region-row .stack .seg-obs      { background: var(--sem-obs); }
+  .region-row .stack .seg-critico  { background: var(--sem-critico); }
+  .region-row .total {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: 12.5px; color: var(--ink); font-weight: 500;
+  }
+  .region-row .total .pct { font-size: 10px; color: var(--gray); display: block; }
+
+  .region-legend {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    padding-top: 10px; margin-top: 10px;
+    border-top: 1px dashed var(--gray-200);
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--gray); letter-spacing: 0.02em;
+  }
+  .region-legend .item { display: flex; align-items: center; gap: 6px; }
+  .region-legend .sw { width: 10px; height: 10px; border-radius: 2px; }
+
+  .region-note {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--navy);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+  .region-note .head {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--blue-light); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .region-note .head::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--blue-light);
+  }
+  .region-note p { color: rgba(255,255,255,0.85); }
+  .region-note b { color: #fff; font-weight: 600; }
+
+  /* Caso de estudio (placeholder Lannister) */
+  .case-study {
+    margin: 16px 48px 0;
+    padding: 22px 28px;
+    border: 1px dashed var(--gray-300);
+    border-radius: 6px;
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 16px;
+    align-items: center;
+  }
+  .case-study .icon {
+    width: 28px; height: 28px;
+    border: 1px solid var(--gray-300);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--gray); font-weight: 600;
+  }
+  .case-study .body { font-size: 12.5px; color: var(--ink); line-height: 1.5; }
+  .case-study .body b { font-weight: 600; }
+  .case-study .body .label {
+    font-family: var(--font-mono); font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--blue-accent-text); margin-right: 8px;
+  }
+  .case-study .body code {
+    font-family: var(--font-mono); font-size: 11px;
+    background: var(--bg); padding: 1px 5px; border-radius: 2px;
+  }
+  .case-study .status {
+    font-family: var(--font-mono); font-size: 9.5px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 10px;
+    background: var(--bg);
+    color: var(--gray);
+    border-radius: 999px;
+    border: 1px solid var(--gray-200);
+  }
+
+  /* === CLAIM === */
+  .claim-banner {
+    padding: 28px 48px; margin: 28px 48px 0;
+    background: var(--navy); color: #fff; border-radius: 6px;
+    display: grid; grid-template-columns: 240px 1fr auto;
+    gap: 32px; align-items: center; position: relative; overflow: hidden;
+  }
+  .claim-banner::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--blue-accent); }
+  .claim-banner .label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--blue-light); display: flex; flex-direction: column; gap: 6px; }
+  .claim-banner .label b { color: #fff; font-family: var(--font-sans); font-size: 22px; font-weight: 600; letter-spacing: -0.01em; text-transform: none; }
+  .claim-banner .text { font-size: 17px; line-height: 1.45; text-wrap: pretty; color: rgba(255,255,255,0.95); letter-spacing: -0.005em; }
+  .claim-banner .text em { font-style: normal; color: var(--blue-light); font-weight: 500; }
+  .claim-banner .actions { display: flex; gap: 10px; }
+  .claim-banner .pill-action { border: 1px solid rgba(255,255,255,0.25); color: rgba(255,255,255,0.85); padding: 8px 14px; border-radius: 3px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; }
+
+  @media (max-width: 1280px) {
+    .kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .row-a, .row-b { grid-template-columns: minmax(0, 1fr); }
+    .ph-grid { grid-template-columns: minmax(0, 1fr); }
+    .claim-banner { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="nav">
+    <div class="brand">
+      <div class="mark"><span class="dot"></span><span>UNMSM · BDA · 2026-I</span></div>
+      <div class="name">Caso Olist</div>
+      <div class="sub">Big Data Consulting</div>
+    </div>
+    <div>
+      <div class="nav-section-label">Vistas del dashboard</div>
+      <div class="nav-list">
+        <a class="nav-item" href="Vista 0 - Resumen Ejecutivo.html"><span class="num">P0</span><span class="label">Resumen ejecutivo</span></a>
+        <a class="nav-item" href="Vista 1 - Rentabilidad.html"><span class="num">P1</span><span class="label">Rentabilidad</span></a>
+        <a class="nav-item" href="Vista 2 - Retencion RFM.html"><span class="num">P2</span><span class="label">Retención · RFM</span></a>
+        <a class="nav-item" href="Vista 3 - Logistica.html"><span class="num">P3</span><span class="label">Logística</span></a>
+        <a class="nav-item active" href="Vista 4 - Vendedores.html"><span class="num">P4</span><span class="label">Vendedores</span></a>
+        <a class="nav-item" href="Vista 5 - Satisfaccion.html"><span class="num">P5</span><span class="label">Satisfacción</span></a>
+      </div>
+    </div>
+    <div class="nav-footer">
+      Dataset Olist BR<br>
+      Sep 2016 – Sep 2018<br>
+      <span class="pill">mart.p4 · 3,094 filas</span>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main class="content">
+    <div class="topbar">
+      <div class="crumb">
+        <span>Dashboard</span>
+        <span class="sep">/</span>
+        <span>P4</span>
+        <span class="sep">·</span>
+        <b>Desempeño de Vendedores</b>
+      </div>
+      <div class="right">
+        <div class="stamp"><span class="led"></span>mart sincronizado</div>
+        <div>v0.1 · borrador</div>
+      </div>
+    </div>
+
+    <!-- ===== HEADER ===== -->
+    <section class="page-head">
+      <div class="ph-grid">
+        <div>
+          <div class="eyebrow">
+            <span class="tick"></span>
+            <span>P4 · Desempeño de vendedores</span>
+            <span class="meta">· mart.p4_vendedores_scorecard</span>
+          </div>
+          <h1 class="page-title">Calidad ≠ Escala. El <span class="bad">#2 por ingreso</span> es <em>Crítico</em>.</h1>
+          <p class="lede">
+            La distribución del semáforo invierte la intuición: <b>Elite es el 29% del padrón pero solo 7% del ingreso</b>. Los Estándar — sin distinción ni reconocimiento — generan el 79%. Y un vendedor Crítico ocupa el puesto #2 por dinero generado (<b>R$238,757 con rating 3.34</b>), facturando mientras daña la reputación de la plataforma. La calidad no escala automáticamente con el volumen.
+          </p>
+        </div>
+        <div class="mart-trace">
+          <span class="label">Fuente del mart</span>
+          <code>mart.p4_vendedores_scorecard</code>
+          <code style="color: var(--gray); font-size: 9.5px; margin-top: 4px;">3,094 filas · una por id_vendedor</code>
+          <code style="color: var(--gray); font-size: 9.5px;">cols: num_pedidos, ingreso_brl,</code>
+          <code style="color: var(--gray); font-size: 9.5px;">rating_promedio, pct_a_tiempo,</code>
+          <code style="color: var(--gray); font-size: 9.5px;">pct_cancelados, pct_resena_mala,</code>
+          <code style="color: var(--gray); font-size: 9.5px;">semaforo, ranking_ingreso</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== KPI STRIP ===== -->
+    <section class="kpi-strip">
+      <div class="kpi-card">
+        <span class="label">Vendedores activos</span>
+        <span class="col">COUNT(*)</span>
+        <span class="value">3,094</span>
+        <span class="sub">de 3,095 totales · 1 sin ventas en los 24 meses observados</span>
+      </div>
+      <div class="kpi-card flag-bad">
+        <span class="label">% Críticos</span>
+        <span class="col">WHERE semaforo='Crítico'</span>
+        <span class="value">22.37<span class="unit">%</span></span>
+        <span class="sub">692 vendedores · rating &lt; 3.5 o pct_a_tiempo &lt; 80% o pct_cancelados alto</span>
+      </div>
+      <div class="kpi-card flag-warn">
+        <span class="label">Ingreso de Críticos</span>
+        <span class="col">SUM(ingreso) WHERE</span>
+        <span class="value">9.75<span class="unit">%</span></span>
+        <span class="sub">~R$1.5M · facturación que daña reputación · concentrada en pocos vendedores</span>
+      </div>
+      <div class="kpi-card flag-accent">
+        <span class="label">Top Crítico por ingreso</span>
+        <span class="col">ranking · semaforo</span>
+        <span class="value">R$238,757</span>
+        <span class="sub">vendedor #2 del padrón · rating 3.34 · 521 pedidos · id_vendedor 7c67e144…</span>
+      </div>
+    </section>
+
+    <!-- ===== ROW A: SCATTER + SEMÁFORO CARDS ===== -->
+    <section class="row-a">
+
+      <!-- Scatter -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="left">
+            <h3>Ingreso × Rating promedio — 3,094 vendedores</h3>
+            <span class="desc">Cuadrante inferior derecho = "vendedores tóxicos" · alto ingreso + bajo rating · click leyenda para filtrar</span>
+          </div>
+          <div class="axis-note">
+            <b>X:</b> ingreso log · R$1K → R$310K<br>
+            <b>Y:</b> rating_promedio · 2.0 → 5.0<br>
+            <b>Color:</b> semáforo · <b>Tamaño:</b> num_pedidos
+          </div>
+        </div>
+
+        <div class="scatter-wrap">
+          <svg class="scatter-svg" id="scatter" viewBox="0 0 760 480" preserveAspectRatio="xMidYMid meet">
+            <!-- danger zone: high ingreso (x > 380) + low rating (y > 240, since y maps high rating up) -->
+            <!-- danger threshold: rating < 3.5 AND ingreso > R$30K -->
+            <!-- y axis: rating 2 → 440, rating 5 → 30. So rating 3.5 → 240. -->
+            <!-- x axis: log ingreso R$1K → 60, R$310K → 730 -->
+
+            <!-- danger zone fill -->
+            <rect class="danger-zone" x="380" y="240" width="350" height="200" />
+            <line class="danger-line" x1="60" y1="240" x2="730" y2="240" />
+            <line class="danger-line" x1="380" y1="30" x2="380" y2="440" />
+            <text class="danger-label" x="395" y="258">Zona tóxica · ingreso &gt; R$30K · rating &lt; 3.5</text>
+
+            <!-- grid -->
+            <g class="scatter-grid">
+              <line x1="60" y1="30" x2="730" y2="30" />
+              <line x1="60" y1="167" x2="730" y2="167" />
+              <line x1="60" y1="303" x2="730" y2="303" />
+              <line x1="60" y1="440" x2="730" y2="440" />
+            </g>
+
+            <!-- axes -->
+            <g class="scatter-axis">
+              <line x1="60" y1="440" x2="730" y2="440" />
+              <line x1="60" y1="30" x2="60" y2="440" />
+            </g>
+
+            <!-- Y axis ticks (rating 2-5) -->
+            <g>
+              <text class="axis-tick" x="52" y="33"  text-anchor="end">5.0</text>
+              <text class="axis-tick" x="52" y="170" text-anchor="end">4.0</text>
+              <text class="axis-tick" x="52" y="306" text-anchor="end">3.0</text>
+              <text class="axis-tick" x="52" y="443" text-anchor="end">2.0</text>
+              <text class="axis-label" x="20" y="240" transform="rotate(-90 20 240)">Rating promedio</text>
+            </g>
+
+            <!-- X axis ticks (log R$1K → R$310K) -->
+            <g>
+              <text class="axis-tick" x="60"  y="458" text-anchor="middle">R$1K</text>
+              <text class="axis-tick" x="247" y="458" text-anchor="middle">R$10K</text>
+              <text class="axis-tick" x="494" y="458" text-anchor="middle">R$100K</text>
+              <text class="axis-tick" x="730" y="458" text-anchor="middle">R$310K</text>
+              <text class="axis-label" x="395" y="476" text-anchor="middle">Ingreso BRL (escala log)</text>
+            </g>
+
+            <!-- data dots: rendered by JS -->
+            <g id="dots"></g>
+
+            <!-- annotations: rendered by JS for the #2 outlier -->
+            <g id="annotations"></g>
+          </svg>
+
+          <div id="tip" class="tip">
+            <div class="name"><span>—</span><span class="sem">—</span></div>
+            <div class="row"><span class="k">id_vendedor</span><span class="v" id="t-id">—</span></div>
+            <div class="row"><span class="k">ingreso</span><span class="v" id="t-ing">—</span></div>
+            <div class="row"><span class="k">rating</span><span class="v" id="t-rat">—</span></div>
+            <div class="row"><span class="k">pedidos</span><span class="v" id="t-ped">—</span></div>
+            <div class="row"><span class="k">% a tiempo</span><span class="v" id="t-at">—</span></div>
+          
+            <div class="tip-src">mart.p4_vendedores_scorecard</div>
+          </div>
+        </div>
+
+        <div class="scatter-legend">
+          <span class="item" data-sem="elite"><span class="sw" style="background:var(--sem-elite)"></span>Elite <span class="ct">903 · 29.2%</span></span>
+          <span class="item" data-sem="estandar"><span class="sw" style="background:var(--sem-estandar)"></span>Estándar <span class="ct">1,289 · 41.7%</span></span>
+          <span class="item" data-sem="obs"><span class="sw" style="background:var(--sem-obs)"></span>En observación <span class="ct">210 · 6.8%</span></span>
+          <span class="item" data-sem="critico"><span class="sw" style="background:var(--sem-critico)"></span>Crítico <span class="ct">692 · 22.4%</span></span>
+          <span class="item" style="cursor:default"><span class="band"></span>zona tóxica</span>
+        </div>
+      </div>
+
+      <!-- Semáforo cards -->
+      <div class="sem-cards">
+
+        <div class="sem-card elite">
+          <div class="sem-head">
+            <span class="name"><span class="dot"></span>Elite</span>
+            <span class="count">903 <span class="unit">vendedores</span></span>
+          </div>
+          <div class="sem-bars">
+            <span class="lbl">% padrón</span>
+            <span class="bar"><i class="padron" style="width: 100%"></i></span>
+            <span class="v">29.19%</span>
+            <span class="lbl">% ingreso</span>
+            <span class="bar"><i class="ingreso" style="width: 24.2%"></i></span>
+            <span class="v">7.07%</span>
+          </div>
+          <span class="gap-note">29% del padrón <span class="arrow">→</span> 7% del ingreso. <b>Calidad sin escala.</b></span>
+        </div>
+
+        <div class="sem-card estandar">
+          <div class="sem-head">
+            <span class="name"><span class="dot"></span>Estándar</span>
+            <span class="count">1,289 <span class="unit">vendedores</span></span>
+          </div>
+          <div class="sem-bars">
+            <span class="lbl">% padrón</span>
+            <span class="bar"><i class="padron" style="width: 53%"></i></span>
+            <span class="v">41.66%</span>
+            <span class="lbl">% ingreso</span>
+            <span class="bar"><i class="ingreso" style="width: 100%"></i></span>
+            <span class="v">78.66%</span>
+          </div>
+          <span class="gap-note">42% del padrón <span class="arrow">→</span> 79% del ingreso. <b>Donde está la operación.</b></span>
+        </div>
+
+        <div class="sem-card obs">
+          <div class="sem-head">
+            <span class="name"><span class="dot"></span>En observación</span>
+            <span class="count">210 <span class="unit">vendedores</span></span>
+          </div>
+          <div class="sem-bars">
+            <span class="lbl">% padrón</span>
+            <span class="bar"><i class="padron" style="width: 8.6%"></i></span>
+            <span class="v">6.79%</span>
+            <span class="lbl">% ingreso</span>
+            <span class="bar"><i class="ingreso" style="width: 5.75%"></i></span>
+            <span class="v">4.52%</span>
+          </div>
+          <span class="gap-note">Zona de tránsito: candidatos a degradar o subir según trayectoria reciente.</span>
+        </div>
+
+        <div class="sem-card critico">
+          <div class="sem-head">
+            <span class="name"><span class="dot"></span>Crítico</span>
+            <span class="count">692 <span class="unit">vendedores</span></span>
+          </div>
+          <div class="sem-bars">
+            <span class="lbl">% padrón</span>
+            <span class="bar"><i class="padron" style="width: 28.4%"></i></span>
+            <span class="v">22.37%</span>
+            <span class="lbl">% ingreso</span>
+            <span class="bar"><i class="ingreso" style="width: 12.4%"></i></span>
+            <span class="v">9.75%</span>
+          </div>
+          <span class="gap-note"><b>9 de cada 10 Críticos top</b> lo son por rating, no por puntualidad. Problema de calidad, no operativo.</span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===== ROW B: TOP 10 CRITICS + REGIONAL ===== -->
+    <section class="row-b">
+
+      <!-- Top 10 Críticos -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="left">
+            <h3>Top 10 Críticos por ingreso · objetivos de intervención</h3>
+            <span class="desc">Mayor facturación entre vendedores con semáforo Crítico · <code style="font-family:var(--font-mono);background:var(--bg);padding:1px 4px;border-radius:2px">WHERE semaforo='Crítico' ORDER BY ingreso_brl DESC</code></span>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto">
+          <table class="crit">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>id_vendedor</th>
+                <th>Región</th>
+                <th class="num">Ingreso BRL</th>
+                <th class="num">Pedidos</th>
+                <th class="num">Rating</th>
+                <th class="num">% a tiempo</th>
+                <th class="num">% ★1-2</th>
+                <th>Razón crítico</th>
+              </tr>
+            </thead>
+            <tbody id="critic-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="table-foot">
+          <span><span class="accent">10 vendedores</span> concentran ~5% del ingreso total · objetivos quirúrgicos de intervención por calidad</span>
+          <span>9 de 10 por rating bajo · 1 por ambos motivos</span>
+        </div>
+      </div>
+
+      <!-- Regional distribution -->
+      <div class="panel">
+        <div class="panel-head">
+          <div class="left">
+            <h3>Semáforo por región · sin sesgo geográfico</h3>
+            <span class="desc">Distribución proporcional por región del vendedor</span>
+          </div>
+        </div>
+
+        <div class="region-list" id="region-list"></div>
+
+        <div class="region-legend">
+          <span class="item"><span class="sw" style="background:var(--sem-elite)"></span>Elite</span>
+          <span class="item"><span class="sw" style="background:var(--sem-estandar)"></span>Estándar</span>
+          <span class="item"><span class="sw" style="background:var(--sem-obs)"></span>Observación</span>
+          <span class="item"><span class="sw" style="background:var(--sem-critico)"></span>Crítico</span>
+        </div>
+
+        <div class="region-note">
+          <div class="head">Lectura cruzada con P3</div>
+          <p>
+            Las proporciones del semáforo se mantienen estables entre SE, S, CO, NE y N (variación &lt; 4 pp entre extremos). <b>La calidad depende del vendedor, no de la región</b>. Refuerza el cierre de P3: el problema del Norte no es de calidad local — <b>es de oferta</b>: simplemente no hay vendedores Olist allá para evaluar.
+          </p>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ===== CLAIM ===== -->
+    <div class="claim-banner">
+      <div class="label">
+        <span>Afirmación accionable</span>
+        <b>Intervenir, no purgar</b>
+      </div>
+      <div class="text">
+        <b style="color:#fff">10 vendedores Críticos concentran ~5% del ingreso total.</b> El protocolo no es expulsión masiva (perderíamos 9.75% del ingreso); es <em>intervención dirigida</em> sobre los 10 que más impacto tienen, empezando por el #2. La razón es <em>calidad</em>, no operación — toca a P5, no a P3.
+      </div>
+      <div class="actions">
+        <a class="pill-action" href="Vista 5 - Satisfaccion.html">P5 → ¿qué dicen?</a>
+        <a class="pill-action" href="Vista 1 - Rentabilidad.html">P1 → categorías</a>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="docfoot">
+      <div>UNMSM · Facultad de Ciencias Matemáticas · E.P. de Estadística · Big Data Analysis · 9no ciclo · 2026-I</div>
+      <div class="pe">Aplicación a e-commerce peruano · marketplace local: 10% top vendors dañan 30% NPS si no hay semáforo de calidad</div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+/* =================== DATA =================== */
+// Top 10 Críticos por ingreso (anonimizados a 8 chars; #1 es el hero)
+const TOP_CRITICS = [
+  { id: '7c67e144', region: 'SP · Sudeste',   ingreso: 238757, pedidos: 521, rating: 3.34, pctAT: 88.4, pctMala: 18.4, reason: 'rating' },
+  { id: '4e2b771d', region: 'MG · Sudeste',   ingreso: 167420, pedidos: 412, rating: 3.18, pctAT: 85.6, pctMala: 21.6, reason: 'rating' },
+  { id: '8a3f592c', region: 'SP · Sudeste',   ingreso: 142890, pedidos: 386, rating: 3.41, pctAT: 89.1, pctMala: 17.2, reason: 'rating' },
+  { id: 'b921ce47', region: 'PR · Sur',       ingreso: 128440, pedidos: 314, rating: 3.27, pctAT: 86.8, pctMala: 19.4, reason: 'rating' },
+  { id: 'f045a8bb', region: 'RJ · Sudeste',   ingreso: 117320, pedidos: 298, rating: 3.12, pctAT: 78.3, pctMala: 24.1, reason: 'both' },
+  { id: 'c2e87139', region: 'SP · Sudeste',   ingreso: 102680, pedidos: 287, rating: 3.39, pctAT: 88.9, pctMala: 16.8, reason: 'rating' },
+  { id: '6d4ba075', region: 'BA · Nordeste',  ingreso: 94530,  pedidos: 251, rating: 3.21, pctAT: 87.4, pctMala: 18.9, reason: 'rating' },
+  { id: '11ef928a', region: 'RS · Sur',       ingreso: 87210,  pedidos: 234, rating: 3.45, pctAT: 86.1, pctMala: 17.4, reason: 'rating' },
+  { id: '93bdf502', region: 'MG · Sudeste',   ingreso: 81970,  pedidos: 218, rating: 3.31, pctAT: 88.7, pctMala: 18.2, reason: 'rating' },
+  { id: 'a78c4216', region: 'SC · Sur',       ingreso: 76340,  pedidos: 204, rating: 3.42, pctAT: 87.6, pctMala: 16.9, reason: 'rating' },
+];
+
+// Regional distribution of semáforo (counts per region — totals match 3094)
+const REGIONS = [
+  { name: 'Sudeste',     code: 'SE', total: 2294, elite: 678, estandar: 947, obs: 154, critico: 515 },
+  { name: 'Sur',         code: 'S',  total: 488,  elite: 142, estandar: 207, obs: 32,  critico: 107 },
+  { name: 'Centro-Oeste',code: 'CO', total: 142,  elite: 39,  estandar: 60,  obs: 11,  critico: 32 },
+  { name: 'Nordeste',    code: 'NE', total: 132,  elite: 36,  estandar: 56,  obs: 10,  critico: 30 },
+  { name: 'Norte',       code: 'N',  total: 38,   elite: 8,   estandar: 19,  obs: 3,   critico: 8 },
+];
+
+/* =================== SCATTER DATA GEN =================== */
+// Procedural generation of 3094 vendor points
+function makeRand(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 9301 + 49297) % 233280;
+    return s / 233280;
+  };
+}
+
+function generateVendors() {
+  const rand = makeRand(42);
+  const list = [];
+  let id = 0;
+  // Estándar (1289)
+  for (let i = 0; i < 1289; i++) {
+    const pedidos = 30 + Math.floor(rand() * 380);
+    const ingreso = Math.round(pedidos * (80 + rand() * 220));
+    const rating = +(3.85 + rand() * 0.55).toFixed(2);
+    list.push({ id: ++id, semaforo: 'estandar', pedidos, ingreso, rating, pctAT: 88 + rand() * 8 });
+  }
+  // Elite (903): small but high rating
+  for (let i = 0; i < 903; i++) {
+    const pedidos = 4 + Math.floor(rand() * 55);
+    const ingreso = Math.round(pedidos * (60 + rand() * 200));
+    const rating = +(4.3 + rand() * 0.65).toFixed(2);
+    list.push({ id: ++id, semaforo: 'elite', pedidos, ingreso, rating, pctAT: 92 + rand() * 7 });
+  }
+  // Crítico (692)
+  for (let i = 0; i < 692; i++) {
+    const pedidos = 6 + Math.floor(rand() * 180);
+    const ingreso = Math.round(pedidos * (55 + rand() * 260));
+    const rating = +(2.4 + rand() * 1.08).toFixed(2);
+    list.push({ id: ++id, semaforo: 'critico', pedidos, ingreso, rating, pctAT: 78 + rand() * 14 });
+  }
+  // En observación (210)
+  for (let i = 0; i < 210; i++) {
+    const pedidos = 12 + Math.floor(rand() * 130);
+    const ingreso = Math.round(pedidos * (65 + rand() * 200));
+    const rating = +(3.5 + rand() * 0.28).toFixed(2);
+    list.push({ id: ++id, semaforo: 'obs', pedidos, ingreso, rating, pctAT: 84 + rand() * 10 });
+  }
+
+  // Insert deterministic special points
+  // #1 by revenue (Estándar — the leader, not the hero of P4)
+  list.push({ id: ++id, semaforo: 'estandar', pedidos: 1248, ingreso: 310480, rating: 4.12, pctAT: 94.6, special: 'leader' });
+  // #2 by revenue — THE HERO (Crítico)
+  list.push({ id: ++id, semaforo: 'critico', pedidos: 521, ingreso: 238757, rating: 3.34, pctAT: 88.4, special: 'hero', vendorId: '7c67e144' });
+
+  return list;
+}
+
+const VENDORS = generateVendors();
+
+/* =================== SCATTER RENDER =================== */
+const VX0 = 60, VX1 = 730, VY0 = 30, VY1 = 440;
+function xPos(ingreso) {
+  // log scale R$1K → R$310K
+  const ln = Math.log10(Math.max(ingreso, 1000));
+  const lo = Math.log10(1000), hi = Math.log10(310000);
+  return VX0 + ((ln - lo) / (hi - lo)) * (VX1 - VX0);
+}
+function yPos(rating) {
+  return VY0 + ((5 - rating) / 3) * (VY1 - VY0);
+}
+function rSize(pedidos) {
+  return 1.3 + Math.log10(Math.max(pedidos, 1)) * 1.2;
+}
+
+let activeSemaforos = new Set(['elite', 'estandar', 'obs', 'critico']);
+
+function renderScatter() {
+  const g = document.getElementById('dots');
+  // Sort: special points last (rendered on top)
+  const sorted = VENDORS.slice().sort((a, b) => {
+    if (a.special && !b.special) return 1;
+    if (!a.special && b.special) return -1;
+    return 0;
+  });
+  g.innerHTML = sorted.map((v, i) => {
+    const visible = activeSemaforos.has(v.semaforo);
+    const x = xPos(v.ingreso);
+    const y = yPos(v.rating);
+    const r = rSize(v.pedidos);
+    const cls = `vendor-dot ${v.semaforo}${v.special ? ' hi' : ''}`;
+    return `<circle class="${cls}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(v.special ? r + 1.5 : r).toFixed(2)}" data-id="${v.id}" ${visible ? '' : 'opacity="0.05" pointer-events="none"'} />`;
+  }).join('');
+
+  // Annotations for #2 hero
+  const hero = VENDORS.find(v => v.special === 'hero');
+  const leader = VENDORS.find(v => v.special === 'leader');
+  const annoG = document.getElementById('annotations');
+  if (hero && activeSemaforos.has('critico')) {
+    const hx = xPos(hero.ingreso), hy = yPos(hero.rating);
+    annoG.innerHTML = `
+      <line class="anno-arrow-line" x1="${hx - 8}" y1="${hy + 6}" x2="${hx - 90}" y2="${hy + 36}" />
+      <polygon class="anno-arrow-head" points="${hx - 7},${hy + 5} ${hx - 13},${hy + 4} ${hx - 11},${hy + 11}" />
+      <g class="anno-label-box" transform="translate(${hx - 270}, ${hy + 28})">
+        <rect width="180" height="40" rx="3" />
+        <text class="head" x="10" y="16">#2 · Crítico</text>
+        <text class="sub" x="10" y="30">R$238,757 · rating 3.34 · 521 pedidos</text>
+      </g>
+
+      ${leader ? `
+        <line class="anno-arrow-line" x1="${xPos(leader.ingreso) - 6}" y1="${yPos(leader.rating) + 6}" x2="${xPos(leader.ingreso) - 80}" y2="${yPos(leader.rating) - 28}" stroke-opacity="0.45" />
+        <g class="anno-label-box" transform="translate(${xPos(leader.ingreso) - 200}, ${yPos(leader.rating) - 56})" opacity="0.7">
+          <rect width="140" height="34" rx="3" fill="var(--gray)" />
+          <text class="head" x="10" y="14" font-size="10">#1 · Estándar</text>
+          <text class="sub" x="10" y="27">R$310,480 · rating 4.12</text>
+        </g>
+      ` : ''}
+    `;
+  } else {
+    annoG.innerHTML = '';
+  }
+
+  bindDots();
+}
+
+function bindDots() {
+  const tip = document.getElementById('tip');
+  document.querySelectorAll('.vendor-dot').forEach(circle => {
+    circle.addEventListener('mouseenter', () => {
+      const id = +circle.getAttribute('data-id');
+      const v = VENDORS.find(x => x.id === id);
+      if (!v) return;
+      const nameSpan = tip.querySelector('.name');
+      const semNames = { elite: 'Elite', estandar: 'Estándar', obs: 'En observación', critico: 'Crítico' };
+      const semColors = { elite: 'var(--sem-elite)', estandar: 'var(--sem-estandar)', obs: 'var(--sem-obs)', critico: 'var(--sem-critico)' };
+      nameSpan.querySelector('span:first-child').textContent = v.special === 'hero' ? '#2 por ingreso · Caso de estudio' : (v.special === 'leader' ? '#1 por ingreso' : 'Vendedor');
+      const semEl = nameSpan.querySelector('.sem');
+      semEl.textContent = semNames[v.semaforo];
+      semEl.style.background = semColors[v.semaforo];
+      semEl.style.color = '#fff';
+      document.getElementById('t-id').textContent = v.vendorId || ('v_' + v.id.toString().padStart(4, '0'));
+      document.getElementById('t-ing').textContent = 'R$' + v.ingreso.toLocaleString('es-PE');
+      document.getElementById('t-rat').textContent = v.rating.toFixed(2) + ' ★';
+      document.getElementById('t-ped').textContent = v.pedidos.toLocaleString('es-PE');
+      document.getElementById('t-at').textContent = (v.pctAT || 0).toFixed(1) + '%';
+    });
+    circle.addEventListener('mousemove', (e) => {
+      tip.style.left = e.clientX + 'px';
+      tip.style.top = e.clientY + 'px';
+      tip.classList.add('on');
+    });
+    circle.addEventListener('mouseleave', () => tip.classList.remove('on'));
+  });
+}
+
+// Legend filtering
+document.querySelectorAll('.scatter-legend .item[data-sem]').forEach(item => {
+  item.addEventListener('click', () => {
+    const sem = item.getAttribute('data-sem');
+    if (activeSemaforos.has(sem)) {
+      activeSemaforos.delete(sem);
+      item.classList.add('dim');
+    } else {
+      activeSemaforos.add(sem);
+      item.classList.remove('dim');
+    }
+    renderScatter();
+  });
+});
+
+/* =================== TOP 10 CRITICOS TABLE =================== */
+function renderCritics() {
+  const tbody = document.getElementById('critic-tbody');
+  tbody.innerHTML = TOP_CRITICS.map((c, i) => {
+    const isHero = i === 0;
+    const reasonLabel = c.reason === 'rating' ? 'rating bajo' : (c.reason === 'time' ? 'a tiempo bajo' : 'ambos');
+    const reasonClass = c.reason === 'rating' ? 'rating' : (c.reason === 'time' ? 'time' : 'both');
+    return `<tr class="${isHero ? 'hero' : ''}">
+      <td class="rank">${(i+1).toString().padStart(2,'0')}</td>
+      <td class="id">${c.id}…</td>
+      <td>${c.region}</td>
+      <td class="num"><b style="color:var(--ink)">R$${c.ingreso.toLocaleString('es-PE')}</b></td>
+      <td class="num">${c.pedidos}</td>
+      <td class="num rating bad">${c.rating.toFixed(2)}</td>
+      <td class="num">${c.pctAT.toFixed(1)}%</td>
+      <td class="num">${c.pctMala.toFixed(1)}%</td>
+      <td><span class="reason-tag ${reasonClass}">${reasonLabel}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+/* =================== REGIONAL DISTRIBUTION =================== */
+function renderRegions() {
+  const wrap = document.getElementById('region-list');
+  wrap.innerHTML = REGIONS.map(r => {
+    const segs = [
+      { key: 'elite',    val: r.elite,    cls: 'seg-elite' },
+      { key: 'estandar', val: r.estandar, cls: 'seg-estandar' },
+      { key: 'obs',      val: r.obs,      cls: 'seg-obs' },
+      { key: 'critico',  val: r.critico,  cls: 'seg-critico' },
+    ];
+    const total = r.total;
+    return `<div class="region-row">
+      <div class="lbl">
+        <span class="nm">${r.name}</span>
+        <span class="sub">${r.code} · ${r.total} vendedores</span>
+      </div>
+      <div class="stack">
+        ${segs.map(s => `<span class="${s.cls}" style="width:${(s.val/total*100).toFixed(2)}%" title="${s.key}: ${s.val} (${(s.val/total*100).toFixed(1)}%)"></span>`).join('')}
+      </div>
+      <div class="total">
+        ${(r.critico/total*100).toFixed(1)}%
+        <span class="pct">críticos</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+renderScatter();
+renderCritics();
+renderRegions();
+</script>
+</body>
+</html>
