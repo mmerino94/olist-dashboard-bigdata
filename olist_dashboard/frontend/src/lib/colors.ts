@@ -1,43 +1,38 @@
+// Paleta de gráficos alineada a la identidad navy corporativa.
+// Espejo de tailwind.config.js + BRIEF_DISENO_DASHBOARD_OLIST.md.
 export const colors = {
-  primario: "#3C3489",
-  secundario: "#0F6E56",
-  acento: "#BA7517",
-  rojo: "#C53030",
-  amarillo: "#D69E2E",
-  azul: "#3182CE",
-  gris: "#A0AEC0",
+  primario: "#27295a",   // navy
+  secundario: "#304b9a", // navy-medium
+  acento: "#3c78bb",     // blue-accent
+  claro: "#85B7EB",      // blue-light
+  verde: "#2f7d5b",      // good
+  amarillo: "#b27a1a",   // warn
+  rojo: "#a8423a",       // bad
+  gris: "#71706f",
 };
 
 export const segmentColors: Record<string, string> = {
-  VIP: "#3C3489",
-  Frecuentes: "#0F6E56",
-  "En riesgo": "#D69E2E",
-  Dormidos: "#BA7517",
-  Perdidos: "#C53030",
+  VIP: "#27295a",
+  Frecuentes: "#304b9a",
+  "En riesgo": "#b27a1a",
+  Dormidos: "#85B7EB",
+  Perdidos: "#d1d0d6",
 };
 
 export const sellerColors: Record<string, string> = {
-  Elite: "#0F6E56",
-  Estándar: "#3182CE",
-  "En observación": "#D69E2E",
-  Crítico: "#C53030",
+  Elite: "#2f7d5b",
+  Estándar: "#3c78bb",
+  "En observación": "#b27a1a",
+  Crítico: "#a8423a",
 };
 
 export const ratingColors: Record<string, string> = {
-  Buena: "#0F6E56",
-  Regular: "#D69E2E",
-  Mala: "#C53030",
+  Buena: "#2f7d5b",
+  Regular: "#b27a1a",
+  Mala: "#a8423a",
 };
 
 export const palette = [
-  "#3C3489",
-  "#0F6E56",
-  "#BA7517",
-  "#3182CE",
-  "#C53030",
-  "#D69E2E",
-  "#805AD5",
-  "#319795",
-  "#DD6B20",
-  "#2B6CB0",
+  "#27295a", "#304b9a", "#3c78bb", "#85B7EB",
+  "#2f7d5b", "#b27a1a", "#a8423a", "#71706f",
 ];
