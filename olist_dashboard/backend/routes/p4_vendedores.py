@@ -74,3 +74,15 @@ def top_vendedores(f: Filters = Depends(filter_dep), tipo: str = "mejores", n: i
     if tipo == "peores":
         df = df.sort_values("score", ascending=True)
     return df.head(n).to_dict(orient="records")
+
+
+@router.get("/scatter")
+def scatter_vendedores(f: Filters = Depends(filter_dep), min_pedidos: int = 5):
+    """Todos los vendedores (con >= min_pedidos) para el cuadrante de desempeño."""
+    df = _seller_metrics(f)
+    if df.empty:
+        return []
+    df = df[df["pedidos"] >= min_pedidos]
+    cols = ["id_vendedor", "region", "pedidos", "ingreso",
+            "puntualidad", "rating", "clasificacion"]
+    return df[cols].to_dict(orient="records")
