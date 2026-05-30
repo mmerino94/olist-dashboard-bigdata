@@ -33,7 +33,9 @@ export default function Sidebar() {
         {/* imagotipo con su proporción original (1091×208) */}
         <img src="/analytics-logo.png" alt="Analytics" className="w-full h-auto block" />
         <div className="leading-none">
-          <div className="text-[20px] font-semibold tracking-tight">Olist</div>
+          <div className="text-[15px] font-semibold tracking-tight leading-tight">
+            Olist Brazilian E-Commerce
+          </div>
           <div className="text-[10px] tracking-[0.1em] uppercase text-blue-light font-mono mt-1.5">
             Big Data · UNMSM
           </div>
@@ -84,13 +86,7 @@ export default function Sidebar() {
 
       {/* Footer */}
       <div className="px-6 py-4 border-t border-white/10">
-        <div className="text-[10px] uppercase tracking-[0.12em] text-white/40 font-mono">
-          Dataset
-        </div>
-        <div className="text-[12px] text-white/80 mt-0.5">
-          Olist Brazilian E-Commerce
-        </div>
-        <div className="text-[10.5px] text-white/40 font-mono mt-1">
+        <div className="text-[10.5px] text-white/45 font-mono">
           112,554 ítems · 2016–2018
         </div>
       </div>
