@@ -75,9 +75,11 @@ export default function Rentabilidad() {
     if (!rows.length) return null;
     const ingresoTotal = rows.reduce((s, r) => s + r.ingreso_total, 0);
     const catalogo = rows.length;
-    const trampa = rows.filter((r) => r.flete_pct >= 35).length;
+    const trampas = rows.filter((r) => r.flete_pct >= 35);
+    const trampa = trampas.length;
+    const fleteTrampa = trampas.reduce((s, r) => s + (r.flete_total ?? 0), 0);
     const lider = rows.reduce((best, r) => (r.pct_ingreso > best.pct_ingreso ? r : best), rows[0]);
-    return { ingresoTotal, catalogo, trampa, lider };
+    return { ingresoTotal, catalogo, trampa, fleteTrampa, lider };
   }, [rows]);
 
   if (loading) {
@@ -127,11 +129,10 @@ export default function Rentabilidad() {
           hint="Categorías con ventas"
         />
         <KpiCard
-          label="Categorías trampa"
-          value={kpis?.trampa ?? "—"}
-          unit="flete ≥ 35%"
+          label="Flete en categorías trampa"
+          value={kpis ? fmtCurrencyShort(kpis.fleteTrampa) : "—"}
           tone={kpis && kpis.trampa > 0 ? "bad" : "neutral"}
-          hint="Flete alto erosiona margen"
+          hint={kpis ? `${kpis.trampa} categorías (flete ≥ 35%) que erosionan margen` : undefined}
         />
         <KpiCard
           label="Categoría líder"
