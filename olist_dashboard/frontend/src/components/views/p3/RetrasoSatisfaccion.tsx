@@ -81,6 +81,14 @@ export default function RetrasoSatisfaccion({ rows }: Props) {
         data: rows.map((r) => r.pct_malas),
         itemStyle: { color: colors.rojo },
         barMaxWidth: 40,
+        label: {
+          show: true,
+          position: "top",
+          formatter: (p: any) => `${(p.value as number).toFixed(0)}%`,
+          fontSize: 10,
+          fontWeight: 600,
+          color: colors.rojo,
+        },
       },
       {
         name: "Rating promedio",
@@ -92,6 +100,14 @@ export default function RetrasoSatisfaccion({ rows }: Props) {
         symbol: "circle",
         symbolSize: 6,
         smooth: false,
+        label: {
+          show: true,
+          position: "bottom",
+          formatter: (p: any) => (p.value as number).toFixed(2),
+          fontSize: 10,
+          fontWeight: 600,
+          color: colors.acento,
+        },
       },
     ],
   };
@@ -99,9 +115,6 @@ export default function RetrasoSatisfaccion({ rows }: Props) {
   return (
     <div className="bg-paper border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
       <div>
-        <div className="text-[11px] font-mono uppercase tracking-widest text-gray mb-0.5">
-          P3 · LOGÍSTICA
-        </div>
         <div className="font-semibold text-ink text-[15px]">
           Satisfacción vs retraso
         </div>

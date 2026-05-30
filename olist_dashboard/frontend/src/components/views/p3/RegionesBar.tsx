@@ -79,9 +79,6 @@ export default function RegionesBar({ rows }: Props) {
   return (
     <div className="bg-paper border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
       <div>
-        <div className="text-[11px] font-mono uppercase tracking-widest text-gray mb-0.5">
-          P3 · LOGÍSTICA
-        </div>
         <div className="font-semibold text-ink text-[15px]">
           Retraso por región
         </div>
@@ -90,6 +87,12 @@ export default function RegionesBar({ rows }: Props) {
         </div>
       </div>
       <ReactECharts option={option} style={{ height: 300 }} notMerge />
+      <div className="text-[10.5px] text-gray leading-relaxed border-t border-gray-100 pt-2.5">
+        <strong className="text-ink">Retraso</strong> = días entre la entrega real y la
+        fecha estimada prometida al cliente. Positivo = entregó tarde;{" "}
+        <span className="whitespace-nowrap">≤ 0 = puntual</span>.{" "}
+        <strong className="text-ink">Retraso crítico</strong> = más de 7 días tarde.
+      </div>
     </div>
   );
 }
