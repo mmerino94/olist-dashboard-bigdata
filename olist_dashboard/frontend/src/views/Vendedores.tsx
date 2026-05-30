@@ -6,6 +6,14 @@ import type { Column } from "../components/DataTable";
 import ScatterVendedores from "../components/views/p4/ScatterVendedores";
 import SemaforoBar from "../components/views/p4/SemaforoBar";
 import { fmtCurrencyShort, fmtNumber, fmtPct } from "../lib/format";
+import { sellerColors } from "../lib/colors";
+
+const NIVELES: { nombre: string; rango: string }[] = [
+  { nombre: "Elite", rango: "> 88" },
+  { nombre: "Estándar", rango: "75 – 88" },
+  { nombre: "En observación", rango: "60 – 75" },
+  { nombre: "Crítico", rango: "< 60" },
+];
 
 type Semaforo = {
   clasificacion: string;
@@ -199,6 +207,42 @@ export default function Vendedores() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <ScatterVendedores rows={scatterRows} />
         <SemaforoBar rows={semaforoRows} />
+      </div>
+
+      {/* Definición del score y sus categorías */}
+      <div className="bg-paper border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
+        <div>
+          <div className="font-semibold text-ink text-[15px]">
+            Cómo se calcula el score y la clasificación
+          </div>
+          <div className="text-[12px] text-gray mt-1 leading-relaxed">
+            Cada vendedor (con <strong className="text-ink">≥ 5 pedidos</strong>) recibe un{" "}
+            <strong className="text-ink">score de 0 a 100</strong> que pondera cuatro señales:
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2 text-[11.5px]">
+          <span className="px-2.5 py-1 rounded bg-bg text-ink font-mono">puntualidad · 40%</span>
+          <span className="px-2.5 py-1 rounded bg-bg text-ink font-mono">rating · 35%</span>
+          <span className="px-2.5 py-1 rounded bg-bg text-ink font-mono">reseñas no-malas · 15%</span>
+          <span className="px-2.5 py-1 rounded bg-bg text-ink font-mono">bajo retraso · 10%</span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1">
+          {NIVELES.map((n) => (
+            <div
+              key={n.nombre}
+              className="flex items-center gap-2 border border-gray-200 rounded px-3 py-2"
+            >
+              <span
+                className="inline-block w-2.5 h-2.5 rounded-full shrink-0"
+                style={{ backgroundColor: sellerColors[n.nombre] }}
+              />
+              <div className="leading-tight">
+                <div className="text-[12.5px] font-semibold text-ink">{n.nombre}</div>
+                <div className="text-[11px] text-gray font-mono">score {n.rango}</div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Top 10 críticos table */}

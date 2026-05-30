@@ -1,5 +1,5 @@
 import ReactECharts from "echarts-for-react";
-import { colors, sellerColors } from "../../../lib/colors";
+import { colors } from "../../../lib/colors";
 
 type Row = {
   clasificacion: string;
@@ -76,10 +76,8 @@ export default function SemaforoBar({ rows }: Props) {
       {
         name: "% vendedores",
         type: "bar",
-        data: sorted.map((r) => ({
-          value: r.pct_vendedores,
-          itemStyle: { color: sellerColors[r.clasificacion] ?? colors.gris, opacity: 0.5 },
-        })),
+        itemStyle: { color: colors.acento },
+        data: sorted.map((r) => r.pct_vendedores),
         barGap: "10%",
         barMaxWidth: 22,
         label: {
@@ -93,10 +91,8 @@ export default function SemaforoBar({ rows }: Props) {
       {
         name: "% ingreso",
         type: "bar",
-        data: sorted.map((r) => ({
-          value: r.pct_ingreso,
-          itemStyle: { color: sellerColors[r.clasificacion] ?? colors.gris },
-        })),
+        itemStyle: { color: colors.primario },
+        data: sorted.map((r) => r.pct_ingreso),
         barMaxWidth: 22,
         label: {
           show: true,
@@ -116,19 +112,11 @@ export default function SemaforoBar({ rows }: Props) {
           Padrón vs ingreso por nivel
         </div>
         <div className="text-[11px] text-gray mt-0.5">
-          % vendedores (claro) vs % ingreso (sólido) por clasificación semáforo
+          <span style={{ color: colors.acento }}>● % vendedores</span> vs{" "}
+          <span style={{ color: colors.primario }}>● % ingreso</span> por nivel — la brecha revela el desbalance
         </div>
       </div>
       <ReactECharts option={option} style={{ height: 300 }} notMerge />
-      <div className="text-[10.5px] text-gray leading-relaxed border-t border-gray-100 pt-2.5">
-        <strong className="text-ink">Clasificación</strong> según un score 0–100 ={" "}
-        puntualidad (40%) + rating (35%) + reseñas no-malas (15%) + bajo retraso (10%).{" "}
-        <span className="whitespace-nowrap"><strong className="text-ink">Elite</strong> &gt; 88</span> ·{" "}
-        <span className="whitespace-nowrap"><strong className="text-ink">Estándar</strong> 75–88</span> ·{" "}
-        <span className="whitespace-nowrap"><strong className="text-ink">En observación</strong> 60–75</span> ·{" "}
-        <span className="whitespace-nowrap"><strong className="text-ink">Crítico</strong> &lt; 60</span>.{" "}
-        Solo vendedores con ≥ 5 pedidos.
-      </div>
     </div>
   );
 }
