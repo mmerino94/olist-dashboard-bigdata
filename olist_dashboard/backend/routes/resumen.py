@@ -45,6 +45,7 @@ def evolucion_mensual(f: Filters = Depends(filter_dep)):
         LEFT JOIN DIM_PRODUCTO p ON f.id_producto = p.id_producto
         {where}
         GROUP BY t.anio, t.mes
+        HAVING COUNT(DISTINCT f.id_pedido) >= 30
         ORDER BY t.anio, t.mes
     """
     df = query(sql, params)
@@ -74,6 +75,7 @@ def serie_mensual(f: Filters = Depends(filter_dep)):
             GROUP BY t.anio, t.mes, f.id_pedido
         ) q
         GROUP BY anio, mes
+        HAVING COUNT(*) >= 30
     """
     dp = query(sql_ped, params)
     # NPS por mes desde las reseñas (5★ promotores − 1-2★ detractores).

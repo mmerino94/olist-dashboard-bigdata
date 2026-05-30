@@ -86,6 +86,7 @@ def evolucion(f: Filters = Depends(filter_dep)):
         LEFT JOIN DIM_PRODUCTO p ON f.id_producto = p.id_producto
         {where}
         GROUP BY t.anio, t.mes
+        HAVING COUNT(*) >= 30
         ORDER BY t.anio, t.mes
     """
     df = query(sql, params)
