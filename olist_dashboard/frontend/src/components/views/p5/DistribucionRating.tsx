@@ -84,9 +84,6 @@ export default function DistribucionRating({ rows }: Props) {
   return (
     <div className="bg-paper border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
       <div>
-        <div className="text-[11px] font-mono uppercase tracking-widest text-gray mb-0.5">
-          P5 · SATISFACCIÓN
-        </div>
         <div className="font-semibold text-ink text-[15px]">
           Distribución de calificaciones
         </div>
@@ -95,6 +92,12 @@ export default function DistribucionRating({ rows }: Props) {
         </div>
       </div>
       <ReactECharts option={option} style={{ height: 320 }} notMerge />
+      <div className="text-[10.5px] text-gray leading-relaxed border-t border-gray-100 pt-2.5">
+        <span style={{ color: colors.rojo }}>● negativa (1–2)</span> ·{" "}
+        <span style={{ color: colors.gris }}>● neutra (3)</span> ·{" "}
+        <span style={{ color: colors.verde }}>● positiva (4–5)</span>.{" "}
+        <strong className="text-ink">NPS</strong> = % promotores (score 5) − % detractores (score 1–2).
+      </div>
     </div>
   );
 }

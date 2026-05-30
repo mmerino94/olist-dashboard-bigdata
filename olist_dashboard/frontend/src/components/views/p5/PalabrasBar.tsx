@@ -71,9 +71,6 @@ export default function PalabrasBar({ rows }: Props) {
   return (
     <div className="bg-paper border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
       <div>
-        <div className="text-[11px] font-mono uppercase tracking-widest text-gray mb-0.5">
-          P5 · SATISFACCIÓN
-        </div>
         <div className="font-semibold text-ink text-[15px]">
           Palabras más frecuentes en reseñas negativas
         </div>
@@ -82,6 +79,12 @@ export default function PalabrasBar({ rows }: Props) {
         </div>
       </div>
       <ReactECharts option={option} style={{ height: 340 }} notMerge />
+      <div className="text-[10.5px] text-gray leading-relaxed border-t border-gray-100 pt-2.5">
+        Las reseñas de Olist están en <strong className="text-ink">portugués</strong>. Se cuentan
+        palabras de ≥ 4 letras en comentarios con score 1–2, descartando palabras vacías
+        (<span className="italic">de, que, não, produto…</span>). La frecuencia es el número de
+        apariciones de cada término.
+      </div>
     </div>
   );
 }
