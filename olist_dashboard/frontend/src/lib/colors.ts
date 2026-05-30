@@ -12,11 +12,11 @@ export const colors = {
 };
 
 export const segmentColors: Record<string, string> = {
-  VIP: "#27295a",
-  Frecuentes: "#304b9a",
-  "En riesgo": "#b27a1a",
-  Dormidos: "#85B7EB",
-  Perdidos: "#d1d0d6",
+  Leales: "#2f7d5b",        // verde — el ~3% que repite (el oro)
+  Campeones: "#27295a",     // navy — reciente + alto valor
+  Prometedores: "#3c78bb",  // azul — reciente, gasto normal
+  "En riesgo": "#b27a1a",   // ámbar — alto valor que se enfría
+  Dormidos: "#a0a6ad",      // gris — antiguos de bajo valor
 };
 
 export const sellerColors: Record<string, string> = {

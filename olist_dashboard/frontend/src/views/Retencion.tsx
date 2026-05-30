@@ -78,6 +78,11 @@ export default function Retencion() {
     return (recompra.una_compra / recompra.clientes_unicos) * 100;
   }, [recompra]);
 
+  // % de ingreso en manos de one-timers de alto valor (Campeones + En riesgo).
+  const altoValorPct = rows
+    .filter((r) => r.segmento === "Campeones" || r.segmento === "En riesgo")
+    .reduce((a, r) => a + r.pct_ingreso, 0);
+
   const loading = segApi.loading || recompraApi.loading;
   const error = segApi.error || recompraApi.error;
 
@@ -114,7 +119,10 @@ export default function Retencion() {
           <strong className="text-bad">
             {oneTimePct != null ? fmtPct(oneTimePct) : "—"} one-time
           </strong>
-          . Los segmentos VIP y Frecuentes concentran desproporcionadamente el ingreso.
+          . Entre los de una sola compra, los de <strong className="text-ink">alto valor</strong>{" "}
+          (Campeones y En riesgo) concentran{" "}
+          <strong className="text-ink">{fmtPct(altoValorPct, 0)} del ingreso</strong>: ahí está la
+          oportunidad de reactivación.
         </p>
       </div>
 

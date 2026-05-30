@@ -41,14 +41,18 @@ def _customer_rfm(f: Filters) -> pd.DataFrame:
                             5, labels=[1, 2, 3, 4, 5]).astype(int)
     df["rfm"] = df["r_score"] + df["f_score"] + df["m_score"]
 
+    # Segmentación adaptada al dataset Olist: ~97% compra una sola vez, así que la
+    # Frecuencia casi no tiene varianza. Separamos primero a los recurrentes reales
+    # (freq>=2) y segmentamos a los one-timers por Recencia × Monto (R y M sí varían).
+    f1 = df["frequency"] == 1
     cond = [
-        (df["r_score"] >= 4) & (df["f_score"] >= 4) & (df["m_score"] >= 4),
-        (df["r_score"] >= 3) & (df["f_score"] >= 3),
-        (df["r_score"] <= 2) & (df["f_score"] >= 3),
-        (df["r_score"] <= 2) & (df["f_score"] <= 2) & (df["m_score"] >= 3),
+        df["frequency"] >= 2,                              # Leales: el ~3% que repite
+        f1 & (df["r_score"] >= 4) & (df["m_score"] >= 4),  # Campeones (1 compra): reciente + alto gasto
+        f1 & (df["r_score"] >= 4) & (df["m_score"] <= 3),  # Prometedores: reciente, gasto normal
+        f1 & (df["r_score"] <= 3) & (df["m_score"] >= 4),  # En riesgo: gastó bien pero se aleja
     ]
-    seg = ["VIP", "Frecuentes", "En riesgo", "Dormidos"]
-    df["segmento"] = np.select(cond, seg, default="Perdidos")
+    seg = ["Leales", "Campeones", "Prometedores", "En riesgo"]
+    df["segmento"] = np.select(cond, seg, default="Dormidos")  # antiguos de bajo valor
     return df
 
 
