@@ -1,5 +1,5 @@
 import KpiRow from "../components/explorador/KpiRow";
-import MatrizRentabilidad from "../components/explorador/charts/MatrizRentabilidad";
+import TrendIngreso from "../components/explorador/charts/TrendIngreso";
 import TreemapRFM from "../components/explorador/charts/TreemapRFM";
 import MapaRegiones from "../components/explorador/charts/MapaRegiones";
 import CuadranteVendedores from "../components/explorador/charts/CuadranteVendedores";
@@ -24,7 +24,9 @@ export default function Explorador() {
         Análisis por problema · clic para profundizar
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <MatrizRentabilidad />
+        <div className="md:col-span-2">
+          <TrendIngreso />
+        </div>
         <TreemapRFM />
         <MapaRegiones />
         <CuadranteVendedores />
