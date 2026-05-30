@@ -4,6 +4,7 @@ import KpiCard from "../components/KpiCard";
 import DataTable from "../components/DataTable";
 import type { Column } from "../components/DataTable";
 import MatrizRFM from "../components/views/p2/MatrizRFM";
+import DefinicionSegmentos from "../components/views/p2/DefinicionSegmentos";
 import SegmentosTreemap from "../components/views/p2/SegmentosTreemap";
 import SegmentosBar from "../components/views/p2/SegmentosBar";
 import { fmtCurrencyShort, fmtNumber, fmtPct } from "../lib/format";
@@ -159,8 +160,13 @@ export default function Retencion() {
         />
       </div>
 
-      {/* Matriz RFM */}
-      <MatrizRFM />
+      {/* Matriz RFM + definición de segmentos */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <MatrizRFM />
+        </div>
+        <DefinicionSegmentos rows={rows} />
+      </div>
 
       {/* Charts grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
