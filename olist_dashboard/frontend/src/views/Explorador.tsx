@@ -1,6 +1,6 @@
 import KpiRow from "../components/explorador/KpiRow";
 import RentabilidadPanel from "../components/explorador/charts/RentabilidadPanel";
-import MatrizRFM from "../components/explorador/charts/MatrizRFM";
+import RetencionPanel from "../components/explorador/charts/RetencionPanel";
 import MapaRegiones from "../components/explorador/charts/MapaRegiones";
 import CuadranteVendedores from "../components/explorador/charts/CuadranteVendedores";
 import BalanceSatisfaccion from "../components/explorador/charts/BalanceSatisfaccion";
@@ -26,7 +26,9 @@ export default function Explorador() {
       <RentabilidadPanel />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <MatrizRFM />
+        <div className="md:col-span-2">
+          <RetencionPanel />
+        </div>
         <MapaRegiones />
         <CuadranteVendedores />
         <BalanceSatisfaccion />
