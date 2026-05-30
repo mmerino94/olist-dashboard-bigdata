@@ -29,18 +29,19 @@ export default function Sidebar() {
   return (
     <aside className="w-[220px] shrink-0 bg-navy text-white flex flex-col sticky top-0 h-screen">
       {/* Branding */}
-      <div className="px-6 py-6 flex flex-col gap-1">
-        <div className="flex items-center gap-2 text-[11px] tracking-[0.08em] uppercase text-blue-light font-mono">
-          <span
-            className="inline-block w-2 h-2 rounded-sm bg-blue-accent"
-            style={{ boxShadow: "0 0 0 2px rgba(60,120,187,0.25)" }}
-          />
-          Big Data · UNMSM
+      <div className="px-5 py-6 flex flex-col gap-2.5">
+        <div className="flex items-center gap-3">
+          <div className="bg-white rounded-lg p-1.5 shrink-0 shadow-sm">
+            <img src="/analytics-logo.png" alt="Analytics" className="h-9 w-auto block" />
+          </div>
+          <div className="leading-none">
+            <div className="text-[20px] font-semibold tracking-tight">Analytics</div>
+            <div className="text-[10px] tracking-[0.1em] uppercase text-blue-light font-mono mt-1">
+              Big Data · UNMSM
+            </div>
+          </div>
         </div>
-        <div className="text-[17px] font-semibold leading-tight tracking-tight mt-1">
-          Olist Consulting
-        </div>
-        <div className="text-[11.5px] text-white/55 font-mono">
+        <div className="text-[11px] text-white/50 font-mono">
           Análisis · Decisión · Impacto
         </div>
       </div>
