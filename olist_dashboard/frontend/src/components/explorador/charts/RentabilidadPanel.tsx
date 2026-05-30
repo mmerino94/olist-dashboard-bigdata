@@ -1,6 +1,7 @@
 import ReactECharts from "echarts-for-react";
 import { Link } from "react-router-dom";
 import { useApi } from "../../../api/client";
+import { useFilters } from "../../../lib/filters";
 import { colors } from "../../../lib/colors";
 import { fmtCurrencyShort } from "../../../lib/format";
 
@@ -28,6 +29,19 @@ export default function RentabilidadPanel() {
 
   const serie = (evo.data ?? []).filter((r) => r.ingreso).slice(-12);
   const top = [...(cat.data ?? [])].sort((a, b) => b.pct_ingreso - a.pct_ingreso).slice(0, 8).reverse();
+
+  // Cross-filtering: clic en una categoría o un mes filtra todo el dashboard.
+  const { filters, setFilters } = useFilters();
+  const onParetoClick = (p: any) => {
+    const c = top[p.dataIndex]?.categoria;
+    if (c) setFilters({ categoria: filters.categoria === c ? null : c });
+  };
+  const onTrendClick = (p: any) => {
+    const per = serie[p.dataIndex]?.periodo;
+    if (!per) return;
+    const activo = filters.meses.length === 1 && filters.meses[0] === per;
+    setFilters({ meses: activo ? [] : [per] });
+  };
 
   const trendOpt = {
     grid: { left: 10, right: 10, top: 26, bottom: 6 },
@@ -129,13 +143,13 @@ export default function RentabilidadPanel() {
         {/* Ingreso mensual */}
         <div className="lg:col-span-2">
           <div className="text-[12px] font-medium text-ink mb-1 border-b border-gray-100 pb-1">
-            Ingreso mensual · últimos 12 meses
+            Ingreso mensual · últimos 12 meses <span className="text-blue-accent font-normal">· clic en un mes para filtrar</span>
           </div>
           {evo.loading || evo.error || serie.length === 0 ? (
             <Estado loading={evo.loading} error={evo.error} empty={serie.length === 0} h={232} />
           ) : (
             <>
-              <ReactECharts option={trendOpt} style={{ height: 200 }} notMerge />
+              <ReactECharts option={trendOpt} style={{ height: 200 }} notMerge onEvents={{ click: onTrendClick }} />
               <div className="grid grid-cols-12 gap-1 mt-1 px-[10px]">
                 {serie.map((r) => (
                   <div key={r.periodo} className="flex flex-col items-center text-center border-t border-gray-100 pt-1.5">
@@ -154,13 +168,13 @@ export default function RentabilidadPanel() {
         {/* Pareto categorías */}
         <div className="lg:col-span-1 flex flex-col">
           <div className="text-[12px] font-medium text-ink mb-1 border-b border-gray-100 pb-1">
-            Pareto de categorías <span className="text-gray font-normal">· línea = % acumulado</span>
+            Pareto de categorías <span className="text-blue-accent font-normal">· clic en una categoría para filtrar</span>
           </div>
           {cat.loading || cat.error || top.length === 0 ? (
             <Estado loading={cat.loading} error={cat.error} empty={top.length === 0} h={240} />
           ) : (
             <div className="flex-1 min-h-[240px]">
-              <ReactECharts option={paretoOpt} style={{ height: "100%" }} notMerge />
+              <ReactECharts option={paretoOpt} style={{ height: "100%" }} notMerge onEvents={{ click: onParetoClick }} />
             </div>
           )}
         </div>

@@ -1,6 +1,7 @@
 import ReactECharts from "echarts-for-react";
 import { Link } from "react-router-dom";
 import { useApi } from "../../../api/client";
+import { useFilters } from "../../../lib/filters";
 import { colors } from "../../../lib/colors";
 import { fmtNumber } from "../../../lib/format";
 
@@ -26,6 +27,15 @@ export default function SatisfaccionPanel() {
   const dist = useApi<P5>("/api/p5/distribucion");
 
   const serie = (evo.data ?? []).filter((r) => r.resenas).slice(-12);
+
+  // Cross-filtering: clic en un mes filtra todo el dashboard.
+  const { filters, setFilters } = useFilters();
+  const onEvoClick = (p: any) => {
+    const per = serie[p.dataIndex]?.periodo;
+    if (!per) return;
+    const activo = filters.meses.length === 1 && filters.meses[0] === per;
+    setFilters({ meses: activo ? [] : [per] });
+  };
 
   const evoOpt = {
     grid: { left: 34, right: 42, top: 26, bottom: 26 },
@@ -112,12 +122,12 @@ export default function SatisfaccionPanel() {
         {/* Evolución mensual del rating */}
         <div className="lg:col-span-2">
           <div className="text-[12px] font-medium text-ink mb-1 border-b border-gray-100 pb-1">
-            Evolución mensual del rating <span className="text-gray font-normal">· línea roja = % reseñas malas</span>
+            Evolución mensual del rating <span className="text-blue-accent font-normal">· clic en un mes para filtrar</span>
           </div>
           {evo.loading || evo.error || serie.length === 0 ? (
             <Estado loading={evo.loading} error={evo.error} empty={serie.length === 0} h={220} />
           ) : (
-            <ReactECharts option={evoOpt} style={{ height: 220 }} notMerge />
+            <ReactECharts option={evoOpt} style={{ height: 220 }} notMerge onEvents={{ click: onEvoClick }} />
           )}
         </div>
 
