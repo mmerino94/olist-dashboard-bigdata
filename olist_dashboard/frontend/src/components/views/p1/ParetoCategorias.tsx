@@ -73,10 +73,15 @@ export default function ParetoCategorias({ rows }: Props) {
         type: "line",
         xAxisIndex: 1,
         data: pctAcumulados,
-        lineStyle: { color: colors.amarillo, width: 2 },
-        itemStyle: { color: colors.amarillo },
+        lineStyle: { color: colors.primario, width: 2.5 },
+        itemStyle: { color: colors.primario },
         symbol: "circle",
-        symbolSize: 5,
+        symbolSize: 6,
+        label: {
+          show: true, position: "top", fontSize: 10, fontWeight: 700, color: colors.primario,
+          backgroundColor: "rgba(255,255,255,0.9)", padding: [1, 3], borderRadius: 3,
+          formatter: (p: any) => `${Math.round(p.value)}%`,
+        },
         markLine: {
           silent: true,
           symbol: "none",
@@ -90,9 +95,6 @@ export default function ParetoCategorias({ rows }: Props) {
   return (
     <div className="bg-paper border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
       <div>
-        <div className="text-[11px] font-mono uppercase tracking-widest text-gray mb-0.5">
-          P1 · RENTABILIDAD
-        </div>
         <div className="font-semibold text-ink text-[15px]">Pareto de categorías</div>
         <div className="text-[11px] text-gray mt-0.5">
           Top 10 por % ingreso · línea: % acumulado

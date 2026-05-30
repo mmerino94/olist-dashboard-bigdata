@@ -66,9 +66,6 @@ export default function ScatterTrampa({ rows }: Props) {
   return (
     <div className="bg-paper border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
       <div>
-        <div className="text-[11px] font-mono uppercase tracking-widest text-gray mb-0.5">
-          P1 · RENTABILIDAD
-        </div>
         <div className="font-semibold text-ink text-[15px]">Matriz estrella / trampa</div>
         <div className="text-[11px] text-gray mt-0.5">
           x: % reseñas malas · y: flete % · tamaño: ingreso ·{" "}
