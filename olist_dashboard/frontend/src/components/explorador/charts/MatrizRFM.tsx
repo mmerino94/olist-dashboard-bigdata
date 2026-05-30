@@ -68,8 +68,11 @@ export default function MatrizRFM() {
         label: {
           show: true,
           fontSize: 8.5,
+          fontWeight: 600,
+          color: "#fff",
+          textBorderColor: "rgba(20,22,40,0.65)",
+          textBorderWidth: 2.5,
           formatter: (p: any) => fmtCurrencyShort(p.data[2]),
-          color: (p: any) => (p.data[2] > maxMonto * 0.45 ? "#fff" : "#1e2230"),
         },
         itemStyle: { borderColor: "#fff", borderWidth: 1.5 },
       },
