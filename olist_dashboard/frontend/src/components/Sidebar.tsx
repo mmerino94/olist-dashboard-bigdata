@@ -33,7 +33,7 @@ export default function Sidebar() {
         {/* imagotipo con su proporción original (1091×208) */}
         <img src="/analytics-logo.png" alt="Analytics" className="w-full h-auto block" />
         <div className="leading-none">
-          <div className="text-[20px] font-semibold tracking-tight">Analytics</div>
+          <div className="text-[20px] font-semibold tracking-tight">Olist</div>
           <div className="text-[10px] tracking-[0.1em] uppercase text-blue-light font-mono mt-1.5">
             Big Data · UNMSM
           </div>
