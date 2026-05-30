@@ -64,14 +64,16 @@ export function useFilters() {
   return ctx;
 }
 
-export function filtersToQuery(f: Filters): string {
+export function filtersToQuery(f: Filters, opts?: { sinPeriodo?: boolean }): string {
   const params = new URLSearchParams();
-  if (f.desde) params.set("desde", f.desde);
-  if (f.hasta) params.set("hasta", f.hasta);
+  if (!opts?.sinPeriodo) {
+    if (f.desde) params.set("desde", f.desde);
+    if (f.hasta) params.set("hasta", f.hasta);
+    if (f.meses.length) params.set("meses", f.meses.join(","));
+  }
   if (f.region) params.set("region", f.region);
   if (f.categoria) params.set("categoria", f.categoria);
   if (f.estado_pedido) params.set("estado_pedido", f.estado_pedido);
-  if (f.meses.length) params.set("meses", f.meses.join(","));
   const s = params.toString();
   return s ? "?" + s : "";
 }

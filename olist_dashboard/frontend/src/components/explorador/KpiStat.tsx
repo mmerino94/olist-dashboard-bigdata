@@ -16,13 +16,14 @@ type Props = {
   label: string;
   value: string;
   delta?: Delta | null;
+  deltaNote?: string;
   context?: string;
   tone?: Tone;
   loading?: boolean;
 };
 
 export default function KpiStat({
-  label, value, delta, context, tone = "neutral", loading,
+  label, value, delta, deltaNote, context, tone = "neutral", loading,
 }: Props) {
   const up = delta ? delta.pct >= 0 : false;
   const good = delta ? (delta.goodWhenUp ?? true) === up : false;
@@ -39,6 +40,7 @@ export default function KpiStat({
         {delta && !loading && (
           <span className={cn("text-[12px] font-semibold tabular-nums", good ? "text-good" : "text-bad")}>
             {up ? "▲" : "▼"} {Math.abs(delta.pct).toFixed(1)}%
+            {deltaNote && <span className="text-gray font-normal"> {deltaNote}</span>}
           </span>
         )}
       </div>

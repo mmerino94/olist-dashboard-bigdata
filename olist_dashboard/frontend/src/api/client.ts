@@ -7,7 +7,11 @@ export type ApiState<T> = {
   error: string | null;
 };
 
-export function useApi<T>(path: string, extra: string = ""): ApiState<T> {
+export function useApi<T>(
+  path: string,
+  extra: string = "",
+  opts?: { sinPeriodo?: boolean }
+): ApiState<T> {
   const { filters } = useFilters();
   const [state, setState] = useState<ApiState<T>>({
     data: null,
@@ -15,7 +19,7 @@ export function useApi<T>(path: string, extra: string = ""): ApiState<T> {
     error: null,
   });
 
-  const qs = filtersToQuery(filters);
+  const qs = filtersToQuery(filters, opts);
   const fullUrl =
     path + qs + (extra ? (qs ? "&" : "?") + extra : "");
 

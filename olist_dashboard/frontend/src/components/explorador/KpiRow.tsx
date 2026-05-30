@@ -2,6 +2,7 @@
 // Cada tarjeta: valor del periodo + comparación (Δ YoY/MoM) + contexto.
 // Datos: todos de endpoints existentes (reactivos a los filtros globales).
 import { useApi } from "../../api/client";
+import { useFilters } from "../../lib/filters";
 import KpiStat from "./KpiStat";
 import { fmtCurrencyShort, fmtNumber, fmtPct } from "../../lib/format";
 
@@ -15,18 +16,28 @@ type Dist = { distribucion: { score: number; pct: number }[]; nps_estimado: numb
 const pctChange = (a: number, b: number) => (b ? ((a - b) / b) * 100 : 0);
 
 export default function KpiRow() {
-  const evo = useApi<Evo[]>("/api/resumen/evolucion");
+  const { filters } = useFilters();
+  // Serie mensual SIN el filtro de período → así el interanual siempre tiene
+  // el mismo mes del año anterior aunque el checklist recorte el periodo.
+  const evo = useApi<Evo[]>("/api/resumen/evolucion", "", { sinPeriodo: true });
   const rec = useApi<Recompra>("/api/p2/recompra");
   const p3 = useApi<P3Kpis>("/api/p3/kpis");
   const reg = useApi<Region[]>("/api/p3/regiones");
   const sem = useApi<Semaforo[]>("/api/p4/semaforo");
   const dist = useApi<Dist>("/api/p5/distribucion");
 
-  // P1 / volumen: último mes y comparaciones desde la serie mensual
+  // P1 / volumen: mes "actual" = último mes seleccionado (o el último con datos).
   const serie = (evo.data ?? []).filter((r) => r.pedidos && r.ingreso);
-  const last = serie[serie.length - 1];
-  const prev = serie[serie.length - 2];
-  const yoy = serie.length > 12 ? serie[serie.length - 13] : undefined;
+  const porPeriodo = new Map(serie.map((r) => [r.periodo, r]));
+  const curPeriodo = filters.meses.length
+    ? [...filters.meses].sort().slice(-1)[0]
+    : serie[serie.length - 1]?.periodo;
+  const curIdx = serie.findIndex((r) => r.periodo === curPeriodo);
+  const last = curIdx >= 0 ? serie[curIdx] : serie[serie.length - 1];
+  const prev = curIdx > 0 ? serie[curIdx - 1] : undefined; // mes anterior (MoM)
+  const yoy = last
+    ? porPeriodo.get(`${Number(last.periodo.slice(0, 4)) - 1}-${last.periodo.slice(5, 7)}`)
+    : undefined; // mismo mes del año anterior (YoY)
 
   // P3: peor región por puntualidad
   const peorReg = (reg.data ?? []).slice().sort((a, b) => a.pct_puntual - b.pct_puntual)[0];
@@ -47,6 +58,7 @@ export default function KpiRow() {
         loading={evo.loading}
         value={fmtCurrencyShort(last?.ingreso)}
         delta={yoy ? { pct: pctChange(last.ingreso, yoy.ingreso), goodWhenUp: true } : null}
+        deltaNote={yoy ? `vs ${yoy.periodo}` : undefined}
         context={last ? `${last.periodo} · proyección anual ${fmtCurrencyShort(last.ingreso * 12)}` : ""}
       />
 
@@ -92,7 +104,8 @@ export default function KpiRow() {
         loading={evo.loading}
         value={fmtNumber(last?.pedidos)}
         delta={prev ? { pct: pctChange(last.pedidos, prev.pedidos), goodWhenUp: true } : null}
-        context={last ? `${last.periodo} vs. mes previo` : ""}
+        deltaNote={prev ? `vs ${prev.periodo}` : undefined}
+        context={last ? last.periodo : ""}
       />
     </div>
   );
