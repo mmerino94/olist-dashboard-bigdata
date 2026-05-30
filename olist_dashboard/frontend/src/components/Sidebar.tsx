@@ -29,12 +29,10 @@ export default function Sidebar() {
   return (
     <aside className="w-[220px] shrink-0 bg-navy text-white flex flex-col sticky top-0 h-screen">
       {/* Branding */}
-      <div className="px-4 py-5 flex flex-col gap-2.5">
-        <div className="bg-white rounded-lg px-3 py-2 shadow-sm">
-          <img src="/analytics-logo.png" alt="Analytics" className="w-full h-auto block" />
-        </div>
-        <div className="px-1">
-          <div className="text-[20px] font-semibold tracking-tight leading-none">Analytics</div>
+      <div className="px-5 py-6 flex items-center gap-3">
+        <img src="/analytics-logo.png" alt="Analytics" className="h-11 w-auto block shrink-0" />
+        <div className="leading-none">
+          <div className="text-[20px] font-semibold tracking-tight">Analytics</div>
           <div className="text-[10px] tracking-[0.1em] uppercase text-blue-light font-mono mt-1.5">
             Big Data · UNMSM
           </div>
