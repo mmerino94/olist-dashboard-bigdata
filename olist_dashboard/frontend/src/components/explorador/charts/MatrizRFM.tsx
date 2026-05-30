@@ -13,16 +13,18 @@ type Celda = {
   monto_avg: number;
 };
 
+const kNum = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}`);
+
 export default function MatrizRFM() {
   const { data, loading, error } = useApi<Celda[]>("/api/p2/matriz");
   const cells = data ?? [];
-  const maxMonto = Math.max(1, ...cells.map((c) => c.monto));
+  const maxCli = Math.max(1, ...cells.map((c) => c.clientes));
   const byXY = new Map(cells.map((c) => [`${c.r_score - 1}_${c.f_bucket - 1}`, c]));
-  // Cada celda elige el color de su etiqueta según qué tan oscuro es su fondo.
+  // Color = nº de clientes únicos. Cada celda elige el color de su etiqueta según su fondo.
   const heat = cells.map((c) => {
-    const oscura = c.monto > maxMonto * 0.5;
+    const oscura = c.clientes > maxCli * 0.5;
     return {
-      value: [c.r_score - 1, c.f_bucket - 1, c.monto],
+      value: [c.r_score - 1, c.f_bucket - 1, c.clientes],
       label: {
         color: oscura ? "#fff" : "#1e2230",
         textBorderColor: oscura ? "rgba(20,22,40,0.6)" : "rgba(255,255,255,0.95)",
@@ -53,7 +55,7 @@ export default function MatrizRFM() {
     },
     visualMap: {
       min: 0,
-      max: maxMonto,
+      max: maxCli,
       show: false, // leyenda renderizada como HTML debajo del gráfico
       inRange: { color: ["#eef2fb", "#9fc2e6", colors.acento, colors.primario] },
     },
@@ -72,7 +74,7 @@ export default function MatrizRFM() {
           show: true,
           fontSize: 8.5,
           fontWeight: 600,
-          formatter: (p: any) => fmtCurrencyShort(p.value[2]),
+          formatter: (p: any) => kNum(p.value[2]),
         },
         itemStyle: { borderColor: "#fff", borderWidth: 1.5 },
       },
@@ -84,7 +86,7 @@ export default function MatrizRFM() {
       badge="P2 · RETENCIÓN"
       accent={colors.secundario}
       titulo="Matriz RFM · Recencia × Frecuencia"
-      meta="color = monto total · la fila F=1 concentra casi todo el dinero"
+      meta="color = nº de clientes únicos · el 97% está en F=1 (compra única)"
       to="/retencion"
       toLabel="Profundizar en Retención"
       loading={loading}
@@ -93,7 +95,7 @@ export default function MatrizRFM() {
     >
       <ReactECharts option={option} style={{ height: 210 }} notMerge />
       <div className="flex items-center justify-center gap-2 mt-1 text-[9px] text-gray font-mono">
-        <span>menos monto</span>
+        <span>menos clientes</span>
         <span
           className="h-2 w-28 rounded"
           style={{ background: "linear-gradient(90deg,#eef2fb,#9fc2e6,#3c78bb,#27295a)" }}
