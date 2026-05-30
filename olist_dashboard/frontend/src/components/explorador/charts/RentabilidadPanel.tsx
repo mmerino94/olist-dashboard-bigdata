@@ -12,7 +12,6 @@ const etiqueta = (ym: string) => `${MES[Number(ym.slice(5, 7))]} ${ym.slice(2, 4
 const kPed = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}`);
 const npsColor = (v: number) => (v >= 45 ? "text-good" : v >= 30 ? "text-warn" : "text-bad");
 const retColor = (v: number) => (v >= 5 ? "text-bad" : v >= 2 ? "text-warn" : "text-gray");
-const corta = (s: string) => (s.length > 16 ? s.slice(0, 15) + "…" : s);
 
 function Estado({ loading, error, empty, h }: { loading: boolean; error: string | null; empty: boolean; h: number }) {
   const txt = loading ? "Cargando…" : error ? `Error: ${error}` : "Sin datos para este filtro";
@@ -71,15 +70,15 @@ export default function RentabilidadPanel() {
   };
 
   const paretoOpt = {
-    grid: { left: 96, right: 38, top: 18, bottom: 22 },
+    grid: { left: 146, right: 38, top: 18, bottom: 22 },
     xAxis: [
       { type: "value", axisLine: { lineStyle: { color: "#d1d0d6" } }, axisLabel: { fontSize: 9, color: "#71706f", formatter: "{value}%" }, splitLine: { lineStyle: { color: "#f2f1f6" } } },
       { type: "value", min: 0, max: 100, show: false },
     ],
     yAxis: {
       type: "category",
-      data: top.map((r) => corta(r.categoria)),
-      axisLabel: { fontSize: 9.5, color: "#54595f" },
+      data: top.map((r) => r.categoria),
+      axisLabel: { fontSize: 9, color: "#54595f" },
       axisLine: { lineStyle: { color: "#d1d0d6" } },
       axisTick: { show: false },
     },
