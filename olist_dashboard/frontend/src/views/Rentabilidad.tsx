@@ -3,6 +3,7 @@ import { useApi } from "../api/client";
 import KpiCard from "../components/KpiCard";
 import DataTable from "../components/DataTable";
 import type { Column } from "../components/DataTable";
+import IngresoMensual from "../components/views/p1/IngresoMensual";
 import ScatterTrampa from "../components/views/p1/ScatterTrampa";
 import ParetoCategorias from "../components/views/p1/ParetoCategorias";
 import { fmtCurrencyShort, fmtPct } from "../lib/format";
@@ -138,6 +139,9 @@ export default function Rentabilidad() {
           size="sm"
         />
       </div>
+
+      {/* Tendencia mensual */}
+      <IngresoMensual />
 
       {/* Charts grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
