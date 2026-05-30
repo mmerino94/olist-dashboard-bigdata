@@ -5,14 +5,21 @@ export default function GlobalFilterBar() {
 
   const regiones = options?.regiones ?? [];
   const categorias = options?.categorias ?? [];
-  const minDate = options?.rango_fechas.desde ?? "";
-  const maxDate = options?.rango_fechas.hasta ?? "";
+  const minMonth = (options?.rango_fechas.desde ?? "").slice(0, 7);
+  const maxMonth = (options?.rango_fechas.hasta ?? "").slice(0, 7);
+
+  // El selector es mes-año (YYYY-MM); el backend espera fecha completa (YYYY-MM-DD).
+  const lastDayOfMonth = (ym: string) => {
+    const [y, m] = ym.split("-").map(Number);
+    const d = new Date(y, m, 0).getDate();
+    return `${ym}-${String(d).padStart(2, "0")}`;
+  };
 
   const activos: { label: string; clear: () => void }[] = [];
   if (filters.desde)
-    activos.push({ label: `Desde: ${filters.desde}`, clear: () => setFilters({ desde: null }) });
+    activos.push({ label: `Desde: ${filters.desde.slice(0, 7)}`, clear: () => setFilters({ desde: null }) });
   if (filters.hasta)
-    activos.push({ label: `Hasta: ${filters.hasta}`, clear: () => setFilters({ hasta: null }) });
+    activos.push({ label: `Hasta: ${filters.hasta.slice(0, 7)}`, clear: () => setFilters({ hasta: null }) });
   if (filters.region)
     activos.push({ label: filters.region, clear: () => setFilters({ region: null }) });
   if (filters.categoria)
@@ -23,28 +30,28 @@ export default function GlobalFilterBar() {
   return (
     <div className="bg-paper border-b border-gray-200 px-6 py-3 sticky top-0 z-10">
       <div className="flex flex-wrap items-end gap-3">
-        {/* Fecha Desde */}
+        {/* Mes desde */}
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-[0.07em] text-gray font-mono">Desde</span>
+          <span className="text-[10px] uppercase tracking-[0.07em] text-gray font-mono">Mes desde</span>
           <input
-            type="date"
-            value={filters.desde ?? ""}
-            min={minDate}
-            max={maxDate}
-            onChange={(e) => setFilters({ desde: e.target.value || null })}
+            type="month"
+            value={filters.desde?.slice(0, 7) ?? ""}
+            min={minMonth}
+            max={maxMonth}
+            onChange={(e) => setFilters({ desde: e.target.value ? `${e.target.value}-01` : null })}
             className="border border-gray-200 rounded px-2 py-1.5 text-[13px] bg-paper text-ink"
           />
         </div>
 
-        {/* Fecha Hasta */}
+        {/* Mes hasta */}
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-[0.07em] text-gray font-mono">Hasta</span>
+          <span className="text-[10px] uppercase tracking-[0.07em] text-gray font-mono">Mes hasta</span>
           <input
-            type="date"
-            value={filters.hasta ?? ""}
-            min={minDate}
-            max={maxDate}
-            onChange={(e) => setFilters({ hasta: e.target.value || null })}
+            type="month"
+            value={filters.hasta?.slice(0, 7) ?? ""}
+            min={minMonth}
+            max={maxMonth}
+            onChange={(e) => setFilters({ hasta: e.target.value ? lastDayOfMonth(e.target.value) : null })}
             className="border border-gray-200 rounded px-2 py-1.5 text-[13px] bg-paper text-ink"
           />
         </div>

@@ -47,7 +47,7 @@ export default function KpiRow() {
         loading={evo.loading}
         value={fmtCurrencyShort(last?.ingreso)}
         delta={yoy ? { pct: pctChange(last.ingreso, yoy.ingreso), goodWhenUp: true } : null}
-        context={last ? `${last.periodo} · run-rate ${fmtCurrencyShort(last.ingreso * 12)}/año` : ""}
+        context={last ? `${last.periodo} · proyección anual ${fmtCurrencyShort(last.ingreso * 12)}` : ""}
       />
 
       {/* P2 — Retención (hallazgo estrella) */}
