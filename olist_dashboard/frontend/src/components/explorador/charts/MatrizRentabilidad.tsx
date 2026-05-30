@@ -27,7 +27,7 @@ export default function MatrizRentabilidad() {
     yAxis: { name: "flete %", axisLine: { lineStyle: { color: "#d1d0d6" } }, splitLine: { lineStyle: { color: "#ecebf1" } } },
     tooltip: {
       formatter: (p: any) =>
-        `<b>${p.data[3]}</b><br/>reseñas malas: ${p.data[0]}%<br/>flete: ${p.data[1]}%<br/>ingreso: R$${(p.data[2] / 1000).toFixed(0)}k`,
+        `<b>${p.value[3]}</b><br/>reseñas malas: ${p.value[0]}%<br/>flete: ${p.value[1]}%<br/>ingreso: R$${(p.value[2] / 1000).toFixed(0)}k`,
     },
     series: [{
       type: "scatter",

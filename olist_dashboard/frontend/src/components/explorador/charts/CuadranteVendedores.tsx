@@ -16,7 +16,7 @@ export default function CuadranteVendedores() {
              axisLine: { lineStyle: { color: "#d1d0d6" } }, splitLine: { lineStyle: { color: "#ecebf1" } } },
     yAxis: { name: "rating", min: 0, max: 5,
              axisLine: { lineStyle: { color: "#d1d0d6" } }, splitLine: { lineStyle: { color: "#ecebf1" } } },
-    tooltip: { formatter: (p: any) => `${p.data[3]}<br/>puntualidad: ${p.data[0]}%<br/>rating: ${p.data[1]}` },
+    tooltip: { formatter: (p: any) => `${p.value[3]}<br/>puntualidad: ${p.value[0]}%<br/>rating: ${p.value[1]}` },
     series: [{
       type: "scatter",
       symbolSize: (d: number[]) => 6 + (d[2] / maxIng) * 34,

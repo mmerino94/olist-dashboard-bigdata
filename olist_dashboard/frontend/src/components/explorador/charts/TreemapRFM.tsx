@@ -3,7 +3,7 @@ import { useApi } from "../../../api/client";
 import PanelCard from "../PanelCard";
 import { colors, segmentColors } from "../../../lib/colors";
 
-type Seg = { segmento: string; clientes: number; ingreso: number; pct_ingreso: number };
+type Seg = { segmento: string; ingreso: number; pct_ingreso: number };
 
 export default function TreemapRFM() {
   const { data, loading, error } = useApi<Seg[]>("/api/p2/segmentos");

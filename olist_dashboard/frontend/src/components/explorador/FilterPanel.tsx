@@ -72,8 +72,8 @@ export default function FilterPanel() {
       {activos.length > 0 && (
         <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100 flex-wrap">
           <span className="text-[11px] text-gray font-mono">Filtros activos:</span>
-          {activos.map((a) => (
-            <button key={a.label} onClick={a.clear}
+          {activos.map((a, i) => (
+            <button key={i} onClick={a.clear}
               className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-blue-accent bg-blue-accent/10 px-3 py-1 rounded-full">
               {a.label} <span className="opacity-60">✕</span>
             </button>
