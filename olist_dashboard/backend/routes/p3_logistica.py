@@ -86,3 +86,23 @@ def kpis_entrega(f: Filters = Depends(filter_dep)):
         {where}
     """
     return query(sql, params).iloc[0].to_dict()
+
+
+@router.get("/regiones")
+def retraso_por_region(f: Filters = Depends(filter_dep)):
+    """Retraso y puntualidad agregados por región de destino (cliente)."""
+    where, params = where_clause(f)
+    sql = f"""
+        SELECT
+            geoc.region AS region,
+            COUNT(DISTINCT f.id_pedido) AS pedidos,
+            ROUND(AVG(CAST(f.dias_retraso AS DECIMAL(8,2))), 1) AS retraso_avg,
+            ROUND(AVG(CAST(f.entrego_a_tiempo AS DECIMAL(5,2))) * 100, 1) AS pct_puntual
+        FROM FACT_VENTAS f
+        JOIN DIM_GEOGRAFIA geoc ON f.id_geografia_cli = geoc.id_geografia
+        LEFT JOIN DIM_PRODUCTO p ON f.id_producto = p.id_producto
+        {where}
+        GROUP BY geoc.region
+        ORDER BY retraso_avg DESC
+    """
+    return query(sql, params).to_dict(orient="records")

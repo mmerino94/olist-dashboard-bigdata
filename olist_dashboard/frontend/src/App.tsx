@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
+import Explorador from "./views/Explorador";
 import Resumen from "./views/Resumen";
 import Rentabilidad from "./views/Rentabilidad";
 import Retencion from "./views/Retencion";
@@ -11,7 +12,8 @@ export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Resumen />} />
+        <Route path="/" element={<Explorador />} />
+        <Route path="/resumen" element={<Resumen />} />
         <Route path="/rentabilidad" element={<Rentabilidad />} />
         <Route path="/retencion" element={<Retencion />} />
         <Route path="/logistica" element={<Logistica />} />

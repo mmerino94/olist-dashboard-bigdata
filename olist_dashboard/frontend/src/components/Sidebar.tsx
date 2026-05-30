@@ -7,8 +7,11 @@ type NavItem = { to: string; num: string; label: string; end?: boolean };
 
 const navSections: { label: string; items: NavItem[] }[] = [
   {
-    label: "Resumen",
-    items: [{ to: "/", num: "0", label: "Resumen ejecutivo", end: true }],
+    label: "Tablero",
+    items: [
+      { to: "/", num: "▦", label: "Explorador", end: true },
+      { to: "/resumen", num: "0", label: "Resumen ejecutivo" },
+    ],
   },
   {
     label: "Análisis por problema",
@@ -72,7 +75,7 @@ export default function Sidebar() {
                           isActive ? "text-blue-light" : "text-white/40"
                         )}
                       >
-                        P{it.num}
+                        {/^\d+$/.test(it.num) ? `P${it.num}` : it.num}
                       </span>
                       <span className="font-medium">{it.label}</span>
                     </>
