@@ -6,6 +6,7 @@ export type Filters = {
   region: string | null;
   categoria: string | null;
   estado_pedido: string;
+  meses: string[]; // lista de meses YYYY-MM seleccionados (checklist)
 };
 
 export type FilterOptions = {
@@ -13,6 +14,7 @@ export type FilterOptions = {
   regiones: string[];
   categorias: string[];
   estados_pedido: string[];
+  meses_disponibles: string[];
 };
 
 type Ctx = {
@@ -28,6 +30,7 @@ const DEFAULTS: Filters = {
   region: null,
   categoria: null,
   estado_pedido: "delivered",
+  meses: [],
 };
 
 const FiltersCtx = createContext<Ctx | null>(null);
@@ -68,6 +71,7 @@ export function filtersToQuery(f: Filters): string {
   if (f.region) params.set("region", f.region);
   if (f.categoria) params.set("categoria", f.categoria);
   if (f.estado_pedido) params.set("estado_pedido", f.estado_pedido);
+  if (f.meses.length) params.set("meses", f.meses.join(","));
   const s = params.toString();
   return s ? "?" + s : "";
 }

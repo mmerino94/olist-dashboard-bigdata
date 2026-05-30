@@ -14,6 +14,7 @@ class Filters:
     region: str | None = None
     categoria: str | None = None
     estado_pedido: str = "delivered"  # default: solo pedidos entregados
+    meses: list[str] | None = None    # lista de meses YYYY-MM a incluir (checklist)
 
 
 def filter_dep(
@@ -22,9 +23,11 @@ def filter_dep(
     region: str | None = Query(None, description="Norte/Nordeste/Sudeste/Sur/Centro-Oeste"),
     categoria: str | None = Query(None),
     estado_pedido: str = Query("delivered", description="delivered (default) o 'all'"),
+    meses: str | None = Query(None, description="lista de meses YYYY-MM separados por coma"),
 ) -> Filters:
+    meses_list = [m.strip() for m in meses.split(",") if m.strip()] if meses else None
     return Filters(desde=desde, hasta=hasta, region=region,
-                   categoria=categoria, estado_pedido=estado_pedido)
+                   categoria=categoria, estado_pedido=estado_pedido, meses=meses_list)
 
 
 def where_clause(f: Filters, alias_fact: str = "f", alias_geo_cli: str = "geoc",
@@ -47,5 +50,14 @@ def where_clause(f: Filters, alias_fact: str = "f", alias_geo_cli: str = "geoc",
     if f.categoria:
         conditions.append(f"{alias_producto}.categoria = :categoria")
         params["categoria"] = f.categoria
+    if f.meses:
+        # YYYY-MM → YYYYMM (id_tiempo/100 da el mes del pedido)
+        placeholders = []
+        for i, ym in enumerate(f.meses):
+            y, mo = ym.split("-")
+            key = f"mes_{i}"
+            placeholders.append(f":{key}")
+            params[key] = int(y) * 100 + int(mo)
+        conditions.append(f"({alias_fact}.id_tiempo / 100) IN ({', '.join(placeholders)})")
     where = (" WHERE " + " AND ".join(conditions)) if conditions else ""
     return where, params

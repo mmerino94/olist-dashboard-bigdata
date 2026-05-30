@@ -1,49 +1,40 @@
 import { useFilters } from "../lib/filters";
 
+const MES = ["", "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+const mesCorto = (ym: string) => MES[Number(ym.split("-")[1])];
+const mesLargo = (ym: string) => `${mesCorto(ym)} ${ym.split("-")[0]}`;
+
 export default function GlobalFilterBar() {
   const { filters, setFilters, reset, options } = useFilters();
 
   const regiones = options?.regiones ?? [];
   const categorias = options?.categorias ?? [];
-  const minMonth = (options?.rango_fechas.desde ?? "").slice(0, 7);
-  const maxMonth = (options?.rango_fechas.hasta ?? "").slice(0, 7);
+  const disponibles = options?.meses_disponibles ?? [];
+  const sel = filters.meses;
 
-  // El selector es mes-año (YYYY-MM); el backend espera fecha completa (YYYY-MM-DD).
-  const lastDayOfMonth = (ym: string) => {
-    const [y, m] = ym.split("-").map(Number);
-    const d = new Date(y, m, 0).getDate();
-    return `${ym}-${String(d).padStart(2, "0")}`;
+  // Agrupar meses disponibles por año.
+  const anios = Array.from(new Set(disponibles.map((ym) => ym.split("-")[0]))).sort();
+  const mesesDe = (anio: string) => disponibles.filter((ym) => ym.startsWith(anio));
+
+  const toggleMes = (ym: string) =>
+    setFilters({ meses: sel.includes(ym) ? sel.filter((x) => x !== ym) : [...sel, ym].sort() });
+
+  const anioCompleto = (anio: string) => mesesDe(anio).every((ym) => sel.includes(ym));
+  const toggleAnio = (anio: string) => {
+    const ms = mesesDe(anio);
+    setFilters({
+      meses: anioCompleto(anio)
+        ? sel.filter((ym) => !ms.includes(ym))
+        : [...new Set([...sel, ...ms])].sort(),
+    });
   };
-
-  // Lista de meses disponibles entre el rango real de datos.
-  const MES = ["", "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
-  const labelMes = (ym: string) => {
-    const [y, m] = ym.split("-").map(Number);
-    return `${MES[m]} ${y}`;
-  };
-  const meses: string[] = [];
-  if (minMonth && maxMonth) {
-    let [y, m] = minMonth.split("-").map(Number);
-    const [ty, tm] = maxMonth.split("-").map(Number);
-    while (y < ty || (y === ty && m <= tm)) {
-      meses.push(`${y}-${String(m).padStart(2, "0")}`);
-      m++;
-      if (m > 12) { m = 1; y++; }
-    }
-  }
-
-  // Periodo seleccionado = el mes activo (si desde/hasta caen en el mismo mes).
-  const periodoSel =
-    filters.desde && filters.hasta && filters.desde.slice(0, 7) === filters.hasta.slice(0, 7)
-      ? filters.desde.slice(0, 7)
-      : "";
-
-  const setPeriodo = (ym: string) =>
-    ym ? setFilters({ desde: `${ym}-01`, hasta: lastDayOfMonth(ym) }) : setFilters({ desde: null, hasta: null });
 
   const activos: { label: string; clear: () => void }[] = [];
-  if (periodoSel)
-    activos.push({ label: `Periodo: ${labelMes(periodoSel)}`, clear: () => setPeriodo("") });
+  if (sel.length)
+    activos.push({
+      label: sel.length === 1 ? `Periodo: ${mesLargo(sel[0])}` : `Periodo: ${sel.length} meses`,
+      clear: () => setFilters({ meses: [] }),
+    });
   if (filters.region)
     activos.push({ label: filters.region, clear: () => setFilters({ region: null }) });
   if (filters.categoria)
@@ -52,21 +43,55 @@ export default function GlobalFilterBar() {
     activos.push({ label: `Estado: ${filters.estado_pedido}`, clear: () => setFilters({ estado_pedido: "delivered" }) });
 
   return (
-    <div className="bg-paper border-b border-gray-200 px-6 py-3 sticky top-0 z-10">
+    <div className="bg-paper border-b border-gray-200 px-6 py-3 sticky top-0 z-20">
       <div className="flex flex-wrap items-end gap-3">
-        {/* Periodo (mes-año) */}
+        {/* Periodo — checklist de meses */}
         <div className="flex flex-col gap-1">
           <span className="text-[10px] uppercase tracking-[0.07em] text-gray font-mono">Periodo</span>
-          <select
-            value={periodoSel}
-            onChange={(e) => setPeriodo(e.target.value)}
-            className="border border-gray-200 rounded px-2 py-1.5 text-[13px] bg-paper text-ink"
-          >
-            <option value="">Todo el periodo</option>
-            {meses.map((ym) => (
-              <option key={ym} value={ym}>{labelMes(ym)}</option>
-            ))}
-          </select>
+          <details className="relative group">
+            <summary className="list-none cursor-pointer select-none border border-gray-200 rounded px-2 py-1.5 text-[13px] bg-paper text-ink flex items-center gap-2 min-w-[150px] [&::-webkit-details-marker]:hidden">
+              <span className="flex-1">
+                {sel.length === 0 ? "Todo el periodo" : sel.length === 1 ? mesLargo(sel[0]) : `${sel.length} meses`}
+              </span>
+              <span className="text-gray text-[10px]">▾</span>
+            </summary>
+            <div className="absolute left-0 mt-1 z-30 bg-paper border border-gray-200 rounded-lg shadow-lg p-3 w-60 max-h-80 overflow-auto">
+              {anios.map((anio) => (
+                <div key={anio} className="mb-3 last:mb-0">
+                  <label className="flex items-center gap-2 text-[12.5px] font-semibold text-ink cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="accent-navy"
+                      checked={anioCompleto(anio)}
+                      onChange={() => toggleAnio(anio)}
+                    />
+                    Año {anio}
+                  </label>
+                  <div className="pl-5 mt-1 grid grid-cols-2 gap-x-3 gap-y-1">
+                    {mesesDe(anio).map((ym) => (
+                      <label key={ym} className="flex items-center gap-2 text-[12.5px] text-ink/90 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="accent-blue-accent"
+                          checked={sel.includes(ym)}
+                          onChange={() => toggleMes(ym)}
+                        />
+                        {mesCorto(ym)}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {sel.length > 0 && (
+                <button
+                  onClick={() => setFilters({ meses: [] })}
+                  className="mt-1 text-[12px] text-blue-accent font-medium"
+                >
+                  Limpiar selección
+                </button>
+              )}
+            </div>
+          </details>
         </div>
 
         {/* Región */}

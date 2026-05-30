@@ -24,9 +24,19 @@ def opciones():
         SELECT estado_pedido, COUNT(*) AS n
         FROM FACT_VENTAS GROUP BY estado_pedido ORDER BY n DESC
     """)["estado_pedido"].tolist()
+    # Meses con ventas reales (>= 100 pedidos) → descarta meses-ruido del dataset.
+    meses_raw = query("""
+        SELECT (id_tiempo / 100) AS ym
+        FROM FACT_VENTAS
+        GROUP BY (id_tiempo / 100)
+        HAVING COUNT(*) >= 100
+        ORDER BY ym
+    """)["ym"].tolist()
+    meses = [f"{int(m) // 100:04d}-{int(m) % 100:02d}" for m in meses_raw]
     return {
         "rango_fechas": {"desde": str(rango["desde"]), "hasta": str(rango["hasta"])},
         "regiones": regiones,
         "categorias": categorias,
         "estados_pedido": estados,
+        "meses_disponibles": meses,
     }
