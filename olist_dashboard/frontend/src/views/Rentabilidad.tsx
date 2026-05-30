@@ -1,11 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useApi } from "../api/client";
 import KpiCard from "../components/KpiCard";
 import DataTable from "../components/DataTable";
 import type { Column } from "../components/DataTable";
 import IngresoMensual from "../components/views/p1/IngresoMensual";
 import ScatterTrampa from "../components/views/p1/ScatterTrampa";
-import DefinicionCategorias from "../components/views/p1/DefinicionCategorias";
+import DefinicionCategorias, { bandItems } from "../components/views/p1/DefinicionCategorias";
 import ParetoCategorias from "../components/views/p1/ParetoCategorias";
 import { fmtCurrencyShort, fmtPct } from "../lib/format";
 
@@ -70,6 +70,11 @@ const COLUMNS: Column<Cat>[] = [
 export default function Rentabilidad() {
   const { data, loading, error } = useApi<Cat[]>("/api/p1/categorias");
   const rows = data ?? [];
+
+  // Filtro local por banda (estrella/trampa/resto) sobre los gráficos y la tabla.
+  const [banda, setBanda] = useState<string | null>(null);
+  const rowsVista = banda ? rows.filter(bandItems.find((b) => b.key === banda)!.test) : rows;
+  const toggleBanda = (k: string) => setBanda((prev) => (prev === k ? null : k));
 
   const kpis = useMemo(() => {
     if (!rows.length) return null;
@@ -146,13 +151,13 @@ export default function Rentabilidad() {
       {/* Matriz estrella/trampa + definiciones · luego ingreso mensual + Pareto */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
-          <ScatterTrampa rows={rows} />
+          <ScatterTrampa rows={rowsVista} />
         </div>
-        <DefinicionCategorias rows={rows} />
+        <DefinicionCategorias rows={rows} active={banda} onSelect={toggleBanda} />
         <div className="lg:col-span-2">
           <IngresoMensual />
         </div>
-        <ParetoCategorias rows={rows} />
+        <ParetoCategorias rows={rowsVista} />
       </div>
 
       {/* Table */}
@@ -161,7 +166,7 @@ export default function Rentabilidad() {
           Todas las categorías
         </div>
         <DataTable<Cat>
-          rows={rows}
+          rows={rowsVista}
           columns={COLUMNS}
           initialSort="ingreso_total"
         />

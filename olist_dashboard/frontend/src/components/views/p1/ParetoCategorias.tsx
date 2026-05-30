@@ -1,4 +1,5 @@
 import ReactECharts from "echarts-for-react";
+import { useFilters } from "../../../lib/filters";
 import { colors } from "../../../lib/colors";
 
 type Cat = {
@@ -10,6 +11,11 @@ type Cat = {
 type Props = { rows: Cat[] };
 
 export default function ParetoCategorias({ rows }: Props) {
+  const { filters, setFilters } = useFilters();
+  const onClick = (p: any) => {
+    const c = p.name as string;
+    if (c) setFilters({ categoria: filters.categoria === c ? null : c });
+  };
   // Top-10 por % ingreso, de mayor a menor (la categoría más grande arriba).
   const top10 = [...rows]
     .sort((a, b) => b.pct_ingreso - a.pct_ingreso)
@@ -98,10 +104,11 @@ export default function ParetoCategorias({ rows }: Props) {
       <div>
         <div className="font-semibold text-ink text-[15px]">Pareto de categorías</div>
         <div className="text-[11px] text-gray mt-0.5">
-          Top 10 por % ingreso · línea: % acumulado
+          Top 10 por % ingreso · línea: % acumulado ·{" "}
+          <span className="text-blue-accent">clic en una categoría para filtrar</span>
         </div>
       </div>
-      <ReactECharts option={option} style={{ height: 340 }} notMerge />
+      <ReactECharts option={option} style={{ height: 340 }} notMerge onEvents={{ click: onClick }} />
     </div>
   );
 }
