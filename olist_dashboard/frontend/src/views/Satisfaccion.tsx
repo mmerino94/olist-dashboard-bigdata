@@ -1,10 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useApi } from "../api/client";
 import KpiCard from "../components/KpiCard";
 import DistribucionRating from "../components/views/p5/DistribucionRating";
 import EvolucionRating from "../components/views/p5/EvolucionRating";
 import PalabrasBar from "../components/views/p5/PalabrasBar";
 import { fmtNumber, fmtPct } from "../lib/format";
+import { traducir, type Idioma } from "../lib/palabras";
 
 type DistRow = {
   score: number;
@@ -45,6 +46,8 @@ export default function Satisfaccion() {
   const distRows: DistRow[] = distData?.distribucion ?? [];
   const evolucionRows: EvolucionRow[] = evolucionApi.data ?? [];
   const palabrasRows: PalabraRow[] = palabrasApi.data ?? [];
+
+  const [idioma, setIdioma] = useState<Idioma>("pt");
 
   const loading =
     distribucionApi.loading || evolucionApi.loading || palabrasApi.loading;
@@ -101,7 +104,7 @@ export default function Satisfaccion() {
         <p className="text-sm text-gray max-w-2xl leading-relaxed">
           No es "mejorar satisfacción": las quejas se agrupan en causas concretas.{" "}
           <strong className="text-bad">
-            La palabra más frecuente en reseñas negativas es "{topPalabra}"
+            La palabra más frecuente en reseñas negativas es "{traducir(topPalabra, idioma)}"
           </strong>{" "}
           — actuar sobre causas raíz específicas mueve el NPS más que campañas genéricas.
         </p>
@@ -141,7 +144,7 @@ export default function Satisfaccion() {
       </div>
 
       {/* Palabras bar — full width */}
-      <PalabrasBar rows={palabrasRows} />
+      <PalabrasBar rows={palabrasRows} idioma={idioma} setIdioma={setIdioma} />
     </div>
   );
 }

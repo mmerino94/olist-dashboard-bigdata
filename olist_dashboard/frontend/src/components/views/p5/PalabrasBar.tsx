@@ -1,124 +1,19 @@
-import { useState } from "react";
 import ReactECharts from "echarts-for-react";
 import { colors } from "../../../lib/colors";
+import { traducir, type Idioma } from "../../../lib/palabras";
 
 type Row = {
   termino: string;
   frecuencia: number;
 };
 
-type Props = { rows: Row[] };
-
-// Diccionario PT→ES para los términos frecuentes de reseñas Olist.
-// Si un filtro saca una palabra no listada, se muestra el original (fallback).
-const PT_ES: Record<string, string> = {
-  // logística / entrega
-  recebi: "recibí",
-  receber: "recibir",
-  recebido: "recibido",
-  entrega: "entrega",
-  entregue: "entregado",
-  entregaram: "entregaron",
-  entregou: "entregó",
-  chegou: "llegó",
-  chegaram: "llegaron",
-  prazo: "plazo",
-  prazos: "plazos",
-  ainda: "todavía",
-  aguardando: "esperando",
-  aguardo: "espero",
-  agora: "ahora",
-  antes: "antes",
-  dias: "días",
-  data: "fecha",
-  previsto: "previsto",
-  dentro: "dentro",
-  correios: "correos",
-  demorou: "tardó",
-  demora: "demora",
-  atraso: "retraso",
-  atrasado: "retrasado",
-  // pedido / producto
-  pedido: "pedido",
-  pedi: "pedí",
-  produto: "producto",
-  produtos: "productos",
-  unidades: "unidades",
-  faltando: "faltan",
-  falta: "falta",
-  defeito: "defecto",
-  errado: "equivocado",
-  quebrado: "roto",
-  mercadoria: "mercancía",
-  conforme: "conforme",
-  certo: "correcto",
-  certinho: "todo correcto",
-  estado: "estado",
-  nota: "nota (factura)",
-  fiscal: "fiscal",
-  // tienda / atención
-  loja: "tienda",
-  site: "sitio web",
-  contato: "contacto",
-  resposta: "respuesta",
-  retorno: "respuesta",
-  atendimento: "atención",
-  empresa: "empresa",
-  vendedor: "vendedor",
-  problema: "problema",
-  // dinero
-  paguei: "pagué",
-  preço: "precio",
-  dinheiro: "dinero",
-  devolução: "devolución",
-  reembolso: "reembolso",
-  // valoración positiva
-  recomendo: "recomiendo",
-  excelente: "excelente",
-  "ótimo": "excelente",
-  otimo: "excelente",
-  "ótima": "excelente",
-  super: "súper",
-  rápida: "rápida",
-  rápido: "rápido",
-  rapida: "rápida",
-  rapido: "rápido",
-  gostei: "me gustó",
-  parabéns: "felicidades",
-  perfeito: "perfecto",
-  adorei: "me encantó",
-  amei: "me encantó",
-  lindo: "precioso",
-  embalado: "bien embalado",
-  satisfeita: "satisfecha",
-  satisfeito: "satisfecho",
-  obrigado: "gracias",
-  sempre: "siempre",
-  // conectores / varios
-  apenas: "solo",
-  somente: "solamente",
-  "porém": "pero",
-  pois: "pues",
-  outro: "otro",
-  quero: "quiero",
-  nada: "nada",
-  momento: "momento",
-  tive: "tuve",
-  dois: "dos",
-  duas: "dos",
-  "está": "está",
-  "não": "no",
-  veio: "llegó",
-  nunca: "nunca",
-  ruim: "malo",
-  "péssimo": "pésimo",
-  pessima: "pésima",
-  "horrível": "horrible",
+type Props = {
+  rows: Row[];
+  idioma: Idioma;
+  setIdioma: (i: Idioma) => void;
 };
 
-export default function PalabrasBar({ rows }: Props) {
-  const [idioma, setIdioma] = useState<"pt" | "es">("pt");
-
+export default function PalabrasBar({ rows, idioma, setIdioma }: Props) {
   // Sort descending by frequency, take top 12
   const sorted = [...rows]
     .sort((a, b) => b.frecuencia - a.frecuencia)
@@ -126,11 +21,7 @@ export default function PalabrasBar({ rows }: Props) {
 
   // Reverse for horizontal bar (echarts renders bottom-to-top)
   const reversed = [...sorted].reverse();
-
-  const traducir = (t: string) =>
-    idioma === "es" ? PT_ES[t] ?? PT_ES[t.toLowerCase()] ?? t : t;
-
-  const terminos = reversed.map((r) => traducir(r.termino));
+  const terminos = reversed.map((r) => traducir(r.termino, idioma));
 
   const option: any = {
     backgroundColor: "transparent",
@@ -142,11 +33,12 @@ export default function PalabrasBar({ rows }: Props) {
         const p = params[0];
         if (!p) return "";
         const row = reversed[p.dataIndex];
+        const traducido = traducir(row.termino, idioma);
         const original =
-          idioma === "es" && traducir(row.termino) !== row.termino
+          idioma === "es" && traducido !== row.termino
             ? ` <span style="color:${colors.gris};font-size:10px">(pt: ${row.termino})</span>`
             : "";
-        return `<b>${traducir(row.termino)}</b>${original}<br/>Frecuencia: <b>${row.frecuencia.toLocaleString("es-PE")}</b>`;
+        return `<b>${traducido}</b>${original}<br/>Frecuencia: <b>${row.frecuencia.toLocaleString("es-PE")}</b>`;
       },
     },
     xAxis: {
@@ -187,7 +79,7 @@ export default function PalabrasBar({ rows }: Props) {
     ],
   };
 
-  const btn = (val: "pt" | "es", label: string) => (
+  const btn = (val: Idioma, label: string) => (
     <button
       onClick={() => setIdioma(val)}
       className={`px-2.5 py-1 transition-colors ${
