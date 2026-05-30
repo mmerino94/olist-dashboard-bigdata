@@ -109,14 +109,21 @@ export default function SemaforoBar({ rows }: Props) {
     <div className="bg-paper border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
       <div>
         <div className="font-semibold text-ink text-[15px]">
-          Padrón vs ingreso por nivel
+          ¿Cuántos vendedores vs cuánto ingreso aporta cada nivel?
         </div>
         <div className="text-[11px] text-gray mt-0.5">
-          <span style={{ color: colors.acento }}>● % vendedores</span> vs{" "}
-          <span style={{ color: colors.primario }}>● % ingreso</span> por nivel — la brecha revela el desbalance
+          Por nivel: <span style={{ color: colors.acento }}>● % de vendedores</span> que agrupa
+          vs <span style={{ color: colors.primario }}>● % del ingreso</span> que genera
         </div>
       </div>
       <ReactECharts option={option} style={{ height: 300 }} notMerge />
+      <div className="text-[10.5px] text-gray leading-relaxed border-t border-gray-100 pt-2.5">
+        <strong className="text-ink">Cómo leerlo:</strong> compara las dos barras dentro de cada
+        nivel. Si la barra de <span style={{ color: colors.primario }}>ingreso</span> supera a la
+        de <span style={{ color: colors.acento }}>vendedores</span>, ese nivel factura más de lo
+        que pesa en número — y al revés. La brecha en <strong className="text-ink">Crítico</strong>{" "}
+        mide el ingreso en riesgo.
+      </div>
     </div>
   );
 }
