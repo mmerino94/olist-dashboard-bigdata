@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useApi } from "../api/client";
 import KpiCard from "../components/KpiCard";
 import DataTable from "../components/DataTable";
@@ -74,6 +74,7 @@ export default function Retencion() {
 
   const rows = segApi.data ?? [];
   const recompra = recompraApi.data;
+  const [segmentoSel, setSegmentoSel] = useState<string | null>(null);
 
   const oneTimePct = useMemo(() => {
     if (!recompra) return null;
@@ -160,12 +161,16 @@ export default function Retencion() {
         />
       </div>
 
-      {/* Matriz RFM + definición de segmentos */}
+      {/* Matriz RFM + definición de segmentos (interactivo) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
-          <MatrizRFM />
+          <MatrizRFM segmento={segmentoSel} />
         </div>
-        <DefinicionSegmentos rows={rows} />
+        <DefinicionSegmentos
+          rows={rows}
+          active={segmentoSel}
+          onSelect={(s) => setSegmentoSel((prev) => (prev === s ? null : s))}
+        />
       </div>
 
       {/* Charts grid */}

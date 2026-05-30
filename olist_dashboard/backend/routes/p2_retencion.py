@@ -1,7 +1,7 @@
 """P2: Retención y RFM."""
 import numpy as np
 import pandas as pd
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from db import query
 from filters import Filters, filter_dep, where_clause
@@ -74,12 +74,16 @@ def segmentos(f: Filters = Depends(filter_dep)):
 
 
 @router.get("/matriz")
-def matriz_rfm(f: Filters = Depends(filter_dep)):
-    """Grilla RFM: Recencia (r_score 1-5) × Frecuencia (1..5+), color = monto."""
+def matriz_rfm(f: Filters = Depends(filter_dep), segmento: str | None = Query(None)):
+    """Grilla RFM: Recencia (r_score 1-5) × Frecuencia (1..5+). Opcional: un solo segmento."""
     df = _customer_rfm(f)
     if df.empty:
         return []
     df = df.copy()
+    if segmento:
+        df = df[df["segmento"] == segmento]
+        if df.empty:
+            return []
     df["f_bucket"] = df["frequency"].clip(upper=5).astype(int)
     g = df.groupby(["r_score", "f_bucket"]).agg(
         clientes=("customer_unique_id", "count"),

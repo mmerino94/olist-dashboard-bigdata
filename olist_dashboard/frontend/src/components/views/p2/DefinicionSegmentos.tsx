@@ -11,21 +11,43 @@ const defs = [
   { nombre: "Dormidos", regla: "1 compra · no reciente + gasto bajo", desc: "Antiguos de bajo valor, baja prioridad." },
 ];
 
-export default function DefinicionSegmentos({ rows = [] }: { rows?: Seg[] }) {
+export default function DefinicionSegmentos({
+  rows = [],
+  active = null,
+  onSelect,
+}: {
+  rows?: Seg[];
+  active?: string | null;
+  onSelect?: (segmento: string) => void;
+}) {
   const byName = new Map(rows.map((r) => [r.segmento, r]));
 
   return (
     <div className="bg-paper border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
-      <div>
-        <div className="font-semibold text-ink text-[15px]">Cómo se definen los segmentos</div>
-        <div className="text-[11px] text-gray mt-0.5">RFM adaptado: Leales por frecuencia · el resto por Recencia × Monto</div>
+      <div className="flex items-start justify-between">
+        <div>
+          <div className="font-semibold text-ink text-[15px]">Cómo se definen los segmentos</div>
+          <div className="text-[11px] text-gray mt-0.5">Clic en un segmento para verlo en la matriz</div>
+        </div>
+        {active && (
+          <button onClick={() => onSelect?.(active)} className="text-[11px] text-blue-accent font-medium shrink-0">
+            ✕ ver todos
+          </button>
+        )}
       </div>
 
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2">
         {defs.map((d) => {
           const s = byName.get(d.nombre);
+          const sel = active === d.nombre;
           return (
-            <div key={d.nombre} className="flex gap-3">
+            <button
+              key={d.nombre}
+              onClick={() => onSelect?.(d.nombre)}
+              className={`flex gap-3 text-left rounded-md p-2 -m-2 transition-colors ${
+                sel ? "bg-bg ring-1 ring-blue-accent/40" : active ? "opacity-50 hover:opacity-100" : "hover:bg-bg"
+              }`}
+            >
               <span className="mt-1 w-3 h-3 rounded-sm shrink-0" style={{ background: segmentColors[d.nombre] ?? colors.acento }} />
               <div>
                 <div className="text-[13px] font-semibold text-ink">
@@ -39,7 +61,7 @@ export default function DefinicionSegmentos({ rows = [] }: { rows?: Seg[] }) {
                 <div className="text-[11px] font-mono text-gray mt-0.5">{d.regla}</div>
                 <div className="text-[11.5px] text-ink/75 leading-snug mt-0.5">{d.desc}</div>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

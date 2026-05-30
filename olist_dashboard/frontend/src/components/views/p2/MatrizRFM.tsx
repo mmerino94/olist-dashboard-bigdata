@@ -7,8 +7,11 @@ type Celda = { r_score: number; f_bucket: number; f_label: string; clientes: num
 
 const kNum = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1)}k` : `${n}`);
 
-export default function MatrizRFM() {
-  const { data, loading, error } = useApi<Celda[]>("/api/p2/matriz");
+export default function MatrizRFM({ segmento = null }: { segmento?: string | null }) {
+  const { data, loading, error } = useApi<Celda[]>(
+    "/api/p2/matriz",
+    segmento ? `segmento=${encodeURIComponent(segmento)}` : ""
+  );
   const cells = data ?? [];
   const maxCli = Math.max(1, ...cells.map((c) => c.clientes));
   const byXY = new Map(cells.map((c) => [`${c.r_score - 1}_${c.f_bucket - 1}`, c]));
@@ -56,8 +59,14 @@ export default function MatrizRFM() {
 
   return (
     <div className="bg-paper border border-gray-200 rounded-lg p-5">
-      <div className="font-semibold text-ink text-[15px]">Matriz RFM</div>
-      <div className="text-[11px] text-gray mt-0.5">Recencia × Frecuencia · color = clientes únicos</div>
+      <div className="font-semibold text-ink text-[15px]">
+        Matriz RFM
+        {segmento && <span className="text-blue-accent text-[13px] font-normal"> · mostrando: {segmento}</span>}
+      </div>
+      <div className="text-[11px] text-gray mt-0.5">
+        Recencia (→ más reciente) × Frecuencia · color = clientes únicos ·{" "}
+        <span className="text-gray">la fila F=1 es "compra única" (97%)</span>
+      </div>
       {loading || error || cells.length === 0 ? (
         <div className="flex items-center justify-center text-sm font-mono text-gray" style={{ height: 300 }}>
           {loading ? "Cargando…" : error ? `Error: ${error}` : "Sin datos para este filtro"}
