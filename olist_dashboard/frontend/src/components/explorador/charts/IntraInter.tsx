@@ -19,7 +19,7 @@ export default function IntraInter() {
   const inter = rows.find((r) => r.tipo === "Inter-estado");
 
   const option = {
-    grid: { left: 88, right: 50, top: 8, bottom: 6 },
+    grid: { left: 88, right: 82, top: 8, bottom: 6 },
     xAxis: {
       type: "value",
       axisLabel: { formatter: "{value} d", fontSize: 9, color: "#71706f" },
@@ -51,8 +51,16 @@ export default function IntraInter() {
           { value: inter?.dias_entrega_avg ?? 0, itemStyle: { color: colors.amarillo } },
         ],
         label: {
-          show: true, position: "right", fontSize: 11.5, fontWeight: 700, color: "#1e2230",
-          formatter: (p: any) => `${p.value} días`,
+          show: true,
+          position: "right",
+          formatter: (p: any) => {
+            const r = p.dataIndex === 0 ? intra : inter;
+            return `{d|${p.value} días}\n{v|${fmtNumber(r?.pedidos ?? 0)} ventas}`;
+          },
+          rich: {
+            d: { fontSize: 11.5, fontWeight: 700, color: "#1e2230" },
+            v: { fontSize: 9.5, color: "#71706f", padding: [2, 0, 0, 0] },
+          },
         },
       },
     ],
