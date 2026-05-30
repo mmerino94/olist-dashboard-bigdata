@@ -33,7 +33,7 @@ export default function Sidebar() {
         {/* imagotipo con su proporción original (1091×208) */}
         <img src="/analytics-logo.png" alt="Analytics" className="w-full h-auto block" />
         <div className="leading-none">
-          <div className="text-[15px] font-semibold tracking-tight leading-tight">
+          <div className="text-[15px] font-normal tracking-tight leading-tight">
             Olist Brazilian E-Commerce
           </div>
           <div className="text-[10px] tracking-[0.1em] uppercase text-blue-light font-mono mt-1.5">
