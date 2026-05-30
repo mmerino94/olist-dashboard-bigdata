@@ -30,7 +30,9 @@ export default function Explorador() {
           <RetencionPanel />
         </div>
         <IntraInter />
-        <CuadranteVendedores />
+        <div className="md:col-span-2">
+          <CuadranteVendedores />
+        </div>
         <BalanceSatisfaccion />
       </div>
     </div>
