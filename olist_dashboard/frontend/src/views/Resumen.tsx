@@ -99,7 +99,7 @@ export default function Resumen() {
               titulo="El 80/20 es suave, y el flete envenena al top"
               kpi={`${k.num_categorias_trampa}/${k.num_categorias}`}
               kpiLabel={"categorías con flete > 35%\n— categorías trampa"}
-              insight={`Top categoría: ${k.top_categoria} (${k.top_categoria_pct}% del ingreso). 25 de 72 categorías tienen flete sobre precio > 35%: estructuralmente erosionan margen.`}
+              insight={`Top categoría: ${k.top_categoria} (${k.top_categoria_pct}% del ingreso). ${k.num_categorias_trampa} de ${k.num_categorias} categorías tienen flete sobre precio > 35%: estructuralmente erosionan margen.`}
               to="/rentabilidad"
               accent="warn"
             />

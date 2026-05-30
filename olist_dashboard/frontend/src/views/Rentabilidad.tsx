@@ -79,12 +79,14 @@ export default function Rentabilidad() {
   const kpis = useMemo(() => {
     if (!rows.length) return null;
     const ingresoTotal = rows.reduce((s, r) => s + r.ingreso_total, 0);
+    const pedidosTotal = rows.reduce((s, r) => s + r.pedidos, 0);
+    const ticketPromedio = pedidosTotal ? ingresoTotal / pedidosTotal : 0;
     const catalogo = rows.length;
     const trampas = rows.filter((r) => r.flete_pct >= 35);
     const trampa = trampas.length;
     const fleteTrampa = trampas.reduce((s, r) => s + (r.flete_total ?? 0), 0);
     const lider = rows.reduce((best, r) => (r.pct_ingreso > best.pct_ingreso ? r : best), rows[0]);
-    return { ingresoTotal, catalogo, trampa, fleteTrampa, lider };
+    return { ingresoTotal, ticketPromedio, catalogo, trampa, fleteTrampa, lider };
   }, [rows]);
 
   if (loading) {
@@ -121,11 +123,16 @@ export default function Rentabilidad() {
       </div>
 
       {/* KPI grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <KpiCard
           label="Ingreso total"
           value={kpis ? fmtCurrencyShort(kpis.ingresoTotal) : "—"}
           hint="Suma del período filtrado"
+        />
+        <KpiCard
+          label="Ticket promedio"
+          value={kpis ? fmtCurrencyShort(kpis.ticketPromedio) : "—"}
+          hint="Ingreso ÷ pedidos (valor medio por pedido)"
         />
         <KpiCard
           label="Catálogo"
