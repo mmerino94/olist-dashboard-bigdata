@@ -10,17 +10,18 @@ type Cat = {
 type Props = { rows: Cat[] };
 
 export default function ParetoCategorias({ rows }: Props) {
-  // Top-10 by pct_ingreso descending
+  // Top-10 por % ingreso, de mayor a menor (la categoría más grande arriba).
   const top10 = [...rows]
     .sort((a, b) => b.pct_ingreso - a.pct_ingreso)
-    .slice(0, 10);
+    .slice(0, 10)
+    .reverse();
 
   const categorias = top10.map((r) => r.categoria);
   const pctIngresos = top10.map((r) => r.pct_ingreso);
   const pctAcumulados = top10.map((r) => r.pct_acumulado);
 
   const option: any = {
-    grid: { left: 130, right: 56, top: 16, bottom: 32 },
+    grid: { left: 142, right: 44, top: 16, bottom: 32 },
     xAxis: [
       {
         type: "value",
@@ -44,7 +45,7 @@ export default function ParetoCategorias({ rows }: Props) {
     yAxis: {
       type: "category",
       data: categorias,
-      axisLabel: { fontSize: 11 },
+      axisLabel: { fontSize: 10, color: "#54595f" },
       axisLine: { lineStyle: { color: "#d1d0d6" } },
     },
     tooltip: {

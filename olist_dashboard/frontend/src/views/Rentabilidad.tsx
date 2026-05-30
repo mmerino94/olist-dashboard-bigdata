@@ -5,6 +5,7 @@ import DataTable from "../components/DataTable";
 import type { Column } from "../components/DataTable";
 import IngresoMensual from "../components/views/p1/IngresoMensual";
 import ScatterTrampa from "../components/views/p1/ScatterTrampa";
+import DefinicionCategorias from "../components/views/p1/DefinicionCategorias";
 import ParetoCategorias from "../components/views/p1/ParetoCategorias";
 import { fmtCurrencyShort, fmtPct } from "../lib/format";
 
@@ -140,12 +141,15 @@ export default function Rentabilidad() {
         />
       </div>
 
-      {/* Tendencia mensual */}
-      <IngresoMensual />
-
-      {/* Charts grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ScatterTrampa rows={rows} />
+      {/* Matriz estrella/trampa + definiciones · luego ingreso mensual + Pareto */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2">
+          <ScatterTrampa rows={rows} />
+        </div>
+        <DefinicionCategorias rows={rows} />
+        <div className="lg:col-span-2">
+          <IngresoMensual />
+        </div>
         <ParetoCategorias rows={rows} />
       </div>
 

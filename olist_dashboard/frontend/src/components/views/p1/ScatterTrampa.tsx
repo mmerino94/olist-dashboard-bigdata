@@ -68,10 +68,7 @@ export default function ScatterTrampa({ rows }: Props) {
       <div>
         <div className="font-semibold text-ink text-[15px]">Matriz estrella / trampa</div>
         <div className="text-[11px] text-gray mt-0.5">
-          x: % reseñas malas · y: flete % · tamaño: ingreso ·{" "}
-          <span className="text-[#a8423a]">■</span> trampa{" "}
-          <span className="text-[#2f7d5b]">■</span> estrella{" "}
-          <span className="text-[#3c78bb]">■</span> resto
+          x: % reseñas malas · y: flete % · tamaño de burbuja: ingreso
         </div>
       </div>
       <ReactECharts option={option} style={{ height: 360 }} notMerge />
