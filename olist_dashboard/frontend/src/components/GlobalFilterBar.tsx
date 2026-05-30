@@ -15,11 +15,35 @@ export default function GlobalFilterBar() {
     return `${ym}-${String(d).padStart(2, "0")}`;
   };
 
+  // Lista de meses disponibles entre el rango real de datos.
+  const MES = ["", "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+  const labelMes = (ym: string) => {
+    const [y, m] = ym.split("-").map(Number);
+    return `${MES[m]} ${y}`;
+  };
+  const meses: string[] = [];
+  if (minMonth && maxMonth) {
+    let [y, m] = minMonth.split("-").map(Number);
+    const [ty, tm] = maxMonth.split("-").map(Number);
+    while (y < ty || (y === ty && m <= tm)) {
+      meses.push(`${y}-${String(m).padStart(2, "0")}`);
+      m++;
+      if (m > 12) { m = 1; y++; }
+    }
+  }
+
+  // Periodo seleccionado = el mes activo (si desde/hasta caen en el mismo mes).
+  const periodoSel =
+    filters.desde && filters.hasta && filters.desde.slice(0, 7) === filters.hasta.slice(0, 7)
+      ? filters.desde.slice(0, 7)
+      : "";
+
+  const setPeriodo = (ym: string) =>
+    ym ? setFilters({ desde: `${ym}-01`, hasta: lastDayOfMonth(ym) }) : setFilters({ desde: null, hasta: null });
+
   const activos: { label: string; clear: () => void }[] = [];
-  if (filters.desde)
-    activos.push({ label: `Desde: ${filters.desde.slice(0, 7)}`, clear: () => setFilters({ desde: null }) });
-  if (filters.hasta)
-    activos.push({ label: `Hasta: ${filters.hasta.slice(0, 7)}`, clear: () => setFilters({ hasta: null }) });
+  if (periodoSel)
+    activos.push({ label: `Periodo: ${labelMes(periodoSel)}`, clear: () => setPeriodo("") });
   if (filters.region)
     activos.push({ label: filters.region, clear: () => setFilters({ region: null }) });
   if (filters.categoria)
@@ -30,30 +54,19 @@ export default function GlobalFilterBar() {
   return (
     <div className="bg-paper border-b border-gray-200 px-6 py-3 sticky top-0 z-10">
       <div className="flex flex-wrap items-end gap-3">
-        {/* Mes desde */}
+        {/* Periodo (mes-año) */}
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-[0.07em] text-gray font-mono">Mes desde</span>
-          <input
-            type="month"
-            value={filters.desde?.slice(0, 7) ?? ""}
-            min={minMonth}
-            max={maxMonth}
-            onChange={(e) => setFilters({ desde: e.target.value ? `${e.target.value}-01` : null })}
+          <span className="text-[10px] uppercase tracking-[0.07em] text-gray font-mono">Periodo</span>
+          <select
+            value={periodoSel}
+            onChange={(e) => setPeriodo(e.target.value)}
             className="border border-gray-200 rounded px-2 py-1.5 text-[13px] bg-paper text-ink"
-          />
-        </div>
-
-        {/* Mes hasta */}
-        <div className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-[0.07em] text-gray font-mono">Mes hasta</span>
-          <input
-            type="month"
-            value={filters.hasta?.slice(0, 7) ?? ""}
-            min={minMonth}
-            max={maxMonth}
-            onChange={(e) => setFilters({ hasta: e.target.value ? lastDayOfMonth(e.target.value) : null })}
-            className="border border-gray-200 rounded px-2 py-1.5 text-[13px] bg-paper text-ink"
-          />
+          >
+            <option value="">Todo el periodo</option>
+            {meses.map((ym) => (
+              <option key={ym} value={ym}>{labelMes(ym)}</option>
+            ))}
+          </select>
         </div>
 
         {/* Región */}
