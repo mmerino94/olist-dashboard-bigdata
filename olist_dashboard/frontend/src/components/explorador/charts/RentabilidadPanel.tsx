@@ -71,7 +71,7 @@ export default function RentabilidadPanel() {
   };
 
   const paretoOpt = {
-    grid: { left: 96, right: 30, top: 10, bottom: 22 },
+    grid: { left: 96, right: 38, top: 18, bottom: 22 },
     xAxis: [
       { type: "value", axisLine: { lineStyle: { color: "#d1d0d6" } }, axisLabel: { fontSize: 9, color: "#71706f", formatter: "{value}%" }, splitLine: { lineStyle: { color: "#f2f1f6" } } },
       { type: "value", min: 0, max: 100, show: false },
@@ -100,7 +100,8 @@ export default function RentabilidadPanel() {
       {
         name: "% acumulado", type: "line", xAxisIndex: 1,
         data: top.map((r) => r.pct_acumulado),
-        lineStyle: { color: colors.amarillo, width: 2 }, itemStyle: { color: colors.amarillo }, symbol: "circle", symbolSize: 4,
+        lineStyle: { color: colors.amarillo, width: 2 }, itemStyle: { color: colors.amarillo }, symbol: "circle", symbolSize: 5,
+        label: { show: true, position: "top", fontSize: 9, fontWeight: 600, color: colors.amarillo, formatter: (p: any) => `${Math.round(p.value)}%` },
       },
     ],
   };
