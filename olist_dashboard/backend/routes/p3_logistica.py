@@ -88,6 +88,28 @@ def kpis_entrega(f: Filters = Depends(filter_dep)):
     return query(sql, params).iloc[0].to_dict()
 
 
+@router.get("/intra_inter")
+def intra_inter(f: Filters = Depends(filter_dep)):
+    """Compara pedidos dentro del mismo estado (vendedor=cliente) vs entre estados."""
+    where, params = where_clause(f)
+    sql = f"""
+        SELECT
+            CASE WHEN geov.estado = geoc.estado THEN 'Intra-estado' ELSE 'Inter-estado' END AS tipo,
+            COUNT(DISTINCT f.id_pedido) AS pedidos,
+            ROUND(AVG(CAST(f.dias_hasta_entrega AS DECIMAL(8,2))), 1) AS dias_entrega_avg,
+            ROUND(AVG(CAST(f.entrego_a_tiempo AS DECIMAL(5,2))) * 100, 1) AS pct_puntual,
+            ROUND(100.0 * COUNT(DISTINCT CASE WHEN f.dias_retraso > 7 THEN f.id_pedido END)
+                  / NULLIF(COUNT(DISTINCT f.id_pedido), 0), 1) AS pct_retraso_critico
+        FROM FACT_VENTAS f
+        JOIN DIM_GEOGRAFIA geov ON f.id_geografia_ven = geov.id_geografia
+        JOIN DIM_GEOGRAFIA geoc ON f.id_geografia_cli = geoc.id_geografia
+        LEFT JOIN DIM_PRODUCTO p ON f.id_producto = p.id_producto
+        {where}
+        GROUP BY CASE WHEN geov.estado = geoc.estado THEN 'Intra-estado' ELSE 'Inter-estado' END
+    """
+    return query(sql, params).to_dict(orient="records")
+
+
 @router.get("/regiones")
 def retraso_por_region(f: Filters = Depends(filter_dep)):
     """Retraso y puntualidad agregados por región de destino (cliente)."""

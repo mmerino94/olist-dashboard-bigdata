@@ -1,7 +1,7 @@
 import KpiRow from "../components/explorador/KpiRow";
 import RentabilidadPanel from "../components/explorador/charts/RentabilidadPanel";
 import RetencionPanel from "../components/explorador/charts/RetencionPanel";
-import MapaRegiones from "../components/explorador/charts/MapaRegiones";
+import IntraInter from "../components/explorador/charts/IntraInter";
 import CuadranteVendedores from "../components/explorador/charts/CuadranteVendedores";
 import BalanceSatisfaccion from "../components/explorador/charts/BalanceSatisfaccion";
 
@@ -29,7 +29,7 @@ export default function Explorador() {
         <div className="md:col-span-2">
           <RetencionPanel />
         </div>
-        <MapaRegiones />
+        <IntraInter />
         <CuadranteVendedores />
         <BalanceSatisfaccion />
       </div>
