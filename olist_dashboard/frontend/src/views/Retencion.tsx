@@ -3,6 +3,7 @@ import { useApi } from "../api/client";
 import KpiCard from "../components/KpiCard";
 import DataTable from "../components/DataTable";
 import type { Column } from "../components/DataTable";
+import MatrizRFM from "../components/views/p2/MatrizRFM";
 import SegmentosTreemap from "../components/views/p2/SegmentosTreemap";
 import SegmentosBar from "../components/views/p2/SegmentosBar";
 import { fmtCurrencyShort, fmtNumber, fmtPct } from "../lib/format";
@@ -157,6 +158,9 @@ export default function Retencion() {
           hint="Valor de vida medio del cliente"
         />
       </div>
+
+      {/* Matriz RFM */}
+      <MatrizRFM />
 
       {/* Charts grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
