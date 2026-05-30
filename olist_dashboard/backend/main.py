@@ -2,8 +2,11 @@
 
 Run: cd olist_dashboard && .venv/bin/uvicorn backend.main:app --reload --port 8000
 """
+import math
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from routes import (
     filtros,
@@ -15,11 +18,31 @@ from routes import (
     resumen,
 )
 
+
+def _sanitize(o):
+    """Convierte NaN/Inf → None (válido en JSON) recursivamente."""
+    if isinstance(o, float):
+        return None if (math.isnan(o) or math.isinf(o)) else o
+    if isinstance(o, dict):
+        return {k: _sanitize(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [_sanitize(v) for v in o]
+    return o
+
+
+class SafeJSONResponse(JSONResponse):
+    """Respuesta JSON que tolera NaN/Inf (los serializa como null)."""
+
+    def render(self, content) -> bytes:
+        return super().render(_sanitize(content))
+
+
 app = FastAPI(
     title="Olist Dashboard API",
     description="Backend que expone los KPIs de los 5 problemas de negocio "
                 "del proyecto Big Data Analysis (dataset Olist).",
     version="0.1.0",
+    default_response_class=SafeJSONResponse,
 )
 
 app.add_middleware(
