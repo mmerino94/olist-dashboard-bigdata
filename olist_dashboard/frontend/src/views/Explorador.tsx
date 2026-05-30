@@ -1,5 +1,6 @@
 import KpiRow from "../components/explorador/KpiRow";
 import TrendIngreso from "../components/explorador/charts/TrendIngreso";
+import ParetoCategorias from "../components/explorador/charts/ParetoCategorias";
 import TreemapRFM from "../components/explorador/charts/TreemapRFM";
 import MapaRegiones from "../components/explorador/charts/MapaRegiones";
 import CuadranteVendedores from "../components/explorador/charts/CuadranteVendedores";
@@ -27,6 +28,7 @@ export default function Explorador() {
         <div className="md:col-span-2">
           <TrendIngreso />
         </div>
+        <ParetoCategorias />
         <TreemapRFM />
         <MapaRegiones />
         <CuadranteVendedores />
