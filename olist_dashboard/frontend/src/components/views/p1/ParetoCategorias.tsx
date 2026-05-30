@@ -2,11 +2,7 @@ import ReactECharts from "echarts-for-react";
 import { useFilters } from "../../../lib/filters";
 import { colors } from "../../../lib/colors";
 
-type Cat = {
-  categoria: string;
-  pct_ingreso: number;
-  pct_acumulado: number;
-};
+type Cat = { categoria: string; ingreso_total: number };
 
 type Props = { rows: Cat[] };
 
@@ -16,11 +12,19 @@ export default function ParetoCategorias({ rows }: Props) {
     const c = p.name as string;
     if (c) setFilters({ categoria: filters.categoria === c ? null : c });
   };
-  // Top-10 por % ingreso, de mayor a menor (la categoría más grande arriba).
-  const top10 = [...rows]
-    .sort((a, b) => b.pct_ingreso - a.pct_ingreso)
-    .slice(0, 10)
-    .reverse();
+
+  // % ingreso y % acumulado se recalculan sobre las filas recibidas (banda o todas),
+  // para que el Pareto sea coherente con lo que se muestra.
+  const total = rows.reduce((s, r) => s + r.ingreso_total, 0) || 1;
+  let acum = 0;
+  const conPct = [...rows]
+    .sort((a, b) => b.ingreso_total - a.ingreso_total)
+    .map((r) => {
+      const pct = (r.ingreso_total / total) * 100;
+      acum += pct;
+      return { categoria: r.categoria, pct_ingreso: pct, pct_acumulado: acum };
+    });
+  const top10 = conPct.slice(0, 10).reverse(); // mayor a menor (más grande arriba)
 
   const categorias = top10.map((r) => r.categoria);
   const pctIngresos = top10.map((r) => r.pct_ingreso);
