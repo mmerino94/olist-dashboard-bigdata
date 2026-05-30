@@ -29,8 +29,9 @@ export default function Sidebar() {
   return (
     <aside className="w-[220px] shrink-0 bg-navy text-white flex flex-col sticky top-0 h-screen">
       {/* Branding */}
-      <div className="px-5 py-6 flex items-center gap-3">
-        <img src="/analytics-logo.png" alt="Analytics" className="h-11 w-auto block shrink-0" />
+      <div className="px-5 py-6 flex flex-col gap-2">
+        {/* imagotipo con su proporción original (1091×208) */}
+        <img src="/analytics-logo.png" alt="Analytics" className="w-full h-auto block" />
         <div className="leading-none">
           <div className="text-[20px] font-semibold tracking-tight">Analytics</div>
           <div className="text-[10px] tracking-[0.1em] uppercase text-blue-light font-mono mt-1.5">
