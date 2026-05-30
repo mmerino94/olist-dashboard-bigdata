@@ -14,6 +14,7 @@ type Cat = {
   pedidos: number;
   unidades_vendidas: number;
   ingreso_total: number;
+  flete_total: number;
   ticket_promedio: number;
   flete_pct: number;
   pct_puntual: number;

@@ -1,7 +1,7 @@
 import { colors } from "../../../lib/colors";
-import { fmtNumber } from "../../../lib/format";
+import { fmtNumber, fmtCurrencyShort } from "../../../lib/format";
 
-type Cat = { flete_pct: number; pedidos: number };
+type Cat = { flete_pct: number; pedidos: number; flete_total: number };
 
 const items = [
   {
@@ -30,7 +30,11 @@ const items = [
 export default function DefinicionCategorias({ rows = [] }: { rows?: Cat[] }) {
   const stats = (idx: number) => {
     const sel = rows.filter(items[idx].test);
-    return { categorias: sel.length, pedidos: sel.reduce((a, c) => a + c.pedidos, 0) };
+    return {
+      categorias: sel.length,
+      pedidos: sel.reduce((a, c) => a + c.pedidos, 0),
+      flete: sel.reduce((a, c) => a + (c.flete_total ?? 0), 0),
+    };
   };
 
   return (
@@ -53,7 +57,8 @@ export default function DefinicionCategorias({ rows = [] }: { rows?: Cat[] }) {
                 {rows.length > 0 && (
                   <div className="text-[11px] text-ink mt-1 tabular-nums">
                     <span className="font-semibold">{s.categorias}</span> categorías ·{" "}
-                    <span className="font-semibold">{fmtNumber(s.pedidos)}</span> pedidos
+                    <span className="font-semibold">{fmtNumber(s.pedidos)}</span> pedidos ·{" "}
+                    <span className="font-semibold" style={{ color: it.color }}>{fmtCurrencyShort(s.flete)}</span> en flete
                   </div>
                 )}
               </div>

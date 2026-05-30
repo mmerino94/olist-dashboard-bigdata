@@ -18,6 +18,7 @@ def ranking_categorias(f: Filters = Depends(filter_dep)):
             COUNT(*) AS unidades_vendidas,
             COUNT(DISTINCT f.id_producto) AS productos_distintos,
             ROUND(SUM(f.valor_total), 0) AS ingreso_total,
+            ROUND(SUM(f.flete), 0) AS flete_total,
             ROUND(SUM(f.valor_total) / NULLIF(COUNT(DISTINCT f.id_pedido), 0), 2) AS ticket_promedio,
             ROUND(AVG(f.flete_sobre_precio), 1) AS flete_pct,
             ROUND(AVG(CAST(f.entrego_a_tiempo AS DECIMAL(5,2))) * 100, 1) AS pct_puntual,
