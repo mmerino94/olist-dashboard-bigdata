@@ -65,7 +65,7 @@ export default function SatisfaccionPanel() {
   const colorScore = (s: number) => (s <= 2 ? colors.rojo : s === 3 ? colors.gris : colors.verde);
 
   const distOpt = {
-    grid: { left: 34, right: 14, top: 22, bottom: 24 },
+    grid: { left: 34, right: 14, top: 30, bottom: 24 },
     xAxis: {
       type: "category", data: dd.map((d) => `${d.score}★`),
       axisLabel: { fontSize: 11, color: "#54595f" }, axisTick: { show: false }, axisLine: { lineStyle: { color: "#d1d0d6" } },
@@ -82,7 +82,18 @@ export default function SatisfaccionPanel() {
       {
         type: "bar", barWidth: "58%",
         data: dd.map((d) => ({ value: d.pct, itemStyle: { color: colorScore(d.score) } })),
-        label: { show: true, position: "top", fontSize: 9.5, fontWeight: 600, color: "#54595f", formatter: (p: any) => `${p.value}%` },
+        label: {
+          show: true,
+          position: "top",
+          formatter: (p: any) => {
+            const d = dd[p.dataIndex];
+            return `{p|${d.pct}%}\n{n|${fmtNumber(d.n)}}`;
+          },
+          rich: {
+            p: { fontSize: 9.5, fontWeight: 700, color: "#54595f" },
+            n: { fontSize: 8.5, color: "#8b909c", padding: [1, 0, 0, 0] },
+          },
+        },
       },
     ],
   };
