@@ -112,9 +112,6 @@ export default function SemaforoBar({ rows }: Props) {
   return (
     <div className="bg-paper border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
       <div>
-        <div className="text-[11px] font-mono uppercase tracking-widest text-gray mb-0.5">
-          P4 · VENDEDORES
-        </div>
         <div className="font-semibold text-ink text-[15px]">
           Padrón vs ingreso por nivel
         </div>
@@ -123,6 +120,15 @@ export default function SemaforoBar({ rows }: Props) {
         </div>
       </div>
       <ReactECharts option={option} style={{ height: 300 }} notMerge />
+      <div className="text-[10.5px] text-gray leading-relaxed border-t border-gray-100 pt-2.5">
+        <strong className="text-ink">Clasificación</strong> según un score 0–100 ={" "}
+        puntualidad (40%) + rating (35%) + reseñas no-malas (15%) + bajo retraso (10%).{" "}
+        <span className="whitespace-nowrap"><strong className="text-ink">Elite</strong> &gt; 88</span> ·{" "}
+        <span className="whitespace-nowrap"><strong className="text-ink">Estándar</strong> 75–88</span> ·{" "}
+        <span className="whitespace-nowrap"><strong className="text-ink">En observación</strong> 60–75</span> ·{" "}
+        <span className="whitespace-nowrap"><strong className="text-ink">Crítico</strong> &lt; 60</span>.{" "}
+        Solo vendedores con ≥ 5 pedidos.
+      </div>
     </div>
   );
 }
