@@ -27,7 +27,7 @@ export default function IntraInter() {
     },
     yAxis: {
       type: "category",
-      data: ["Intra-estado", "Inter-estado"],
+      data: ["Mismo estado", "Otro estado"],
       axisLabel: { fontSize: 11, color: "#1e2230", fontWeight: 600 },
       axisTick: { show: false },
       axisLine: { lineStyle: { color: "#d1d0d6" } },
@@ -35,9 +35,11 @@ export default function IntraInter() {
     tooltip: {
       trigger: "axis",
       formatter: (ps: any) => {
-        const r = ps[0].dataIndex === 0 ? intra : inter;
+        const esMismo = ps[0].dataIndex === 0;
+        const r = esMismo ? intra : inter;
         if (!r) return "";
-        return `<b>${r.tipo}</b><br/>${fmtNumber(r.pedidos)} pedidos<br/>entrega: ${r.dias_entrega_avg} días<br/>puntual: ${r.pct_puntual}%<br/>retraso crítico: ${r.pct_retraso_critico}%`;
+        const nombre = esMismo ? "Mismo estado" : "Otro estado";
+        return `<b>${nombre}</b><br/>${fmtNumber(r.pedidos)} pedidos<br/>entrega: ${r.dias_entrega_avg} días<br/>puntual: ${r.pct_puntual}%<br/>retraso crítico: ${r.pct_retraso_critico}%`;
       },
     },
     series: [
@@ -71,7 +73,7 @@ export default function IntraInter() {
     <PanelCard
       badge="P3 · LOGÍSTICA"
       accent={colors.acento}
-      titulo="Intra-estado vs Inter-estado"
+      titulo="Mismo estado vs Otro estado"
       meta="días de entrega · entregar dentro del estado tarda la mitad"
       to="/logistica"
       toLabel="Profundizar en Logística"
