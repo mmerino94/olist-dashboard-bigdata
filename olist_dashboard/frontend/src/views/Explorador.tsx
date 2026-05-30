@@ -1,4 +1,3 @@
-import FilterPanel from "../components/explorador/FilterPanel";
 import KpiRow from "../components/explorador/KpiRow";
 import MatrizRentabilidad from "../components/explorador/charts/MatrizRentabilidad";
 import TreemapRFM from "../components/explorador/charts/TreemapRFM";
@@ -19,7 +18,6 @@ export default function Explorador() {
         </div>
       </header>
 
-      <FilterPanel />
       <KpiRow />
 
       <div className="text-[11px] uppercase tracking-[0.1em] text-gray font-mono mt-1">
