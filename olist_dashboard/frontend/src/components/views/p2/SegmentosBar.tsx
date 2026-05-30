@@ -47,6 +47,7 @@ export default function SegmentosBar({ rows }: Props) {
         data: rows.map((r) => r.pct_clientes),
         itemStyle: { color: colors.acento },
         barMaxWidth: 20,
+        label: { show: true, position: "right", fontSize: 9.5, color: "#54595f", formatter: (p: any) => `${p.value.toFixed(1)}%` },
       },
       {
         name: "% ingreso",
@@ -54,6 +55,7 @@ export default function SegmentosBar({ rows }: Props) {
         data: rows.map((r) => r.pct_ingreso),
         itemStyle: { color: colors.primario },
         barMaxWidth: 20,
+        label: { show: true, position: "right", fontSize: 9.5, fontWeight: 600, color: "#54595f", formatter: (p: any) => `${p.value.toFixed(1)}%` },
       },
     ],
   };
