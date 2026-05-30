@@ -203,12 +203,6 @@ export default function Vendedores() {
         />
       </div>
 
-      {/* Charts grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <ScatterVendedores rows={scatterRows} />
-        <SemaforoBar rows={semaforoRows} />
-      </div>
-
       {/* Definición del score y sus categorías */}
       <div className="bg-paper border border-gray-200 rounded-lg p-5 flex flex-col gap-3">
         <div>
@@ -219,6 +213,9 @@ export default function Vendedores() {
             Cada vendedor (con <strong className="text-ink">≥ 5 pedidos</strong>) recibe un{" "}
             <strong className="text-ink">score de 0 a 100</strong> que pondera cuatro señales:
           </div>
+        </div>
+        <div className="bg-bg border border-gray-200 rounded px-4 py-3 font-mono text-[12px] text-ink leading-relaxed overflow-x-auto">
+          score = 40 × puntualidad + 35 × (rating ÷ 5) + 15 × (1 − %malas) + 10 × max(0, 1 − retraso ÷ 10)
         </div>
         <div className="flex flex-wrap gap-2 text-[11.5px]">
           <span className="px-2.5 py-1 rounded bg-bg text-ink font-mono">puntualidad · 40%</span>
@@ -243,6 +240,12 @@ export default function Vendedores() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Charts grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <ScatterVendedores rows={scatterRows} />
+        <SemaforoBar rows={semaforoRows} />
       </div>
 
       {/* Top 10 críticos table */}
