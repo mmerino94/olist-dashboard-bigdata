@@ -10,7 +10,6 @@ const navSections: { label: string; items: NavItem[] }[] = [
     label: "Tablero",
     items: [
       { to: "/", num: "▦", label: "Explorador", end: true },
-      { to: "/resumen", num: "0", label: "Resumen ejecutivo" },
     ],
   },
   {
