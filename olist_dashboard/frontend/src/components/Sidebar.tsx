@@ -30,7 +30,8 @@ export default function Sidebar() {
     <aside className="w-[220px] shrink-0 bg-navy text-white flex flex-col sticky top-0 h-screen">
       {/* Branding */}
       <div className="px-5 py-6 flex flex-col gap-3">
-        <img src="/analytics-logo.png" alt="Analytics" className="h-16 w-auto block" />
+        {/* imagotipo original, sin recortar, en su proporción (1091×208) */}
+        <img src="/analytics-logo.png" alt="Analytics" className="w-full h-auto block" />
         <div className="leading-none">
           <div className="text-[15px] font-normal tracking-tight leading-tight">
             Olist Brazilian E-Commerce
