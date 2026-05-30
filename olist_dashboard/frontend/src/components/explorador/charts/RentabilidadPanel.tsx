@@ -100,8 +100,12 @@ export default function RentabilidadPanel() {
       {
         name: "% acumulado", type: "line", xAxisIndex: 1,
         data: top.map((r) => r.pct_acumulado),
-        lineStyle: { color: colors.amarillo, width: 2 }, itemStyle: { color: colors.amarillo }, symbol: "circle", symbolSize: 5,
-        label: { show: true, position: "top", fontSize: 9, fontWeight: 600, color: colors.amarillo, formatter: (p: any) => `${Math.round(p.value)}%` },
+        lineStyle: { color: colors.primario, width: 2.5 }, itemStyle: { color: colors.primario }, symbol: "circle", symbolSize: 5,
+        label: {
+          show: true, position: "top", fontSize: 9.5, fontWeight: 700, color: colors.primario,
+          backgroundColor: "rgba(255,255,255,0.9)", padding: [1, 3], borderRadius: 3,
+          formatter: (p: any) => `${Math.round(p.value)}%`,
+        },
       },
     ],
   };
@@ -151,7 +155,7 @@ export default function RentabilidadPanel() {
         {/* Pareto categorías */}
         <div className="lg:col-span-1">
           <div className="text-[12px] font-medium text-ink mb-1 border-b border-gray-100 pb-1">
-            Pareto de categorías <span className="text-gray font-normal">· línea ámbar = % acumulado</span>
+            Pareto de categorías <span className="text-gray font-normal">· línea = % acumulado</span>
           </div>
           {cat.loading || cat.error || top.length === 0 ? (
             <Estado loading={cat.loading} error={cat.error} empty={top.length === 0} h={240} />
