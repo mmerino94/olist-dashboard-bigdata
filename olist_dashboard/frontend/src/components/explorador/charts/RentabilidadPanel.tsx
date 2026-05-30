@@ -153,14 +153,16 @@ export default function RentabilidadPanel() {
         </div>
 
         {/* Pareto categorías */}
-        <div className="lg:col-span-1">
+        <div className="lg:col-span-1 flex flex-col">
           <div className="text-[12px] font-medium text-ink mb-1 border-b border-gray-100 pb-1">
             Pareto de categorías <span className="text-gray font-normal">· línea = % acumulado</span>
           </div>
           {cat.loading || cat.error || top.length === 0 ? (
             <Estado loading={cat.loading} error={cat.error} empty={top.length === 0} h={240} />
           ) : (
-            <ReactECharts option={paretoOpt} style={{ height: 240 }} notMerge />
+            <div className="flex-1 min-h-[240px]">
+              <ReactECharts option={paretoOpt} style={{ height: "100%" }} notMerge />
+            </div>
           )}
         </div>
       </div>
