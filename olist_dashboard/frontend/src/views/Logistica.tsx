@@ -93,6 +93,12 @@ export default function Logistica() {
   const regionesRows = regionesApi.data ?? [];
   const rutasRows = rutasApi.data ?? [];
 
+  // Peor / mejor región por puntualidad — dinámico según filtros activos.
+  const porPuntual = [...regionesRows].sort((a, b) => a.pct_puntual - b.pct_puntual);
+  const peorRegion = porPuntual[0] ?? null;
+  const mejorRegion = porPuntual[porPuntual.length - 1] ?? null;
+  const ultimoBucket = satRows.length > 0 ? satRows[satRows.length - 1] : null;
+
   const loading =
     kpisApi.loading || satApi.loading || regionesApi.loading || rutasApi.loading;
   const error =
@@ -123,14 +129,24 @@ export default function Logistica() {
           Logística y tiempos de entrega
         </h1>
         <p className="text-sm text-gray max-w-2xl leading-relaxed">
-          La intuición geográfica está mal calibrada:{" "}
-          <strong className="text-bad">Nordeste castiga más que Norte</strong>
+          El retraso no se reparte parejo por geografía:{" "}
+          <strong className="text-bad">
+            {peorRegion ? peorRegion.region : "—"}
+          </strong>{" "}
+          es la región más castigada
+          {peorRegion ? ` (solo ${fmtPct(peorRegion.pct_puntual)} puntual)` : ""}
+          {mejorRegion && peorRegion && mejorRegion.region !== peorRegion.region ? (
+            <>
+              {" "}frente a{" "}
+              <strong className="text-good">
+                {mejorRegion.region} ({fmtPct(mejorRegion.pct_puntual)})
+              </strong>
+            </>
+          ) : null}
           . Cada día de retraso dispara el % de reseñas malas — el impacto
           llega a{" "}
           <strong className="text-bad">
-            {satRows.length > 0
-              ? `${satRows[satRows.length - 1].pct_malas.toFixed(0)}%`
-              : "—"}
+            {ultimoBucket ? `${ultimoBucket.pct_malas.toFixed(0)}%` : "—"}
           </strong>{" "}
           en retrasos superiores a 14 días.
         </p>
