@@ -60,31 +60,29 @@ export default function SatisfaccionPanel() {
     ],
   };
 
-  // --- Balance + NPS ---
+  // --- Distribución de calificaciones (1★ a 5★) ---
   const dd = dist.data?.distribucion ?? [];
-  const nps = dist.data?.nps_estimado ?? 0;
-  const sum = (pred: (d: Dist) => boolean) => Math.round(dd.filter(pred).reduce((a, d) => a + d.pct, 0) * 10) / 10;
-  const malas = sum((d) => d.score <= 2);
-  const regular = sum((d) => d.score === 3);
-  const buenas = sum((d) => d.score >= 4);
+  const colorScore = (s: number) => (s <= 2 ? colors.rojo : s === 3 ? colors.gris : colors.verde);
 
-  const balOpt = {
-    grid: { left: 8, right: 8, top: 14, bottom: 86 },
-    xAxis: { type: "value", max: 100, show: false },
-    yAxis: { type: "category", data: ["Reseñas"], show: false },
-    tooltip: { trigger: "item" },
+  const distOpt = {
+    grid: { left: 34, right: 14, top: 22, bottom: 24 },
+    xAxis: {
+      type: "category", data: dd.map((d) => `${d.score}★`),
+      axisLabel: { fontSize: 11, color: "#54595f" }, axisTick: { show: false }, axisLine: { lineStyle: { color: "#d1d0d6" } },
+    },
+    yAxis: { type: "value", axisLabel: { fontSize: 9, color: "#71706f", formatter: "{value}%" }, splitLine: { lineStyle: { color: "#f2f1f6" } } },
+    tooltip: {
+      trigger: "axis",
+      formatter: (ps: any) => {
+        const d = dd[ps[0].dataIndex];
+        return `<b>${d.score}★</b><br/>${d.pct}% · ${fmtNumber(d.n)} reseñas`;
+      },
+    },
     series: [
-      { name: "Malas", type: "bar", stack: "x", data: [malas], itemStyle: { color: colors.rojo }, label: { show: true, formatter: `${malas}%`, color: "#fff", fontSize: 10 } },
-      { name: "Regular", type: "bar", stack: "x", data: [regular], itemStyle: { color: colors.gris } },
-      { name: "Buenas", type: "bar", stack: "x", data: [buenas], itemStyle: { color: colors.verde }, label: { show: true, formatter: `${buenas}%`, color: "#fff", fontSize: 10 } },
       {
-        type: "gauge", center: ["50%", "120%"], radius: "120%", startAngle: 180, endAngle: 0,
-        min: -100, max: 100, splitNumber: 4,
-        progress: { show: true, width: 12, itemStyle: { color: colors.amarillo } },
-        axisLine: { lineStyle: { width: 12, color: [[1, "#ecebf1"]] } },
-        axisLabel: { show: false }, axisTick: { show: false }, splitLine: { show: false }, pointer: { show: false },
-        detail: { valueAnimation: true, offset: [0, -16], fontSize: 22, fontWeight: 700, color: colors.primario, formatter: "NPS {value}" },
-        data: [{ value: nps }],
+        type: "bar", barWidth: "58%",
+        data: dd.map((d) => ({ value: d.pct, itemStyle: { color: colorScore(d.score) } })),
+        label: { show: true, position: "top", fontSize: 9.5, fontWeight: 600, color: "#54595f", formatter: (p: any) => `${p.value}%` },
       },
     ],
   };
@@ -112,15 +110,15 @@ export default function SatisfaccionPanel() {
           )}
         </div>
 
-        {/* Balance + NPS */}
+        {/* Distribución de calificaciones */}
         <div className="lg:col-span-1">
           <div className="text-[12px] font-medium text-ink mb-1 border-b border-gray-100 pb-1">
-            Balance de reseñas + NPS
+            Distribución de calificaciones <span className="text-gray font-normal">· % por estrellas</span>
           </div>
           {dist.loading || dist.error || dd.length === 0 ? (
             <Estado loading={dist.loading} error={dist.error} empty={dd.length === 0} h={220} />
           ) : (
-            <ReactECharts option={balOpt} style={{ height: 220 }} notMerge />
+            <ReactECharts option={distOpt} style={{ height: 220 }} notMerge />
           )}
         </div>
       </div>
