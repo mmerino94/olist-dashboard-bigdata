@@ -79,6 +79,10 @@ export default function MatrizRFM({ segmento = null }: { segmento?: string | nul
             <span className="h-2 w-28 rounded" style={{ background: "linear-gradient(90deg,#eef2fb,#9fc2e6,#3c78bb,#27295a)" }} />
             <span>más</span>
           </div>
+          <p className="text-[10px] text-gray leading-snug mt-2 pt-2 border-t border-gray-100">
+            <strong>Recencia:</strong> días desde la última compra de cada cliente, medidos hasta el fin del dataset
+            (2018, no la fecha actual). Se parte en quintiles: <strong>R=5</strong> = más reciente · <strong>R=1</strong> = más antiguo.
+          </p>
         </>
       )}
     </div>
