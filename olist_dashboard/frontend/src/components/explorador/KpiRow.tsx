@@ -80,13 +80,13 @@ export default function KpiRow() {
         context={peorReg ? `peor región: ${peorReg.region} (${fmtPct(peorReg.pct_puntual)} puntual)` : ""}
       />
 
-      {/* P4 — Vendedores */}
+      {/* P4 — Vendedores: conteo accionable al frente; el % ingreso como respaldo */}
       <KpiStat
-        label="% Ingreso · Vend. críticos"
+        label="Vendedores críticos"
         loading={sem.loading}
-        value={fmtPct(critico?.pct_ingreso)}
-        tone="warn"
-        context={critico ? `${fmtNumber(critico.vendedores)} críticos (${fmtPct(critico.pct_vendedores)} del padrón)` : ""}
+        value={critico ? fmtNumber(critico.vendedores) : "—"}
+        tone="bad"
+        context={critico ? `removibles · solo ${fmtPct(critico.pct_ingreso)} del ingreso` : ""}
       />
 
       {/* P5 — Satisfacción (NPS en vez de media bimodal) */}
