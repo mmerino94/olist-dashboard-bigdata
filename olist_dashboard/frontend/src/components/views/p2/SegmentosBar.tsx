@@ -45,14 +45,16 @@ export default function SegmentosBar({ rows, active = null, onSelect }: Props) {
       {
         name: "% clientes",
         type: "bar",
-        data: rows.map((r) => ({ value: r.pct_clientes, itemStyle: { color: colors.acento, opacity: op(r) } })),
+        itemStyle: { color: colors.acento },
+        data: rows.map((r) => ({ value: r.pct_clientes, itemStyle: { opacity: op(r) } })),
         barMaxWidth: 20,
         label: { show: true, position: "right", fontSize: 9.5, color: "#54595f", formatter: (p: any) => `${p.value.toFixed(1)}%` },
       },
       {
         name: "% ingreso",
         type: "bar",
-        data: rows.map((r) => ({ value: r.pct_ingreso, itemStyle: { color: colors.primario, opacity: op(r) } })),
+        itemStyle: { color: colors.primario },
+        data: rows.map((r) => ({ value: r.pct_ingreso, itemStyle: { opacity: op(r) } })),
         barMaxWidth: 20,
         label: { show: true, position: "right", fontSize: 9.5, fontWeight: 600, color: "#54595f", formatter: (p: any) => `${p.value.toFixed(1)}%` },
       },
