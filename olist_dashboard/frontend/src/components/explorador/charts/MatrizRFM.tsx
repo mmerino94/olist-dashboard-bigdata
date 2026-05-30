@@ -32,7 +32,7 @@ export default function MatrizRFM() {
   });
 
   const option = {
-    grid: { left: 30, right: 12, top: 12, bottom: 54 },
+    grid: { left: 30, right: 12, top: 34, bottom: 38 },
     xAxis: {
       type: "category",
       data: ["1", "2", "3", "4", "5"],
@@ -57,9 +57,9 @@ export default function MatrizRFM() {
       calculable: false,
       orient: "horizontal",
       left: "center",
-      bottom: 0,
-      itemWidth: 12,
-      itemHeight: 90,
+      top: 0,
+      itemWidth: 100,
+      itemHeight: 10,
       text: ["+ monto", "0"],
       textStyle: { fontSize: 9, color: "#71706f" },
       inRange: { color: ["#eef2fb", "#9fc2e6", colors.acento, colors.primario] },
