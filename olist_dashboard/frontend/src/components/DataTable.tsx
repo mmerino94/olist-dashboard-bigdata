@@ -8,8 +8,8 @@ export type Column<T> = {
 };
 
 export default function DataTable<T extends Record<string, any>>({
-  rows, columns, initialSort, maxRows,
-}: { rows: T[]; columns: Column<T>[]; initialSort?: keyof T & string; maxRows?: number }) {
+  rows, columns, initialSort, maxRows, rowHighlight,
+}: { rows: T[]; columns: Column<T>[]; initialSort?: keyof T & string; maxRows?: number; rowHighlight?: (row: T) => boolean }) {
   const [sortKey, setSortKey] = useState<string | null>(initialSort ?? null);
   const [dir, setDir] = useState<"asc" | "desc">("desc");
 
@@ -42,15 +42,26 @@ export default function DataTable<T extends Record<string, any>>({
           </tr>
         </thead>
         <tbody>
-          {sorted.map((row, i) => (
-            <tr key={i} className="border-b border-gray-100 hover:bg-bg">
-              {columns.map((c) => (
-                <td key={c.key} className={`py-2 px-2 ${c.align === "right" ? "text-right tabular-nums" : "text-left"}`}>
-                  {c.format ? c.format(row[c.key], row) : String(row[c.key])}
-                </td>
-              ))}
-            </tr>
-          ))}
+          {(() => {
+            const anyHl = rowHighlight ? sorted.some(rowHighlight) : false;
+            return sorted.map((row, i) => {
+              const hl = rowHighlight?.(row) ?? false;
+              return (
+                <tr
+                  key={i}
+                  className={`border-b border-gray-100 ${
+                    hl ? "bg-blue-accent/10" : anyHl ? "opacity-40" : "hover:bg-bg"
+                  }`}
+                >
+                  {columns.map((c) => (
+                    <td key={c.key} className={`py-2 px-2 ${c.align === "right" ? "text-right tabular-nums" : "text-left"}`}>
+                      {c.format ? c.format(row[c.key], row) : String(row[c.key])}
+                    </td>
+                  ))}
+                </tr>
+              );
+            });
+          })()}
         </tbody>
       </table>
     </div>

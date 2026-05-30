@@ -75,6 +75,7 @@ export default function Retencion() {
   const rows = segApi.data ?? [];
   const recompra = recompraApi.data;
   const [segmentoSel, setSegmentoSel] = useState<string | null>(null);
+  const selectSeg = (s: string) => setSegmentoSel((prev) => (prev === s ? null : s));
 
   const oneTimePct = useMemo(() => {
     if (!recompra) return null;
@@ -166,17 +167,13 @@ export default function Retencion() {
         <div className="lg:col-span-2">
           <MatrizRFM segmento={segmentoSel} />
         </div>
-        <DefinicionSegmentos
-          rows={rows}
-          active={segmentoSel}
-          onSelect={(s) => setSegmentoSel((prev) => (prev === s ? null : s))}
-        />
+        <DefinicionSegmentos rows={rows} active={segmentoSel} onSelect={selectSeg} />
       </div>
 
       {/* Charts grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <SegmentosTreemap rows={rows} />
-        <SegmentosBar rows={rows} />
+        <SegmentosTreemap rows={rows} active={segmentoSel} onSelect={selectSeg} />
+        <SegmentosBar rows={rows} active={segmentoSel} onSelect={selectSeg} />
       </div>
 
       {/* Table */}
@@ -188,6 +185,7 @@ export default function Retencion() {
           rows={rows}
           columns={COLUMNS}
           initialSort="ingreso"
+          rowHighlight={(r) => r.segmento === segmentoSel}
         />
       </div>
     </div>

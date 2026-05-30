@@ -7,10 +7,11 @@ type Seg = {
   pct_ingreso: number;
 };
 
-type Props = { rows: Seg[] };
+type Props = { rows: Seg[]; active?: string | null; onSelect?: (s: string) => void };
 
-export default function SegmentosBar({ rows }: Props) {
+export default function SegmentosBar({ rows, active = null, onSelect }: Props) {
   const segmentos = rows.map((r) => r.segmento);
+  const op = (r: Seg) => (active && active !== r.segmento ? 0.28 : 1);
 
   const option: any = {
     grid: { left: 100, right: 32, top: 40, bottom: 32 },
@@ -44,16 +45,14 @@ export default function SegmentosBar({ rows }: Props) {
       {
         name: "% clientes",
         type: "bar",
-        data: rows.map((r) => r.pct_clientes),
-        itemStyle: { color: colors.acento },
+        data: rows.map((r) => ({ value: r.pct_clientes, itemStyle: { color: colors.acento, opacity: op(r) } })),
         barMaxWidth: 20,
         label: { show: true, position: "right", fontSize: 9.5, color: "#54595f", formatter: (p: any) => `${p.value.toFixed(1)}%` },
       },
       {
         name: "% ingreso",
         type: "bar",
-        data: rows.map((r) => r.pct_ingreso),
-        itemStyle: { color: colors.primario },
+        data: rows.map((r) => ({ value: r.pct_ingreso, itemStyle: { color: colors.primario, opacity: op(r) } })),
         barMaxWidth: 20,
         label: { show: true, position: "right", fontSize: 9.5, fontWeight: 600, color: "#54595f", formatter: (p: any) => `${p.value.toFixed(1)}%` },
       },
@@ -70,7 +69,12 @@ export default function SegmentosBar({ rows }: Props) {
           Revela el desbalance: pocos clientes concentran mucho ingreso
         </div>
       </div>
-      <ReactECharts option={option} style={{ height: 320 }} notMerge />
+      <ReactECharts
+        option={option}
+        style={{ height: 320 }}
+        notMerge
+        onEvents={{ click: (p: any) => rows[p.dataIndex] && onSelect?.(rows[p.dataIndex].segmento) }}
+      />
     </div>
   );
 }

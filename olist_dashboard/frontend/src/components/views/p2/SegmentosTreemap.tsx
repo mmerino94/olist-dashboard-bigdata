@@ -10,9 +10,9 @@ type Seg = {
   pct_clientes: number;
 };
 
-type Props = { rows: Seg[] };
+type Props = { rows: Seg[]; active?: string | null; onSelect?: (s: string) => void };
 
-export default function SegmentosTreemap({ rows }: Props) {
+export default function SegmentosTreemap({ rows, active = null, onSelect }: Props) {
   const option: any = {
     tooltip: {
       formatter: (p: any) =>
@@ -42,7 +42,10 @@ export default function SegmentosTreemap({ rows }: Props) {
           pct: s.pct_ingreso,
           clientes: s.clientes,
           pctCli: s.pct_clientes,
-          itemStyle: { color: segmentColors[s.segmento] ?? colors.acento },
+          itemStyle: {
+            color: segmentColors[s.segmento] ?? colors.acento,
+            opacity: active && active !== s.segmento ? 0.28 : 1,
+          },
         })),
       },
     ],
@@ -58,7 +61,12 @@ export default function SegmentosTreemap({ rows }: Props) {
           Área proporcional al ingreso · etiqueta: % ingreso · monto · clientes
         </div>
       </div>
-      <ReactECharts option={option} style={{ height: 340 }} notMerge />
+      <ReactECharts
+        option={option}
+        style={{ height: 340 }}
+        notMerge
+        onEvents={{ click: (p: any) => p.name && onSelect?.(p.name) }}
+      />
     </div>
   );
 }
