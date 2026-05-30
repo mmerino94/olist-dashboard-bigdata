@@ -58,13 +58,14 @@ export default function IntraInter() {
     ],
   };
 
-  const Comp = ({ label, a, b, bTone }: { label: string; a: string; b: string; bTone: string }) => (
+  // Verde = Mismo estado, ámbar = Otro estado (mismos colores que las barras).
+  const Comp = ({ label, a, b }: { label: string; a: string; b: string }) => (
     <div className="text-center">
       <div className="text-[10px] text-gray font-mono uppercase tracking-wide">{label}</div>
       <div className="text-[12px] mt-0.5">
         <span className="text-good font-semibold">{a}</span>
         <span className="text-gray"> vs </span>
-        <span className={`${bTone} font-semibold`}>{b}</span>
+        <span className="text-warn font-semibold">{b}</span>
       </div>
     </div>
   );
@@ -84,8 +85,8 @@ export default function IntraInter() {
       <ReactECharts option={option} style={{ height: 132 }} notMerge />
       {intra && inter && (
         <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-gray-100">
-          <Comp label="% puntual" a={`${intra.pct_puntual}%`} b={`${inter.pct_puntual}%`} bTone="text-warn" />
-          <Comp label="% retraso crítico" a={`${intra.pct_retraso_critico}%`} b={`${inter.pct_retraso_critico}%`} bTone="text-bad" />
+          <Comp label="% puntual" a={`${intra.pct_puntual}%`} b={`${inter.pct_puntual}%`} />
+          <Comp label="% retraso crítico" a={`${intra.pct_retraso_critico}%`} b={`${inter.pct_retraso_critico}%`} />
         </div>
       )}
     </PanelCard>
