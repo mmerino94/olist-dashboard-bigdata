@@ -3,7 +3,7 @@ import RentabilidadPanel from "../components/explorador/charts/RentabilidadPanel
 import RetencionPanel from "../components/explorador/charts/RetencionPanel";
 import IntraInter from "../components/explorador/charts/IntraInter";
 import VendedoresPanel from "../components/explorador/charts/VendedoresPanel";
-import BalanceSatisfaccion from "../components/explorador/charts/BalanceSatisfaccion";
+import SatisfaccionPanel from "../components/explorador/charts/SatisfaccionPanel";
 
 export default function Explorador() {
   return (
@@ -33,7 +33,9 @@ export default function Explorador() {
         <div className="md:col-span-2 lg:col-span-3">
           <VendedoresPanel />
         </div>
-        <BalanceSatisfaccion />
+        <div className="md:col-span-2 lg:col-span-3">
+          <SatisfaccionPanel />
+        </div>
       </div>
     </div>
   );
