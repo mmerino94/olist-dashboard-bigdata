@@ -18,7 +18,18 @@ export default function MatrizRFM() {
   const cells = data ?? [];
   const maxMonto = Math.max(1, ...cells.map((c) => c.monto));
   const byXY = new Map(cells.map((c) => [`${c.r_score - 1}_${c.f_bucket - 1}`, c]));
-  const heat = cells.map((c) => [c.r_score - 1, c.f_bucket - 1, c.monto]);
+  // Cada celda elige el color de su etiqueta según qué tan oscuro es su fondo.
+  const heat = cells.map((c) => {
+    const oscura = c.monto > maxMonto * 0.5;
+    return {
+      value: [c.r_score - 1, c.f_bucket - 1, c.monto],
+      label: {
+        color: oscura ? "#fff" : "#1e2230",
+        textBorderColor: oscura ? "rgba(20,22,40,0.6)" : "rgba(255,255,255,0.95)",
+        textBorderWidth: 2,
+      },
+    };
+  });
 
   const option = {
     grid: { left: 30, right: 12, top: 12, bottom: 54 },
@@ -56,7 +67,7 @@ export default function MatrizRFM() {
     },
     tooltip: {
       formatter: (p: any) => {
-        const c = byXY.get(`${p.data[0]}_${p.data[1]}`);
+        const c = byXY.get(`${p.value[0]}_${p.value[1]}`);
         if (!c) return "";
         return `R=${c.r_score} · F=${c.f_label}<br/>clientes: ${fmtNumber(c.clientes)}<br/>monto total: ${fmtCurrencyShort(c.monto)}<br/>ticket prom.: ${fmtCurrencyShort(c.monto_avg)}`;
       },
@@ -69,10 +80,7 @@ export default function MatrizRFM() {
           show: true,
           fontSize: 8.5,
           fontWeight: 600,
-          color: "#fff",
-          textBorderColor: "rgba(20,22,40,0.65)",
-          textBorderWidth: 2.5,
-          formatter: (p: any) => fmtCurrencyShort(p.data[2]),
+          formatter: (p: any) => fmtCurrencyShort(p.value[2]),
         },
         itemStyle: { borderColor: "#fff", borderWidth: 1.5 },
       },
