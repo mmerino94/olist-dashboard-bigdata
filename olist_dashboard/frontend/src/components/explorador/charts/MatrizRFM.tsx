@@ -32,7 +32,7 @@ export default function MatrizRFM() {
   });
 
   const option = {
-    grid: { left: 30, right: 12, top: 34, bottom: 38 },
+    grid: { left: 30, right: 12, top: 12, bottom: 38 },
     xAxis: {
       type: "category",
       data: ["1", "2", "3", "4", "5"],
@@ -54,16 +54,8 @@ export default function MatrizRFM() {
     visualMap: {
       min: 0,
       max: maxMonto,
-      calculable: false,
-      orient: "horizontal",
-      left: "center",
-      top: 0,
-      itemWidth: 100,
-      itemHeight: 10,
-      text: ["+ monto", "0"],
-      textStyle: { fontSize: 9, color: "#71706f" },
+      show: false, // leyenda renderizada como HTML debajo del gráfico
       inRange: { color: ["#eef2fb", "#9fc2e6", colors.acento, colors.primario] },
-      formatter: (v: number) => fmtCurrencyShort(v),
     },
     tooltip: {
       formatter: (p: any) => {
@@ -99,7 +91,15 @@ export default function MatrizRFM() {
       error={error}
       empty={cells.length === 0}
     >
-      <ReactECharts option={option} style={{ height: 220 }} notMerge />
+      <ReactECharts option={option} style={{ height: 210 }} notMerge />
+      <div className="flex items-center justify-center gap-2 mt-1 text-[9px] text-gray font-mono">
+        <span>menos monto</span>
+        <span
+          className="h-2 w-28 rounded"
+          style={{ background: "linear-gradient(90deg,#eef2fb,#9fc2e6,#3c78bb,#27295a)" }}
+        />
+        <span>más</span>
+      </div>
     </PanelCard>
   );
 }
