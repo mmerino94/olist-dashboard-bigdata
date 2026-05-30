@@ -69,6 +69,26 @@ def segmentos(f: Filters = Depends(filter_dep)):
     return out.to_dict(orient="records")
 
 
+@router.get("/matriz")
+def matriz_rfm(f: Filters = Depends(filter_dep)):
+    """Grilla RFM: Recencia (r_score 1-5) × Frecuencia (1..5+), color = monto."""
+    df = _customer_rfm(f)
+    if df.empty:
+        return []
+    df = df.copy()
+    df["f_bucket"] = df["frequency"].clip(upper=5).astype(int)
+    g = df.groupby(["r_score", "f_bucket"]).agg(
+        clientes=("customer_unique_id", "count"),
+        monto=("monetary", "sum"),
+        monto_avg=("monetary", "mean"),
+    ).reset_index()
+    g["monto"] = g["monto"].round(0)
+    g["monto_avg"] = g["monto_avg"].round(2)
+    g["r_score"] = g["r_score"].astype(int)
+    g["f_label"] = g["f_bucket"].apply(lambda x: "5+" if x >= 5 else str(int(x)))
+    return g.to_dict(orient="records")
+
+
 @router.get("/recompra")
 def tasa_recompra(f: Filters = Depends(filter_dep)):
     df = _customer_rfm(f)
