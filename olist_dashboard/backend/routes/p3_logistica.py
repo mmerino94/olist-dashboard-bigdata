@@ -78,8 +78,8 @@ def kpis_entrega(f: Filters = Depends(filter_dep)):
             ROUND(AVG(CAST(f.dias_hasta_entrega AS DECIMAL(8,2))), 1) AS tiempo_promedio,
             ROUND(AVG(CAST(f.entrego_a_tiempo AS DECIMAL(5,2))) * 100, 1) AS pct_puntual,
             ROUND(AVG(CASE WHEN f.dias_retraso > 0 THEN CAST(f.dias_retraso AS DECIMAL(8,2)) END), 1) AS retraso_avg_atrasados,
-            ROUND(100.0 * SUM(CASE WHEN f.dias_retraso > 7 THEN 1 ELSE 0 END) /
-                  NULLIF(COUNT(*), 0), 1) AS pct_retraso_critico
+            ROUND(100.0 * COUNT(DISTINCT CASE WHEN f.dias_retraso > 7 THEN f.id_pedido END) /
+                  NULLIF(COUNT(DISTINCT f.id_pedido), 0), 1) AS pct_retraso_critico
         FROM FACT_VENTAS f
         LEFT JOIN DIM_GEOGRAFIA geoc ON f.id_geografia_cli = geoc.id_geografia
         LEFT JOIN DIM_PRODUCTO p ON f.id_producto = p.id_producto

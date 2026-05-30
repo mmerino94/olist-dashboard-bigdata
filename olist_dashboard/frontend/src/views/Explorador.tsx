@@ -1,5 +1,5 @@
 import KpiRow from "../components/explorador/KpiRow";
-import MatrizRentabilidad from "../components/explorador/charts/MatrizRentabilidad";
+import RentabilidadPanel from "../components/explorador/charts/RentabilidadPanel";
 import TreemapRFM from "../components/explorador/charts/TreemapRFM";
 import MapaRegiones from "../components/explorador/charts/MapaRegiones";
 import CuadranteVendedores from "../components/explorador/charts/CuadranteVendedores";
@@ -23,8 +23,9 @@ export default function Explorador() {
       <div className="text-[11px] uppercase tracking-[0.1em] text-gray font-mono mt-1">
         Análisis por problema · clic para profundizar
       </div>
+      <RentabilidadPanel />
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <MatrizRentabilidad />
         <TreemapRFM />
         <MapaRegiones />
         <CuadranteVendedores />
