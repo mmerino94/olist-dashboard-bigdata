@@ -15,10 +15,14 @@ export default function CuadranteVendedores() {
     grid: { left: 44, right: 22, top: 18, bottom: 40 },
     xAxis: {
       name: "% puntualidad", nameLocation: "middle", nameGap: 26, min: 0, max: 100,
+      nameTextStyle: { color: "#54595f", fontSize: 11, fontWeight: 600 },
+      axisLabel: { color: "#71706f", fontSize: 10 },
       axisLine: { lineStyle: { color: "#d1d0d6" } }, splitLine: { lineStyle: { color: "#ecebf1" } },
     },
     yAxis: {
       name: "rating", min: 0, max: 5,
+      nameTextStyle: { color: "#54595f", fontSize: 11, fontWeight: 600 },
+      axisLabel: { color: "#71706f", fontSize: 10 },
       axisLine: { lineStyle: { color: "#d1d0d6" } }, splitLine: { lineStyle: { color: "#ecebf1" } },
     },
     tooltip: {
